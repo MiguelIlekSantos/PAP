@@ -1,4 +1,5 @@
 import { BgLoginPage } from "./components/BgLoginPage";
+import { SlideFrame } from "./components/SlideFrame";
 
 export default function Index() {
   /*
@@ -8,7 +9,7 @@ export default function Index() {
    */
   return (
     <>
-      <BgLoginPage/>
+      <SlideFrame/>
     </>
   );
 }
