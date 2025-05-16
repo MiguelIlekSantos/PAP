@@ -4,13 +4,13 @@ import { BallRow } from './BallRow'
 
 export const BgLoginPage = () => {
 
-  
+
   return (
     <>
       <SlideFrame />
-      <BallRow/>
-      <BallRow/>
+      <BallRow />
+      <BallRow />
     </>
   )
-  
+
 }

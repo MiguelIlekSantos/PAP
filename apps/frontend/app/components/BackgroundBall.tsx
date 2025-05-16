@@ -6,7 +6,7 @@ export const BackgroundBall = () => {
 
   return (
     <>
-      <div className="opacity-0 relative -z-[1] w-20 h-10 bg-[rgba(255,255,255,0.4)] rounded-full animate-fall-45"
+      <div className="opacity-0 relative -z-[1] w-80 h-40 bg-[rgba(255,255,255,0.4)] rounded-full animate-fall-45"
         style={{ animationDelay: delay }}
       ></div>
     </>

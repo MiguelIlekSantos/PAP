@@ -10,7 +10,7 @@ export const BallRow = () => {
 
     return (
         <>
-            <div className='flex justify-around items-start'>
+            <div className='absolute flex justify-around items-start'>
                 {balls}
             </div>
         </>
