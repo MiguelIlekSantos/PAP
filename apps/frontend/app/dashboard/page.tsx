@@ -1,19 +1,15 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { SlideFrame } from '../components/SlideFrame'
-import { MenuBtn } from '../components/MenuBtn'
-import { DrawerMenu } from '../components/DrawerMenu'
-import { Menu } from '../components/Menu'
-import Image from 'next/image'
 import { Card } from '../components/Card'
 import { Nav } from '../components/Nav'
 import { AddBtnCard } from '../components/AddBtnCard'
-import { AddEnterpriseModal } from '../components/AddEnterpriseModal'
+import { Modal } from '../components/Modal'
 
 export default function DashboardPage() {
 
-	const [addEnterpriseModal, setAddEnterpriseModal] = useState<boolean>(false)
+	const [CreateEnterpriseModal, setCEM] = useState<boolean>(false)
 
 	return (
 		<>
@@ -23,11 +19,13 @@ export default function DashboardPage() {
 			<div className='flex flex-wrap justify-center gap-5 p-5 relative'>
 				<Card />
 				<Card />
-				<AddBtnCard onclick={() => {setAddEnterpriseModal(true)}}/>
+				<AddBtnCard onclick={() => { setCEM(true) }} />
 			</div>
 			<div className='h-20'></div>
-			{addEnterpriseModal &&
-				<AddEnterpriseModal onclick={() => {setAddEnterpriseModal(false)}}/>
+			{CreateEnterpriseModal &&
+				<Modal onclick={() => { setCEM(false) }} isCreate={true} isLarge={true}>
+					<p>Create enterprise modal</p>
+				</Modal>
 			}
 
 
