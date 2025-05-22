@@ -1,6 +1,7 @@
+import { Button } from "../interfaces/painelBtn";
 
 
-export const Buttons = [
+export const Buttons : Button[] = [
 
     {
         "title": "Empresa",
