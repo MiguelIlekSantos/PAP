@@ -3,3 +3,6 @@
 @tailwind utilities;
 @plugin "daisyui";
 
+*{
+    box-sizing: border-box;
+}
