@@ -10,7 +10,7 @@ import { DrawerMenu } from '../components/DrawerMenu'
 import { Menu } from '../components/Menu'
 import { OptPanel } from '../components/OptPanel'
 
-export default function DashboardPage() {
+export default function DetailsPage() {
 
 	// const [CreateEnterpriseModal, setCEM] = useState<boolean>(false)
 

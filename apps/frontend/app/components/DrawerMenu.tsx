@@ -6,6 +6,7 @@ import Image from 'next/image'
 
 type Props = {
 	tabs: Tabs[]
+	page: string
 }
 
 export const DrawerMenu = (props: Props) => {
@@ -42,30 +43,28 @@ export const DrawerMenu = (props: Props) => {
 				<img src="/icons/management.png" alt="logo" className="w-10 h-10 mb-8" />
 
 				{/* Menu Items */}
-				<ul className="flex flex-col gap-6 w-full items-center">
+				<ul className="flex flex-col gap-8 w-full items-center">
 					{props.tabs.map((tab, i) => (
-						<li className="w-full" key={i}>
+						<Link onClick={toggleDrawer} href={props.page + tab.url} key={i} className={`flex w-full pl-5`}>
+							<li className="w-full flex flex-row">
+								{tab.img && (
 
+									<Image
+										src={tab.img}
+										width={30}
+										height={30}
+										alt={""}
+										className="rounded"
+									/>
 
-							{tab.img && (
-								<Image
-									src={tab.img}
-									width={30}
-									height={30}
-									alt={tab.title}
-									className="rounded"
-								/>
-							)}
-							{isOpen && <span>{tab.title}</span>}
+								)}
+								{isOpen && <span className='pl-5'>{tab.title}</span>}
 
-						</li>
+							</li>
+						</Link>
+
 					))}
 				</ul>
-			</div>
-
-			{/* Conteúdo principal sem ser afetado pelo drawer */}
-			<div className="relative z-0 min-h-screen p-6 ml-20">
-				<h1 className="text-2xl font-bold">Conteúdo da Página</h1>
 			</div>
 		</>
 	)
