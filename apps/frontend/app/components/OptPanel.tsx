@@ -11,8 +11,6 @@ export const OptPanel = () => {
 
   return (
     <>
-        {/* <Nav/> */}
-        {/* <DrawerMenu/> */}
         <div className='w-screen h-screen flex justify-center items-center'>
             <div className='w-screen pt-20 md:pt-0 md:w-2/3 flex justify-center items-center flex-wrap gap-12 text-center'>
                 {

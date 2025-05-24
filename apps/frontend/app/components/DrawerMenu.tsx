@@ -16,12 +16,10 @@ export const DrawerMenu = (props: Props) => {
 
 	return (
 		<>
-			{/* Drawer flutuante por cima */}
 			<div
 				className={`fixed top-0 left-0 h-full bg-base-200 text-base-content z-50 transition-all duration-300 ease-in-out
         ${isOpen ? 'w-64' : 'w-20'} flex flex-col items-center py-4 shadow-md`}
 			>
-				{/* Botão de toggle */}
 				<button
 					onClick={toggleDrawer}
 					className="mb-10 p-2 hover:bg-base-300 rounded transition"
@@ -39,13 +37,11 @@ export const DrawerMenu = (props: Props) => {
 					)}
 				</button>
 
-				{/* Logo */}
-				<img src="/icons/management.png" alt="logo" className="w-10 h-10 mb-8" />
+				<img src="/icons/recursos_humanos.png" alt="logo" className="w-10 h-10 mb-8" />
 
-				{/* Menu Items */}
 				<ul className="flex flex-col gap-8 w-full items-center">
 					{props.tabs.map((tab, i) => (
-						<Link onClick={toggleDrawer} href={props.page + tab.url} key={i} className={`flex w-full pl-5`}>
+						<Link onClick={() => {setIsOpen(false)}} href={props.page + tab.url} key={i} className={`flex w-full pl-5 hover:scale-110`}>
 							<li className="w-full flex flex-row">
 								{tab.img && (
 

@@ -1,7 +1,7 @@
 import { Tabs } from "../interfaces/tabs";
 
 export const EnterpriseTabs: Tabs[] = [
-  { title: "Visão geral", img: "/icons/documentation.png", url: "/overview" },
+  { title: "Home", img: "/icons/documentation.png", url: "/" },
   { title: "Filiais", img: "/", url: "/branches" },
   { title: "Departamentos", img: "/", url: "/departments" },
   { title: "Configurações Gerais", img: "/", url: "/seetings" },
