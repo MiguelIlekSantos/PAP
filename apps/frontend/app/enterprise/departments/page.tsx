@@ -1,104 +1,204 @@
 'use client'
 
-import React from 'react'
-import { Pencil } from 'lucide-react'
-import { InfoCard } from '@/app/components/InfoCard'
+import React, { useState } from 'react'
+import { Plus, Search, Filter, ChevronDown } from 'lucide-react'
+import { DepartmentCard } from '@/app/components/DepartmentCard'
+import { Modal } from '@/app/components/Modal'
 
-export default function DepartamentsPage() {
+// Definindo o tipo para um departamento
+type Department = {
+	id: string;
+	name: string;
+	manager: string;
+	employeeCount: number;
+	budget: {
+		total: number;
+		used: number;
+		currency: string;
+	};
+	location: string;
+	parentId: string | null;
+};
+
+export default function DepartmentsPage() {
+	const [createDepartmentModal, setCreateDepartmentModal] = useState<boolean>(false);
+	const [createSubDepartmentModal, setCreateSubDepartmentModal] = useState<boolean>(false);
+	const [editModal, setEditModal] = useState<boolean>(false);
+	const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
+
+	// Dados de exemplo para os departamentos
+	const departments: Department[] = [
+		{
+			id: "dev-dept",
+			name: "Desenvolvimento de Software",
+			manager: "Ana Moura",
+			employeeCount: 32,
+			budget: {
+				total: 1250000,
+				used: 875000,
+				currency: "€"
+			},
+			location: "Techwave Lisboa",
+			parentId: null
+		},
+		{
+			id: "marketing-dept",
+			name: "Marketing e Vendas",
+			manager: "Carlos Mendes",
+			employeeCount: 18,
+			budget: {
+				total: 750000,
+				used: 420000,
+				currency: "€"
+			},
+			location: "Techwave Porto",
+			parentId: null
+		},
+		{
+			id: "hr-dept",
+			name: "Recursos Humanos",
+			manager: "Sofia Almeida",
+			employeeCount: 8,
+			budget: {
+				total: 350000,
+				used: 210000,
+				currency: "€"
+			},
+			location: "Techwave Lisboa",
+			parentId: null
+		},
+		{
+			id: "finance-dept",
+			name: "Finanças",
+			manager: "Pedro Santos",
+			employeeCount: 12,
+			budget: {
+				total: 500000,
+				used: 380000,
+				currency: "€"
+			},
+			location: "Techwave Lisboa",
+			parentId: null
+		},
+		{
+			id: "frontend-dept",
+			name: "Frontend",
+			manager: "João Silva",
+			employeeCount: 14,
+			budget: {
+				total: 600000,
+				used: 450000,
+				currency: "€"
+			},
+			location: "Techwave Lisboa",
+			parentId: "dev-dept"
+		},
+		{
+			id: "backend-dept",
+			name: "Backend",
+			manager: "Maria Costa",
+			employeeCount: 18,
+			budget: {
+				total: 650000,
+				used: 425000,
+				currency: "€"
+			},
+			location: "Techwave Braga",
+			parentId: "dev-dept"
+		}
+	];
+
+	// Função para lidar com o clique no ícone de edição
+	const handleEditClick = (departmentId: string) => {
+		setSelectedDepartmentId(departmentId);
+		setEditModal(true);
+	};
+
+	// Encontrar o departamento selecionado
+	const selectedDepartment = selectedDepartmentId 
+		? departments.find(dept => dept.id === selectedDepartmentId) 
+		: null;
+
 	return (
 		<div className="min-h-screen ml-20 bg-base-300 text-white p-10">
-			<h1 className="text-4xl font-bold text-white mb-10 border-b border-violet-900/30 pb-4">
-				🗂️ Departamentos / Setores
-			</h1>
+			<div className="flex items-center justify-between mb-10 border-b border-violet-900/30 pb-4">
+				<h1 className="text-4xl font-bold text-white">
+					🗂️ Estrutura Organizacional
+				</h1>
+			</div>
 
-			{/* Departamento 1 */}
-			<div className="mb-12">
-				<div className="flex items-center justify-between mb-6">
-					<h2 className="text-2xl font-semibold text-violet-400">Desenvolvimento de Software</h2>
-					<button 
-						onClick={() => alert("Editar departamento")}
-						className="bg-[#11161d] text-violet-400 hover:text-violet-300 px-4 py-2 rounded-lg border border-gray-800 hover:border-violet-700 transition-all duration-300 flex items-center gap-2"
-					>
-						<Pencil size={16} />
-						<span>Editar departamento</span>
+			{/* Departamentos Principais */}
+			<div className="mb-10">
+				<div className='flex gap-10'>
+					<h2 className="text-2xl font-semibold text-violet-400 mb-6">Departamentos Principais</h2>
+					<button onClick={() => setCreateDepartmentModal(true)} className='btn btn-primary text-2xl'>
+						<Plus size={18} />
 					</button>
 				</div>
-
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-					<InfoCard label="Nome do departamento" value="Desenvolvimento de Software" onEdit={() => alert("Editar nome")} />
-					<InfoCard label="Responsável" value="Ana Moura" onEdit={() => alert("Editar responsável")} />
-					<InfoCard label="Número de funcionários" value="32" onEdit={() => alert("Editar número")} />
-					<InfoCard label="Filial associada" value="Techwave Lisboa" onEdit={() => alert("Editar filial")} />
-					<InfoCard label="Email do departamento" value="dev@techwave.pt" isEmail onEdit={() => alert("Editar email")} />
-					<InfoCard label="Orçamento anual" value="€1.250.000" onEdit={() => alert("Editar orçamento")} />
-					<InfoCard label="Projetos ativos" value="8" onEdit={() => alert("Editar projetos")} />
-					<InfoCard label="Data de criação" value="15/03/2015" onEdit={() => alert("Editar data")} />
-					<InfoCard label="Tecnologias principais" value="React, Node.js, Python, AWS" onEdit={() => alert("Editar tecnologias")} />
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{departments
+						.filter(dept => dept.parentId === null)
+						.map(dept => (
+							<DepartmentCard
+								key={dept.id}
+								id={dept.id}
+								name={dept.name}
+								manager={dept.manager}
+								employeeCount={dept.employeeCount}
+								budget={dept.budget}
+								location={dept.location}
+								onClick={handleEditClick}
+							/>
+						))}
 				</div>
 			</div>
 
-			{/* Departamento 2 */}
-			<div className="mb-12">
-				<div className="flex items-center justify-between mb-6">
-					<h2 className="text-2xl font-semibold text-violet-400">Marketing e Vendas</h2>
-					<button 
-						onClick={() => alert("Editar departamento")}
-						className="bg-[#11161d] text-violet-400 hover:text-violet-300 px-4 py-2 rounded-lg border border-gray-800 hover:border-violet-700 transition-all duration-300 flex items-center gap-2"
-					>
-						<Pencil size={16} />
-						<span>Editar departamento</span>
+			{/* Subdepartamentos */}
+			<div className="mb-10">
+				<div className='flex gap-10'>
+					<h2 className="text-2xl font-semibold text-violet-400 mb-6">Subdepartamentos</h2>
+					<button onClick={() => setCreateSubDepartmentModal(true)} className='btn btn-primary text-2xl'>
+						<Plus size={18} />
 					</button>
 				</div>
-
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-					<InfoCard label="Nome do departamento" value="Marketing e Vendas" onEdit={() => alert("Editar nome")} />
-					<InfoCard label="Responsável" value="Carlos Mendes" onEdit={() => alert("Editar responsável")} />
-					<InfoCard label="Número de funcionários" value="18" onEdit={() => alert("Editar número")} />
-					<InfoCard label="Filial associada" value="Techwave Porto" onEdit={() => alert("Editar filial")} />
-					<InfoCard label="Email do departamento" value="marketing@techwave.pt" isEmail onEdit={() => alert("Editar email")} />
-					<InfoCard label="Orçamento anual" value="€750.000" onEdit={() => alert("Editar orçamento")} />
-					<InfoCard label="Campanhas ativas" value="5" onEdit={() => alert("Editar campanhas")} />
-					<InfoCard label="Data de criação" value="20/05/2016" onEdit={() => alert("Editar data")} />
-					<InfoCard label="Canais principais" value="Digital, Eventos, Parcerias" onEdit={() => alert("Editar canais")} />
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{departments
+						.filter(dept => dept.parentId !== null)
+						.map(dept => (
+							<DepartmentCard
+								key={dept.id}
+								id={dept.id}
+								name={dept.name}
+								manager={dept.manager}
+								employeeCount={dept.employeeCount}
+								budget={dept.budget}
+								location={dept.location}
+								onClick={handleEditClick}
+							/>
+						))}
 				</div>
 			</div>
 
-			{/* Departamento 3 */}
-			<div className="mb-12">
-				<div className="flex items-center justify-between mb-6">
-					<h2 className="text-2xl font-semibold text-violet-400">Recursos Humanos</h2>
-					<button 
-						onClick={() => alert("Editar departamento")}
-						className="bg-[#11161d] text-violet-400 hover:text-violet-300 px-4 py-2 rounded-lg border border-gray-800 hover:border-violet-700 transition-all duration-300 flex items-center gap-2"
-					>
-						<Pencil size={16} />
-						<span>Editar departamento</span>
-					</button>
-				</div>
+			{/* Modal para criar novo departamento principal */}
+			{createDepartmentModal && (
+				<Modal onclick={() => setCreateDepartmentModal(false)} isCreate={true} isLarge={true}>
+					<p>a</p>
+				</Modal>
+			)}
 
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-					<InfoCard label="Nome do departamento" value="Recursos Humanos" onEdit={() => alert("Editar nome")} />
-					<InfoCard label="Responsável" value="Sofia Almeida" onEdit={() => alert("Editar responsável")} />
-					<InfoCard label="Número de funcionários" value="8" onEdit={() => alert("Editar número")} />
-					<InfoCard label="Filial associada" value="Techwave Lisboa" onEdit={() => alert("Editar filial")} />
-					<InfoCard label="Email do departamento" value="rh@techwave.pt" isEmail onEdit={() => alert("Editar email")} />
-					<InfoCard label="Orçamento anual" value="€350.000" onEdit={() => alert("Editar orçamento")} />
-					<InfoCard label="Vagas abertas" value="12" onEdit={() => alert("Editar vagas")} />
-					<InfoCard label="Data de criação" value="10/01/2016" onEdit={() => alert("Editar data")} />
-					<InfoCard label="Ferramentas utilizadas" value="Workday, LinkedIn Recruiter, BambooHR" onEdit={() => alert("Editar ferramentas")} />
-				</div>
-			</div>
+			{/* Modal para criar subdepartamento */}
+			{createSubDepartmentModal && (
+				<Modal onclick={() => setCreateSubDepartmentModal(false)} isCreate={true} isLarge={true}>
+					<p>a</p>
+				</Modal>
+			)}
 
-			{/* Botão para adicionar novo departamento */}
-			<div className="mt-8 flex justify-center">
-				<button 
-					onClick={() => alert("Adicionar novo departamento")}
-					className="bg-violet-700 hover:bg-violet-600 text-white px-6 py-3 rounded-lg transition-all duration-300 flex items-center gap-2"
-				>
-					<span className="text-xl">+</span>
-					<span>Adicionar novo departamento</span>
-				</button>
-			</div>
+			{/* Modal para editar departamento */}
+			{editModal && selectedDepartment && (
+				<Modal onclick={() => setEditModal(false)} isCreate={false} isLarge={true}>
+					<p>a</p>
+				</Modal>
+			)}
 		</div>
-	)
+	);
 }
