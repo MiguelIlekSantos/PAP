@@ -1,8 +1,15 @@
 import Image from 'next/image'
 import React, { useState } from 'react'
 import { Modal } from './Modal'
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
-export const Nav = () => {
+
+type Props = {
+    isSimple?: boolean,
+}
+
+export const Nav = (props: Props) => {
 
     const [ProfileModal, setProfileModal] = useState<boolean>(false)
     const [SettingsModal, setSettingsModal] = useState<boolean>(false)
@@ -15,26 +22,36 @@ export const Nav = () => {
                     <a className="pl-10 text-xl">Enterprises management</a>
                 </div>
                 <div className="flex gap-2">
-                    <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto" />
-                    <div className="dropdown dropdown-end">
-                        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                            <div className="w-10 rounded-full">
-                                <Image
-                                    src="/icons/user.png"
-                                    alt="icon"
-                                    width={50}
-                                    height={50}
-                                />
+                    {props.isSimple ?
+                        <Link href={"/dashboard"} className={`flex w-full pl-5 btn btn-error`}>
+                            <div className={`w-full flex justify-center items-center`}>
+                                <ArrowLeft size={30} color="#fff" className="cursor-pointer" />
+                            </div>
+                        </Link>
+                        :
+                        <div>
+                            <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto" />
+                            <div className="dropdown dropdown-end">
+                                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                                    <div className="w-10 rounded-full">
+                                        <Image
+                                            src="/icons/user.png"
+                                            alt="icon"
+                                            width={50}
+                                            height={50}
+                                        />
+                                    </div>
+                                </div>
+                                <ul
+                                    tabIndex={0}
+                                    className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                                    <li onClick={() => { setProfileModal(true) }}><a>Profile</a></li>
+                                    <li onClick={() => { setSettingsModal(true) }}><a>Settings</a></li>
+                                    <li onClick={() => { setLogOutModal(true) }} className='bg-red-800 rounded-lg'><a>Logout</a></li>
+                                </ul>
                             </div>
                         </div>
-                        <ul
-                            tabIndex={0}
-                            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                            <li onClick={() => { setProfileModal(true) }}><a>Profile</a></li>
-                            <li onClick={() => { setSettingsModal(true) }}><a>Settings</a></li>
-                            <li onClick={() => { setLogOutModal(true) }} className='bg-red-800 rounded-lg'><a>Logout</a></li>
-                        </ul>
-                    </div>
+                    }
                 </div>
             </div>
             {ProfileModal &&

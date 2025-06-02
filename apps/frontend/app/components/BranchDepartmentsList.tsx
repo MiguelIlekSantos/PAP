@@ -1,5 +1,5 @@
-import React from 'react';
-import { Users, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, ArrowRight, Pencil } from 'lucide-react';
 import Link from 'next/link';
 
 type DepartmentInfo = {
@@ -11,10 +11,12 @@ type DepartmentInfo = {
 
 type BranchDepartmentsListProps = {
   departments: DepartmentInfo[];
+  setDptModal: () => void;
 };
 
-export const BranchDepartmentsList = ({ departments }: BranchDepartmentsListProps) => {
-  if (!departments || departments.length === 0) {
+export const BranchDepartmentsList = (props: BranchDepartmentsListProps) => {
+
+  if (!props.departments || props.departments.length === 0) {
     return (
       <div className="bg-[#11161d] border border-gray-800 rounded-lg p-4 text-center text-gray-400">
         Nenhum departamento associado a esta filial.
@@ -24,9 +26,12 @@ export const BranchDepartmentsList = ({ departments }: BranchDepartmentsListProp
 
   return (
     <div className="bg-[#11161d] border border-gray-800 rounded-lg p-4">
-      <h3 className="text-lg font-semibold text-violet-400 mb-4">Departamentos nesta filial</h3>
+      <div className='flex justify-between'>
+        <h3 className="text-lg font-semibold text-violet-400 mb-4">Departamentos nesta filial</h3>
+        <button className='btn' onClick={props.setDptModal}><Pencil size={20} /></button>
+      </div>
       <div className="space-y-3">
-        {departments.map((dept) => (
+        {props.departments.map((dept) => (
           <div 
             key={dept.id} 
             className="flex justify-between items-center p-3 border border-gray-800 rounded-lg hover:border-violet-700 transition-all duration-200"

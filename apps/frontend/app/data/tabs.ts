@@ -1,19 +1,15 @@
 import { Tabs } from "../interfaces/tabs";
 
 export const EnterpriseTabs: Tabs[] = [
-  { title: "Home", img: "/icons/documentation.png", url: "/" },
-  { title: "Filiais", img: "/", url: "/branches" },
-  { title: "Departamentos", img: "/", url: "/departments" },
-  { title: "Configurações Gerais", img: "/", url: "/seetings" },
+  { title: "Home", img: "/icons/home.png", url: "/" },
+  { title: "Filiais", img: "/icons/branches.png", url: "/branches" },
+  { title: "Departamentos", img: "/icons/department.png", url: "/departments" },
+  { title: "Configurações Gerais", img: "/icons/settings.png", url: "/seetings" },
 ];
 
 export const ResourcesTabs: Tabs[] = [
-  { title: "Funcionários", img: "/", url: "/employees" },
-  { title: "Contratações", img: "/", url: "/recruitment" },
-  { title: "Presenças", img: "/", url: "/attendance" },
-  { title: "Folgas e Férias", img: "/", url: "/time-off" },
-  { title: "Cargos e Salários", img: "/", url: "/positions-salaries" },
-  { title: "Turnos e Horários", img: "/", url: "/shifts-schedules" },
+  { title: "Funcionários", img: "/icons/employees.png", url: "/" },
+  { title: "Horário Geral", img: "/icons/schedule.png", url: "/schedule" },
 ];
 
 export const FinanceTabs: Tabs[] = [

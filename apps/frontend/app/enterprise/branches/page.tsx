@@ -7,6 +7,7 @@ import { Branch } from '@/app/components/Branch'
 
 export default function BranchesPage() {
 	const [createModal, setCreateModal] = useState<boolean>(false)
+	const [editDptModal, setDptModal] = useState<boolean>(false)
 
 	// Dados de exemplo para as filiais com departamentos
 	const branches = [
@@ -103,9 +104,9 @@ export default function BranchesPage() {
 		<div className="min-h-screen ml-20 bg-base-300 text-white p-10">
 			<div className="flex items-center justify-between mb-10 border-b border-violet-900/30 pb-4">
 				<h1 className="text-4xl font-bold text-white">
-					🏬 Filiais 
+					🏬 Filiais
 				</h1>
-				<button 
+				<button
 					onClick={() => setCreateModal(true)}
 					className="bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2"
 				>
@@ -114,7 +115,6 @@ export default function BranchesPage() {
 				</button>
 			</div>
 
-			{/* Lista de filiais em grid */}
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 				{branches.map((branch) => (
 					<Branch
@@ -126,6 +126,7 @@ export default function BranchesPage() {
 						contact={branch.contact}
 						function={branch.function}
 						departments={branch.departments}
+						setDptModal={() => setDptModal(true)}
 					/>
 				))}
 			</div>
@@ -176,6 +177,15 @@ export default function BranchesPage() {
 					</div>
 				</Modal>
 			)}
+
+			{editDptModal && (
+				<Modal onclick={() => setDptModal(false)} isCreate={true} isLarge={true}>
+					<div>
+						<p>Edit modal</p>
+					</div>
+				</Modal>
+			)}
+
 		</div>
 	)
 }
