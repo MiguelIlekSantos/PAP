@@ -3,11 +3,13 @@
 import React, { useState } from 'react'
 import { SlideFrame } from '../components/SlideFrame'
 import { Nav } from '../components/Nav'
+import { DrawerMenu } from '../components/DrawerMenu'
 import { FilterPanel } from '../components/FilterPanel'
 import { Table } from '../components/Table'
 import { Modal } from '../components/Modal'
 import { Plus, Search, CreditCard, BarChart, Receipt } from 'lucide-react'
 import Link from 'next/link'
+import { FinanceTabs } from '../data/tabs'
 
 // Mock data for financial transactions
 const mockTransactions = [
@@ -232,10 +234,9 @@ export default function FinancialPage() {
   return (
     <>
       <SlideFrame />
-      <Nav />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-white">Financeiro</h1>
+          <h1 className="text-3xl font-bold text-white">Faturamento</h1>
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
@@ -243,29 +244,6 @@ export default function FinancialPage() {
             <Plus size={18} />
             Nova Transação
           </button>
-        </div>
-
-        {/* Navigation cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <Link href="/financial/dashboard" className="bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-4 flex items-center gap-4">
-            <div className="bg-violet-900/30 p-3 rounded-lg">
-              <CreditCard size={24} className="text-violet-400" />
-            </div>
-            <div>
-              <h3 className="text-white font-medium">Dashboard Financeiro</h3>
-              <p className="text-gray-400 text-sm">Contas, fluxo de caixa e bancos</p>
-            </div>
-          </Link>
-          
-          <Link href="/financial/reports" className="bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-4 flex items-center gap-4">
-            <div className="bg-violet-900/30 p-3 rounded-lg">
-              <BarChart size={24} className="text-violet-400" />
-            </div>
-            <div>
-              <h3 className="text-white font-medium">Relatórios e Faturação</h3>
-              <p className="text-gray-400 text-sm">Relatórios financeiros, impostos e faturação</p>
-            </div>
-          </Link>
         </div>
 
         {/* Summary cards */}
@@ -324,11 +302,7 @@ export default function FinancialPage() {
       {/* Add Transaction Modal */}
       {showAddModal && (
         <Modal onclick={() => setShowAddModal(false)} isCreate={true} isLarge={true}>
-          <h2 className="text-xl font-bold mb-4">Nova Transação</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Form fields would go here */}
-            <p className="text-gray-400 col-span-full">Formulário para adicionar nova transação financeira</p>
-          </div>
+          <p>a</p>
         </Modal>
       )}
     </>

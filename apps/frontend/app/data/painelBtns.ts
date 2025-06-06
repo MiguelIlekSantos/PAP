@@ -1,71 +1,84 @@
 import { Button } from "../interfaces/painelBtn";
-
+import { 
+    Building2, 
+    Users, 
+    Package, 
+    DollarSign, 
+    ShoppingCart, 
+    Truck, 
+    MapPin, 
+    CheckSquare, 
+    Monitor, 
+    Megaphone, 
+    FileText, 
+    BarChart3, 
+    Settings 
+} from 'lucide-react';
 
 export const Buttons : Button[] = [
-
     {
         "title": "Empresa",
-        "img": "/icons/empresa.png",
+        "icon": Building2,
         "url": "/enterprise"
     },
     {
         "title": "Recursos humanos",
-        "img": "/icons/recursos_humanos.png",
+        "icon": Users,
         "url": "/resources"
     },
     {
         "title": "Inventário",
-        "img": "/icons/inventory.png",
+        "icon": Package,
         "url": "/inventory"
     },
     {
         "title": "Financeiro",
-        "img": "/icons/financeiro.png",
+        "icon": DollarSign,
         "url": "/financial"
     },
     {
         "title": "Vendas e Clientes",
-        "img": "/icons/vendas.png",
+        "icon": ShoppingCart,
         "url": "/sales"
     },
     {
         "title": "Compras e Fornecedores",
-        "img": "/icons/fornecedores.png",
+        "icon": Truck,
         "url": "/suppliers"
     },
     {
         "title": "Logística e Expedição",
-        "img": "/icons/logistica.png",
+        "icon": MapPin,
         "url": "/logistic"
     },
     {
         "title": "Projetos e Tarefas",
-        "img": "/icons/projetos.png",
+        "icon": CheckSquare,
         "url": "/projects"
     },
     {
         "title": "Tecnologia e TI",
-        "img": "/icons/technology.png",
+        "icon": Monitor,
         "url": "/tecnology"
     },
     {
         "title": "Marketing",
-        "img": "/icons/Marketing.png",
+        "icon": Megaphone,
         "url": "/marketing"
     },
     {
         "title": "Documentação e Jurídico",
-        "img": "/icons/documentation.png",
+        "icon": FileText,
         "url": "/documents"
     },
     {
         "title": "Relatórios",
-        "img": "/icons/report.png",
+        "icon": BarChart3,
         "url": "/reports"
     },
     {
         "title": "Administração do Sistema",
-        "img": "/icons/settings.png",
+        "icon": Settings,
         "url": "/administration"
     },
 ]

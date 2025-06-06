@@ -15,7 +15,7 @@ export const OptPanel = () => {
             <div className='w-screen pt-20 md:pt-0 md:w-2/3 flex justify-center items-center flex-wrap gap-12 text-center'>
                 {
                     Buttons.map((button, i) => (
-                        <OptBtn title={button.title} img={button.img} url={button.url} key={i} />
+                        <OptBtn title={button.title} icon={button.icon} url={button.url} key={i} />
                     ))
                 }
             </div>

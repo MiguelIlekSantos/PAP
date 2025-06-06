@@ -17,17 +17,20 @@ export const Nav = (props: Props) => {
 
     return (
         <>
-            <div className="navbar bg-base-100 shadow-sm fixed z-10">
+            <div className="navbar bg-black/30 shadow-sm fixed z-10">
                 <div className="flex-1">
                     <a className="pl-10 text-xl">Enterprises management</a>
                 </div>
                 <div className="flex gap-2">
                     {props.isSimple ?
-                        <Link href={"/dashboard"} className={`flex w-full pl-5 btn btn-error`}>
-                            <div className={`w-full flex justify-center items-center`}>
-                                <ArrowLeft size={30} color="#fff" className="cursor-pointer" />
-                            </div>
+                        <Link
+                            href="/dashboard"
+                            className="btn btn-error flex items-center gap-2 px-4 py-2 text-white transition hover:scale-105 hover:shadow-md"
+                        >
+                            <ArrowLeft size={22} />
+                            {/* <span className="hidden sm:inline">Voltar</span> */}
                         </Link>
+
                         :
                         <div>
                             <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto" />

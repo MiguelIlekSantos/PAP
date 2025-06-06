@@ -258,7 +258,6 @@ export default function ProductsPage() {
   return (
     <>
       <SlideFrame />
-      <Nav />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center mb-6">
           <Link href="/inventory" className="mr-4 text-gray-400 hover:text-violet-400 transition-colors duration-200">

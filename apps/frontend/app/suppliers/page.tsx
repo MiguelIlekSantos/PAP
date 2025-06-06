@@ -6,6 +6,39 @@ import { Nav } from '../components/Nav'
 import { FilterPanel } from '../components/FilterPanel'
 import { Modal } from '../components/Modal'
 import { Plus, Search, User, Building, Phone, Mail, MapPin, Package, Truck } from 'lucide-react'
+import { SupplierCard } from '../components/SupplierCard'
+
+interface supplier{
+  id: string;
+  name: string;
+  type: 'hardware' | 'software' | 'services' | 'office';
+  contact: string;
+  email: string;
+  phone: string;
+  address: string;
+  taxId: string;
+  status: string;
+  totalOrders: number;
+  lastOrder: string;
+  paymentTerms: string;
+  products: string[];
+};
+
+const a:supplier = {
+    id: '1',
+    name: 'Dell Portugal',
+    type: 'hardware',
+    contact: 'Miguel Oliveira',
+    email: 'miguel.oliveira@dell.com',
+    phone: '+351 210 123 456',
+    address: 'Av. D. João II, Lote 1.06.2.3, 1990-095 Lisboa',
+    taxId: 'PT503280089',
+    status: 'active',
+    totalOrders: 25800.50,
+    lastOrder: '15/03/2023',
+    paymentTerms: '30 dias',
+    products: ['Laptops', 'Desktops', 'Servidores', 'Monitores'],
+}
 
 // Mock data for suppliers
 const mockSuppliers = [
@@ -192,10 +225,9 @@ export default function SuppliersPage() {
   return (
     <>
       <SlideFrame />
-      <Nav />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-white">Compras e Fornecedores</h1>
+          <h1 className="text-3xl font-bold text-white">Fornecedores</h1>
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
@@ -228,9 +260,9 @@ export default function SuppliersPage() {
           onReset={resetFilters}
         />
 
-        {/* Supplier cards */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredSuppliers.map((supplier) => (
+          {/* {filteredSuppliers.map((supplier) => (
             <div 
               key={supplier.id}
               className="relative bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg overflow-hidden shadow-md hover:shadow-violet-900/20 cursor-pointer"
@@ -292,7 +324,10 @@ export default function SuppliersPage() {
                 </div>
               </div>
             </div>
-          ))}
+          ))} */}
+
+          <SupplierCard supplier={a}/>
+
           {filteredSuppliers.length === 0 && (
             <div className="col-span-full text-center py-10 text-gray-400">
               Nenhum fornecedor encontrado com os filtros aplicados.
@@ -304,186 +339,14 @@ export default function SuppliersPage() {
       {/* Add Supplier Modal */}
       {showAddModal && (
         <Modal onclick={() => setShowAddModal(false)} isCreate={true} isLarge={true}>
-          <h2 className="text-xl font-bold mb-4">Adicionar Novo Fornecedor</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Nome</label>
-              <input
-                type="text"
-                placeholder="Nome da empresa"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Tipo</label>
-              <select
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              >
-                <option value="hardware">Hardware</option>
-                <option value="software">Software</option>
-                <option value="services">Serviços</option>
-                <option value="office">Material de Escritório</option>
-              </select>
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">NIF</label>
-              <input
-                type="text"
-                placeholder="Número de identificação fiscal"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Pessoa de Contato</label>
-              <input
-                type="text"
-                placeholder="Nome do contato"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Email</label>
-              <input
-                type="email"
-                placeholder="Email de contato"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Telefone</label>
-              <input
-                type="tel"
-                placeholder="Número de telefone"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full">
-              <label className="text-sm text-gray-400 mb-1 block">Endereço</label>
-              <input
-                type="text"
-                placeholder="Endereço completo"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Condições de Pagamento</label>
-              <select
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              >
-                <option value="15 dias">15 dias</option>
-                <option value="30 dias">30 dias</option>
-                <option value="45 dias">45 dias</option>
-                <option value="60 dias">60 dias</option>
-              </select>
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Status</label>
-              <select
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              >
-                <option value="active">Ativo</option>
-                <option value="inactive">Inativo</option>
-              </select>
-            </div>
-            
-            <div className="col-span-full">
-              <label className="text-sm text-gray-400 mb-1 block">Produtos/Serviços Fornecidos</label>
-              <textarea
-                placeholder="Lista de produtos ou serviços fornecidos"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500 h-24"
-              ></textarea>
-            </div>
-            
-            <div className="col-span-full flex justify-end mt-2">
-              <button
-                className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
-              >
-                <Plus size={18} />
-                Adicionar
-              </button>
-            </div>
-          </div>
+          <p>aaaa</p>
         </Modal>
       )}
 
       {/* Supplier Details Modal */}
       {showSupplierModal && selectedSupplier && (
         <Modal onclick={() => setShowSupplierModal(false)} isCreate={false} isLarge={true}>
-          <h2 className="text-xl font-bold mb-4">{selectedSupplier.name}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="col-span-full md:col-span-1">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Informações Básicas</h3>
-                <div className="space-y-2">
-                  <p>
-                    <span className="text-gray-400">Tipo:</span> 
-                    {selectedSupplier.type === 'hardware' && ' Hardware'}
-                    {selectedSupplier.type === 'software' && ' Software'}
-                    {selectedSupplier.type === 'services' && ' Serviços'}
-                    {selectedSupplier.type === 'office' && ' Material de Escritório'}
-                  </p>
-                  <p><span className="text-gray-400">Contato:</span> {selectedSupplier.contact}</p>
-                  <p><span className="text-gray-400">Email:</span> {selectedSupplier.email}</p>
-                  <p><span className="text-gray-400">Telefone:</span> {selectedSupplier.phone}</p>
-                  <p><span className="text-gray-400">NIF:</span> {selectedSupplier.taxId}</p>
-                  <p><span className="text-gray-400">Endereço:</span> {selectedSupplier.address}</p>
-                  <p>
-                    <span className="text-gray-400">Status:</span> 
-                    <span className={selectedSupplier.status === 'active' ? 'text-green-500 ml-2' : 'text-gray-500 ml-2'}>
-                      {selectedSupplier.status === 'active' ? 'Ativo' : 'Inativo'}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full md:col-span-1">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Informações Comerciais</h3>
-                <div className="space-y-2">
-                  <p><span className="text-gray-400">Total de Pedidos:</span> <span className="text-green-500">€{selectedSupplier.totalOrders.toFixed(2)}</span></p>
-                  <p><span className="text-gray-400">Último Pedido:</span> {selectedSupplier.lastOrder}</p>
-                  <p><span className="text-gray-400">Condições de Pagamento:</span> {selectedSupplier.paymentTerms}</p>
-                  <div>
-                    <p className="text-gray-400 mb-1">Produtos/Serviços:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedSupplier.products.map((product: string, index: number) => (
-                        <span 
-                          key={index} 
-                          className="bg-violet-900/30 text-violet-300 text-xs px-2 py-1 rounded-full"
-                        >
-                          {product}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Histórico de Pedidos</h3>
-                <div className="space-y-2">
-                  <p className="text-gray-400">Histórico de pedidos realizados a este fornecedor</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Cotações e Propostas</h3>
-                <div className="space-y-2">
-                  <p className="text-gray-400">Cotações e propostas recebidas deste fornecedor</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <p>aaaa</p>
         </Modal>
       )}
     </>

@@ -1,15 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
-import { SlideFrame } from '../components/SlideFrame'
-import { Nav } from '../components/Nav'
-import { FilterPanel } from '../components/FilterPanel'
-import { Table } from '../components/Table'
-import { Modal } from '../components/Modal'
-import { Plus, Search, Package, Warehouse } from 'lucide-react'
+import { Plus, Search, ArrowLeft, Table } from 'lucide-react'
 import Link from 'next/link'
+import { SlideFrame } from '../components/SlideFrame';
+import { FilterPanel } from '../components/FilterPanel';
+import { Modal } from '../components/Modal';
 
-// Mock data for inventory
+// Mock data for products
 const mockProducts = [
   {
     id: '1',
@@ -17,8 +15,10 @@ const mockProducts = [
     category: 'Equipamentos',
     sku: 'DELL-XPS13-001',
     price: 1299.99,
+    cost: 1050.00,
     stock: 15,
-    location: 'Armazém Lisboa',
+    minStock: 5,
+    supplier: 'Dell Portugal',
     status: 'active',
   },
   {
@@ -27,8 +27,10 @@ const mockProducts = [
     category: 'Equipamentos',
     sku: 'LG-MON27-002',
     price: 299.99,
+    cost: 220.00,
     stock: 23,
-    location: 'Armazém Porto',
+    minStock: 8,
+    supplier: 'LG Electronics',
     status: 'active',
   },
   {
@@ -37,8 +39,10 @@ const mockProducts = [
     category: 'Periféricos',
     sku: 'LOG-KEYB-003',
     price: 89.99,
+    cost: 65.00,
     stock: 42,
-    location: 'Armazém Lisboa',
+    minStock: 10,
+    supplier: 'Logitech Portugal',
     status: 'active',
   },
   {
@@ -47,8 +51,10 @@ const mockProducts = [
     category: 'Periféricos',
     sku: 'MS-MOUSE-004',
     price: 49.99,
+    cost: 32.50,
     stock: 38,
-    location: 'Armazém Porto',
+    minStock: 15,
+    supplier: 'Microsoft Portugal',
     status: 'low',
   },
   {
@@ -57,8 +63,10 @@ const mockProducts = [
     category: 'Áudio',
     sku: 'SONY-HS-005',
     price: 129.99,
+    cost: 95.00,
     stock: 7,
-    location: 'Armazém Lisboa',
+    minStock: 10,
+    supplier: 'Sony Portugal',
     status: 'low',
   },
   {
@@ -67,9 +75,35 @@ const mockProducts = [
     category: 'Periféricos',
     sku: 'LOG-WC-006',
     price: 79.99,
+    cost: 55.00,
     stock: 0,
-    location: 'Armazém Porto',
+    minStock: 5,
+    supplier: 'Logitech Portugal',
     status: 'out',
+  },
+  {
+    id: '7',
+    name: 'Serviço de Instalação',
+    category: 'Serviços',
+    sku: 'SRV-INST-001',
+    price: 50.00,
+    cost: 35.00,
+    stock: null,
+    minStock: null,
+    supplier: 'Interno',
+    status: 'service',
+  },
+  {
+    id: '8',
+    name: 'Serviço de Manutenção',
+    category: 'Serviços',
+    sku: 'SRV-MAINT-002',
+    price: 75.00,
+    cost: 50.00,
+    stock: null,
+    minStock: null,
+    supplier: 'Interno',
+    status: 'service',
   },
 ];
 
@@ -83,15 +117,20 @@ const filterFields = [
       { label: 'Equipamentos', value: 'Equipamentos' },
       { label: 'Periféricos', value: 'Periféricos' },
       { label: 'Áudio', value: 'Áudio' },
+      { label: 'Serviços', value: 'Serviços' },
     ],
   },
   {
-    name: 'location',
-    label: 'Localização',
+    name: 'supplier',
+    label: 'Fornecedor',
     type: 'select' as const,
     options: [
-      { label: 'Armazém Lisboa', value: 'Armazém Lisboa' },
-      { label: 'Armazém Porto', value: 'Armazém Porto' },
+      { label: 'Dell Portugal', value: 'Dell Portugal' },
+      { label: 'LG Electronics', value: 'LG Electronics' },
+      { label: 'Logitech Portugal', value: 'Logitech Portugal' },
+      { label: 'Microsoft Portugal', value: 'Microsoft Portugal' },
+      { label: 'Sony Portugal', value: 'Sony Portugal' },
+      { label: 'Interno', value: 'Interno' },
     ],
   },
   {
@@ -102,16 +141,19 @@ const filterFields = [
       { label: 'Em estoque', value: 'active' },
       { label: 'Estoque baixo', value: 'low' },
       { label: 'Sem estoque', value: 'out' },
+      { label: 'Serviço', value: 'service' },
     ],
   },
 ];
 
-export default function InventoryPage() {
+export default function ProductsPage() {
   const [products, setProducts] = useState(mockProducts);
   const [filteredProducts, setFilteredProducts] = useState(mockProducts);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   // Handle filter change
   const handleFilterChange = (name: string, value: any) => {
@@ -132,7 +174,8 @@ export default function InventoryPage() {
         (product) =>
           product.name.toLowerCase().includes(term) ||
           product.sku.toLowerCase().includes(term) ||
-          product.category.toLowerCase().includes(term)
+          product.category.toLowerCase().includes(term) ||
+          (product.supplier && product.supplier.toLowerCase().includes(term))
       );
     }
 
@@ -158,6 +201,12 @@ export default function InventoryPage() {
     setFilteredProducts(products);
   };
 
+  // Handle product click
+  const handleProductClick = (product: any) => {
+    setSelectedProduct(product);
+    setShowProductModal(true);
+  };
+
   // Table columns
   const columns = [
     {
@@ -178,71 +227,51 @@ export default function InventoryPage() {
       cell: (value: number) => `€${value.toFixed(2)}`,
     },
     {
-      header: 'Estoque',
-      accessor: 'stock',
-      cell: (value: number, row: any) => (
-        <span className={
-          row.status === 'out' ? 'text-red-500' : 
-          row.status === 'low' ? 'text-yellow-500' : 
-          'text-green-500'
-        }>
-          {value}
-        </span>
-      ),
+      header: 'Custo',
+      accessor: 'cost',
+      cell: (value: number) => `€${value.toFixed(2)}`,
     },
     {
-      header: 'Localização',
-      accessor: 'location',
+      header: 'Estoque',
+      accessor: 'stock',
+      cell: (value: number | null, row: any) => {
+        if (row.status === 'service') return 'N/A';
+        return (
+          <span className={
+            row.status === 'out' ? 'text-red-500' : 
+            row.status === 'low' ? 'text-yellow-500' : 
+            'text-green-500'
+          }>
+            {value}
+          </span>
+        );
+      },
+    },
+    {
+      header: 'Fornecedor',
+      accessor: 'supplier',
     },
   ];
 
   return (
     <>
       <SlideFrame />
-      <Nav />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-white">Inventário e Produção</h1>
+        <div className="flex items-center mb-6">
+          <Link href="/inventory" className="mr-4 text-gray-400 hover:text-violet-400 transition-colors duration-200">
+            <ArrowLeft size={24} />
+          </Link>
+          <h1 className="text-3xl font-bold text-white">Produtos e Serviços</h1>
+        </div>
+
+        <div className="flex justify-end mb-6">
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
           >
             <Plus size={18} />
-            Adicionar Produto
+            Adicionar Produto/Serviço
           </button>
-        </div>
-
-        {/* Navigation cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Link href="/inventory/products" className="bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-4 flex items-center gap-4">
-            <div className="bg-violet-900/30 p-3 rounded-lg">
-              <Package size={24} className="text-violet-400" />
-            </div>
-            <div>
-              <h3 className="text-white font-medium">Produtos e Serviços</h3>
-              <p className="text-gray-400 text-sm">Gerenciar catálogo de produtos</p>
-            </div>
-          </Link>
-          
-          <Link href="/inventory/warehouses" className="bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-4 flex items-center gap-4">
-            <div className="bg-violet-900/30 p-3 rounded-lg">
-              <Warehouse size={24} className="text-violet-400" />
-            </div>
-            <div>
-              <h3 className="text-white font-medium">Armazéns</h3>
-              <p className="text-gray-400 text-sm">Gestão de estoque e armazéns</p>
-            </div>
-          </Link>
-          
-          <Link href="/inventory/equipment" className="bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-4 flex items-center gap-4">
-            <div className="bg-violet-900/30 p-3 rounded-lg">
-              {/* <Tool size={24} className="text-violet-400" /> */}
-            </div>
-            <div>
-              <h3 className="text-white font-medium">Equipamentos</h3>
-              <p className="text-gray-400 text-sm">Manutenção e controle de equipamentos</p>
-            </div>
-          </Link>
         </div>
 
         {/* Search bar */}
@@ -254,7 +283,7 @@ export default function InventoryPage() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Pesquisar produtos..."
+            placeholder="Pesquisar produtos e serviços..."
             className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 pl-10 pr-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
           />
         </div>
@@ -273,7 +302,7 @@ export default function InventoryPage() {
           <Table
             columns={columns}
             data={filteredProducts}
-            onRowClick={(row) => console.log('Row clicked:', row)}
+            onRowClick={handleProductClick}
           />
         </div>
       </div>
@@ -281,10 +310,69 @@ export default function InventoryPage() {
       {/* Add Product Modal */}
       {showAddModal && (
         <Modal onclick={() => setShowAddModal(false)} isCreate={true} isLarge={true}>
-          <h2 className="text-xl font-bold mb-4">Adicionar Novo Produto</h2>
+          <h2 className="text-xl font-bold mb-4">Adicionar Novo Produto/Serviço</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Form fields would go here */}
-            <p className="text-gray-400 col-span-full">Formulário de cadastro de produto</p>
+            <p className="text-gray-400 col-span-full">Formulário de cadastro de produto ou serviço</p>
+          </div>
+        </Modal>
+      )}
+
+      {/* Product Details Modal */}
+      {showProductModal && selectedProduct && (
+        <Modal onclick={() => setShowProductModal(false)} isCreate={false} isLarge={true}>
+          <h2 className="text-xl font-bold mb-4">{selectedProduct.name}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="col-span-full md:col-span-1">
+              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
+                <h3 className="text-violet-400 font-medium mb-3">Informações Básicas</h3>
+                <div className="space-y-2">
+                  <p><span className="text-gray-400">SKU:</span> {selectedProduct.sku}</p>
+                  <p><span className="text-gray-400">Categoria:</span> {selectedProduct.category}</p>
+                  <p><span className="text-gray-400">Preço:</span> €{selectedProduct.price.toFixed(2)}</p>
+                  <p><span className="text-gray-400">Custo:</span> €{selectedProduct.cost.toFixed(2)}</p>
+                  <p><span className="text-gray-400">Margem:</span> {((selectedProduct.price - selectedProduct.cost) / selectedProduct.price * 100).toFixed(2)}%</p>
+                  <p><span className="text-gray-400">Fornecedor:</span> {selectedProduct.supplier}</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-span-full md:col-span-1">
+              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
+                <h3 className="text-violet-400 font-medium mb-3">Estoque</h3>
+                <div className="space-y-2">
+                  {selectedProduct.status === 'service' ? (
+                    <p className="text-gray-400">Este item é um serviço e não possui estoque.</p>
+                  ) : (
+                    <>
+                      <p>
+                        <span className="text-gray-400">Quantidade em Estoque:</span> 
+                        <span className={
+                          selectedProduct.status === 'out' ? 'text-red-500 ml-2' : 
+                          selectedProduct.status === 'low' ? 'text-yellow-500 ml-2' : 
+                          'text-green-500 ml-2'
+                        }>
+                          {selectedProduct.stock}
+                        </span>
+                      </p>
+                      <p><span className="text-gray-400">Estoque Mínimo:</span> {selectedProduct.minStock}</p>
+                      <p><span className="text-gray-400">Status:</span> {
+                        selectedProduct.status === 'active' ? 'Em estoque' :
+                        selectedProduct.status === 'low' ? 'Estoque baixo' :
+                        'Sem estoque'
+                      }</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="col-span-full">
+              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
+                <h3 className="text-violet-400 font-medium mb-3">Histórico de Movimentações</h3>
+                <div className="space-y-2">
+                  <p className="text-gray-400">Histórico de entradas e saídas do produto</p>
+                </div>
+              </div>
+            </div>
           </div>
         </Modal>
       )}

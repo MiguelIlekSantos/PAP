@@ -1,13 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
-import { SlideFrame } from '../components/SlideFrame'
-
-import { FilterPanel } from '../components/FilterPanel'
-import { InfoCard } from '../components/InfoCard'
-import { Modal } from '../components/Modal'
-import { Plus, Search, User, Building, Phone, Mail, MapPin, CreditCard } from 'lucide-react'
-
+import { SlideFrame } from '../../components/SlideFrame'
+import { FilterPanel } from '../../components/FilterPanel'
+import { Modal } from '../../components/Modal'
+import { Plus, Search, User, Building, Phone, Mail, MapPin } from 'lucide-react'
 
 // Mock data for customers
 const mockCustomers = [
@@ -63,32 +60,6 @@ const mockCustomers = [
     totalPurchases: 8750.00,
     lastPurchase: '20/02/2023',
   },
-  {
-    id: '5',
-    name: 'Carlos Rodrigues',
-    type: 'individual',
-    contact: 'Carlos Rodrigues',
-    email: 'carlos.rodrigues@outlook.com',
-    phone: '+351 956 789 012',
-    address: 'Rua da Boavista 234, 4050-107 Porto',
-    taxId: 'PT246789012',
-    status: 'active',
-    totalPurchases: 1500.50,
-    lastPurchase: '15/02/2023',
-  },
-  {
-    id: '6',
-    name: 'Empresa GHI',
-    type: 'company',
-    contact: 'Sofia Costa',
-    email: 'sofia.costa@empresaghi.pt',
-    phone: '+351 967 890 123',
-    address: 'Av. da República 567, 1050-191 Lisboa',
-    taxId: 'PT510864235',
-    status: 'active',
-    totalPurchases: 12300.00,
-    lastPurchase: '01/03/2023',
-  },
 ];
 
 // Filter fields
@@ -113,7 +84,7 @@ const filterFields = [
   },
 ];
 
-export default function SalesPage() {
+export default function ClientsPage() {
   const [customers, setCustomers] = useState(mockCustomers);
   const [filteredCustomers, setFilteredCustomers] = useState(mockCustomers);
   const [filterValues, setFilterValues] = useState<Record<string, any>>({});
@@ -179,10 +150,9 @@ export default function SalesPage() {
   return (
     <>
       <SlideFrame />
-
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-white">Dashboard de Vendas</h1>
+          <h1 className="text-3xl font-bold text-white">Clientes</h1>
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
@@ -291,149 +261,15 @@ export default function SalesPage() {
       {showAddModal && (
         <Modal onclick={() => setShowAddModal(false)} isCreate={true} isLarge={true}>
           <h2 className="text-xl font-bold mb-4">Adicionar Novo Cliente</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="col-span-full">
-              <label className="text-sm text-gray-400 mb-1 block">Tipo de Cliente</label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="customerType" className="text-violet-600" defaultChecked />
-                  <span>Empresa</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="customerType" className="text-violet-600" />
-                  <span>Individual</span>
-                </label>
-              </div>
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Nome</label>
-              <input
-                type="text"
-                placeholder="Nome da empresa ou pessoa"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">NIF</label>
-              <input
-                type="text"
-                placeholder="Número de identificação fiscal"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Pessoa de Contato</label>
-              <input
-                type="text"
-                placeholder="Nome do contato"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Email</label>
-              <input
-                type="email"
-                placeholder="Email de contato"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Telefone</label>
-              <input
-                type="tel"
-                placeholder="Número de telefone"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Status</label>
-              <select
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              >
-                <option value="active">Ativo</option>
-                <option value="inactive">Inativo</option>
-              </select>
-            </div>
-            
-            <div className="col-span-full">
-              <label className="text-sm text-gray-400 mb-1 block">Endereço</label>
-              <input
-                type="text"
-                placeholder="Endereço completo"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full flex justify-end mt-2">
-              <button
-                className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
-              >
-                <Plus size={18} />
-                Adicionar
-              </button>
-            </div>
-          </div>
+          <p>Formulário para adicionar cliente</p>
         </Modal>
       )}
 
       {/* Customer Details Modal */}
       {showCustomerModal && selectedCustomer && (
         <Modal onclick={() => setShowCustomerModal(false)} isCreate={false} isLarge={true}>
-          <h2 className="text-xl font-bold mb-4">{selectedCustomer.name}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="col-span-full md:col-span-1">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Informações Básicas</h3>
-                <div className="space-y-2">
-                  <p><span className="text-gray-400">Tipo:</span> {selectedCustomer.type === 'company' ? 'Empresa' : 'Individual'}</p>
-                  <p><span className="text-gray-400">Contato:</span> {selectedCustomer.contact}</p>
-                  <p><span className="text-gray-400">Email:</span> {selectedCustomer.email}</p>
-                  <p><span className="text-gray-400">Telefone:</span> {selectedCustomer.phone}</p>
-                  <p><span className="text-gray-400">NIF:</span> {selectedCustomer.taxId}</p>
-                  <p><span className="text-gray-400">Endereço:</span> {selectedCustomer.address}</p>
-                  <p>
-                    <span className="text-gray-400">Status:</span> 
-                    <span className={selectedCustomer.status === 'active' ? 'text-green-500 ml-2' : 'text-gray-500 ml-2'}>
-                      {selectedCustomer.status === 'active' ? 'Ativo' : 'Inativo'}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full md:col-span-1">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Informações Financeiras</h3>
-                <div className="space-y-2">
-                  <p><span className="text-gray-400">Total de Compras:</span> <span className="text-green-500">€{selectedCustomer.totalPurchases.toFixed(2)}</span></p>
-                  <p><span className="text-gray-400">Última Compra:</span> {selectedCustomer.lastPurchase}</p>
-                  <p><span className="text-gray-400">Método de Pagamento Preferido:</span> Transferência Bancária</p>
-                  <p><span className="text-gray-400">Condições de Pagamento:</span> 30 dias</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Histórico de Pedidos</h3>
-                <div className="space-y-2">
-                  <p className="text-gray-400">Histórico de pedidos do cliente</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Propostas e Orçamentos</h3>
-                <div className="space-y-2">
-                  <p className="text-gray-400">Propostas e orçamentos enviados ao cliente</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <h2 className="text-xl font-bold mb-4">Detalhes do Cliente</h2>
+          <p>Detalhes de {selectedCustomer.name}</p>
         </Modal>
       )}
     </>
