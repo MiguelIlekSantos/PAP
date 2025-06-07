@@ -2,11 +2,9 @@
 
 import React, { useState } from 'react'
 import { SlideFrame } from '../components/SlideFrame'
-import { Nav } from '../components/Nav'
 import { Table } from '../components/Table'
 import { Modal } from '../components/Modal'
 import { Plus, Search, Globe, Server, Lock, FileText } from 'lucide-react'
-import Link from 'next/link'
 
 export default function TechnologyPage() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -14,53 +12,9 @@ export default function TechnologyPage() {
   return (
     <>
       <SlideFrame />
-      <Nav />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-white">Tecnologia / TI</h1>
-        </div>
-
-        {/* Navigation cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <Link href="/tecnology/domains" className="bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-4 flex items-center gap-4">
-            <div className="bg-violet-900/30 p-3 rounded-lg">
-              <Globe size={24} className="text-violet-400" />
-            </div>
-            <div>
-              <h3 className="text-white font-medium">Domínios e Sites</h3>
-              <p className="text-gray-400 text-sm">Gerenciar domínios e websites</p>
-            </div>
-          </Link>
-          
-          <Link href="/tecnology/systems" className="bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-4 flex items-center gap-4">
-            <div className="bg-violet-900/30 p-3 rounded-lg">
-              <Server size={24} className="text-violet-400" />
-            </div>
-            <div>
-              <h3 className="text-white font-medium">Sistemas Internos</h3>
-              <p className="text-gray-400 text-sm">Gerenciar sistemas e aplicações</p>
-            </div>
-          </Link>
-          
-          <Link href="/tecnology/access" className="bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-4 flex items-center gap-4">
-            <div className="bg-violet-900/30 p-3 rounded-lg">
-              <Lock size={24} className="text-violet-400" />
-            </div>
-            <div>
-              <h3 className="text-white font-medium">Contas e Permissões</h3>
-              <p className="text-gray-400 text-sm">Gerenciar acessos e permissões</p>
-            </div>
-          </Link>
-          
-          <Link href="/tecnology/logs" className="bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-4 flex items-center gap-4">
-            <div className="bg-violet-900/30 p-3 rounded-lg">
-              <FileText size={24} className="text-violet-400" />
-            </div>
-            <div>
-              <h3 className="text-white font-medium">Logs de Atividade</h3>
-              <p className="text-gray-400 text-sm">Visualizar logs do sistema</p>
-            </div>
-          </Link>
         </div>
 
         {/* Overview section */}

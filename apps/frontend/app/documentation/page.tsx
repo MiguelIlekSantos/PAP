@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { SlideFrame } from '../components/SlideFrame'
 import { Nav } from '../components/Nav'
 import { DrawerMenu } from '../components/DrawerMenu'
-import { FilterPanel } from '../components/FilterPanel'
 import { Table } from '../components/Table'
 import { Modal } from '../components/Modal'
 import { Plus, Search, FileText, Download, Eye, Edit } from 'lucide-react'
@@ -74,96 +73,21 @@ const mockDocuments = [
   },
 ];
 
-// Filter fields
-const filterFields = [
-  {
-    name: 'type',
-    label: 'Tipo de Documento',
-    type: 'select' as const,
-    options: [
-      { label: 'Manual', value: 'Manual' },
-      { label: 'Política', value: 'Política' },
-      { label: 'Procedimento', value: 'Procedimento' },
-      { label: 'Contrato', value: 'Contrato' },
-    ],
-  },
-  {
-    name: 'category',
-    label: 'Categoria',
-    type: 'select' as const,
-    options: [
-      { label: 'Sistema', value: 'Sistema' },
-      { label: 'Segurança', value: 'Segurança' },
-      { label: 'TI', value: 'TI' },
-      { label: 'Legal', value: 'Legal' },
-      { label: 'RH', value: 'RH' },
-    ],
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    type: 'select' as const,
-    options: [
-      { label: 'Publicado', value: 'published' },
-      { label: 'Rascunho', value: 'draft' },
-      { label: 'Em Revisão', value: 'review' },
-      { label: 'Arquivado', value: 'archived' },
-    ],
-  },
-];
-
 export default function DocumentationPage() {
   const [documents, setDocuments] = useState(mockDocuments);
-  const [filteredDocuments, setFilteredDocuments] = useState(mockDocuments);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Handle filter change
-  const handleFilterChange = (name: string, value: any) => {
-    setFilterValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Apply filters
-  const applyFilters = () => {
-    let filtered = [...documents];
-
-    // Apply search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
+  // Filter documents based on search term
+  const filteredDocuments = searchTerm
+    ? documents.filter(
         (document) =>
-          document.title.toLowerCase().includes(term) ||
-          document.type.toLowerCase().includes(term) ||
-          document.category.toLowerCase().includes(term) ||
-          document.author.toLowerCase().includes(term)
-      );
-    }
-
-    // Apply other filters
-    Object.entries(filterValues).forEach(([key, value]) => {
-      if (value) {
-        filtered = filtered.filter((document) => {
-          if (typeof document[key as keyof typeof document] === 'string') {
-            return (document[key as keyof typeof document] as string).toLowerCase() === value.toLowerCase();
-          }
-          return document[key as keyof typeof document] === value;
-        });
-      }
-    });
-
-    setFilteredDocuments(filtered);
-  };
-
-  // Reset filters
-  const resetFilters = () => {
-    setFilterValues({});
-    setSearchTerm('');
-    setFilteredDocuments(documents);
-  };
+          document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          document.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          document.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          document.author.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : documents;
 
   // Calculate stats
   const totalDocuments = filteredDocuments.length;
@@ -233,8 +157,6 @@ export default function DocumentationPage() {
 
   return (
     <>
-      <SlideFrame />
-      <Nav />
       <DrawerMenu tabs={DocumentationTabs} page="/documentation" />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
@@ -297,14 +219,7 @@ export default function DocumentationPage() {
           />
         </div>
 
-        {/* Filters */}
-        <FilterPanel
-          fields={filterFields}
-          values={filterValues}
-          onChange={handleFilterChange}
-          onApply={applyFilters}
-          onReset={resetFilters}
-        />
+
 
         {/* Documents table */}
         <div className="bg-[#0d1218] border border-gray-800 rounded-lg overflow-hidden shadow-md">

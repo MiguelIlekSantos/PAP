@@ -69,7 +69,7 @@ export const Buttons : Button[] = [
     {
         "title": "Documentação e Jurídico",
         "icon": FileText,
-        "url": "/documents"
+        "url": "/documentation"
     },
     {
         "title": "Relatórios",
@@ -79,6 +79,6 @@ export const Buttons : Button[] = [
     {
         "title": "Administração do Sistema",
         "icon": Settings,
-        "url": "/administration"
+        "url": "/system-admin"
     },
 ]

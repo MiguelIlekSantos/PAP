@@ -141,51 +141,7 @@ export default function ReportsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Handle filter change
-  const handleFilterChange = (name: string, value: any) => {
-    setFilterValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
-  // Apply filters
-  const applyFilters = () => {
-    let filtered = [...reports];
-
-    // Apply search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (report) =>
-          report.name.toLowerCase().includes(term) ||
-          report.type.toLowerCase().includes(term) ||
-          report.category.toLowerCase().includes(term) ||
-          report.author.toLowerCase().includes(term)
-      );
-    }
-
-    // Apply other filters
-    Object.entries(filterValues).forEach(([key, value]) => {
-      if (value) {
-        filtered = filtered.filter((report) => {
-          if (typeof report[key as keyof typeof report] === 'string') {
-            return (report[key as keyof typeof report] as string).toLowerCase() === value.toLowerCase();
-          }
-          return report[key as keyof typeof report] === value;
-        });
-      }
-    });
-
-    setFilteredReports(filtered);
-  };
-
-  // Reset filters
-  const resetFilters = () => {
-    setFilterValues({});
-    setSearchTerm('');
-    setFilteredReports(reports);
-  };
 
   // Calculate stats
   const totalReports = filteredReports.length;
@@ -254,8 +210,6 @@ export default function ReportsPage() {
 
   return (
     <>
-      <SlideFrame />
-      <Nav />
       <DrawerMenu tabs={ReportsTabs} page="/reports" />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
@@ -304,28 +258,6 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {/* Search bar */}
-        <div className="relative mb-6">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={18} className="text-gray-400" />
-          </div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Pesquisar relatórios..."
-            className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 pl-10 pr-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-          />
-        </div>
-
-        {/* Filters */}
-        <FilterPanel
-          fields={filterFields}
-          values={filterValues}
-          onChange={handleFilterChange}
-          onApply={applyFilters}
-          onReset={resetFilters}
-        />
 
         {/* Reports table */}
         <div className="bg-[#0d1218] border border-gray-800 rounded-lg overflow-hidden shadow-md">

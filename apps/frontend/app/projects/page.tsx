@@ -104,97 +104,12 @@ const mockProjects = [
   },
 ];
 
-// Filter fields
-const filterFields = [
-  {
-    name: 'status',
-    label: 'Status',
-    type: 'select' as const,
-    options: [
-      { label: 'Em Andamento', value: 'in_progress' },
-      { label: 'Concluído', value: 'completed' },
-      { label: 'Em Risco', value: 'at_risk' },
-      { label: 'Em Espera', value: 'on_hold' },
-    ],
-  },
-  {
-    name: 'priority',
-    label: 'Prioridade',
-    type: 'select' as const,
-    options: [
-      { label: 'Alta', value: 'high' },
-      { label: 'Média', value: 'medium' },
-      { label: 'Baixa', value: 'low' },
-    ],
-  },
-  {
-    name: 'manager',
-    label: 'Gerente',
-    type: 'select' as const,
-    options: [
-      { label: 'João Silva', value: 'João Silva' },
-      { label: 'Maria Santos', value: 'Maria Santos' },
-      { label: 'Carlos Rodrigues', value: 'Carlos Rodrigues' },
-      { label: 'Ana Oliveira', value: 'Ana Oliveira' },
-      { label: 'Sofia Costa', value: 'Sofia Costa' },
-      { label: 'António Ferreira', value: 'António Ferreira' },
-    ],
-  },
-];
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState(mockProjects);
   const [filteredProjects, setFilteredProjects] = useState(mockProjects);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Handle filter change
-  const handleFilterChange = (name: string, value: any) => {
-    setFilterValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Apply filters
-  const applyFilters = () => {
-    let filtered = [...projects];
-
-    // Apply search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (project) =>
-          project.name.toLowerCase().includes(term) ||
-          project.description.toLowerCase().includes(term) ||
-          project.client.toLowerCase().includes(term) ||
-          project.manager.toLowerCase().includes(term) ||
-          project.team.some(member => member.toLowerCase().includes(term))
-      );
-    }
-
-    // Apply other filters
-    Object.entries(filterValues).forEach(([key, value]) => {
-      if (value) {
-        filtered = filtered.filter((project) => {
-          if (typeof project[key as keyof typeof project] === 'string') {
-            return (project[key as keyof typeof project] as string).toLowerCase() === value.toLowerCase();
-          }
-          return project[key as keyof typeof project] === value;
-        });
-      }
-    });
-
-    setFilteredProjects(filtered);
-  };
-
-  // Reset filters
-  const resetFilters = () => {
-    setFilterValues({});
-    setSearchTerm('');
-    setFilteredProjects(projects);
-  };
 
   // Get status badge color
   const getStatusBadgeColor = (status: string) => {
@@ -258,12 +173,10 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <SlideFrame />
-      <Nav />
-      <DrawerMenu tabs={ProjectsTabs} page="/projects" />
+      <DrawerMenu tabs={ProjectsTabs} page='/projects'/>
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-white">Dashboard de Projetos</h1>
+          <h1 className="text-3xl font-bold text-white">Projetos</h1>
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
@@ -272,29 +185,6 @@ export default function ProjectsPage() {
             Novo Projeto
           </button>
         </div>
-
-        {/* Search bar */}
-        <div className="relative mb-6">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={18} className="text-gray-400" />
-          </div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Pesquisar projetos..."
-            className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 pl-10 pr-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-          />
-        </div>
-
-        {/* Filters */}
-        <FilterPanel
-          fields={filterFields}
-          values={filterValues}
-          onChange={handleFilterChange}
-          onApply={applyFilters}
-          onReset={resetFilters}
-        />
 
         {/* Project cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -387,133 +277,7 @@ export default function ProjectsPage() {
       {/* Add Project Modal */}
       {showAddModal && (
         <Modal onclick={() => setShowAddModal(false)} isCreate={true} isLarge={true}>
-          <h2 className="text-xl font-bold mb-4">Novo Projeto</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="col-span-full">
-              <label className="text-sm text-gray-400 mb-1 block">Nome do Projeto</label>
-              <input
-                type="text"
-                placeholder="Nome do projeto"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full">
-              <label className="text-sm text-gray-400 mb-1 block">Descrição</label>
-              <textarea
-                placeholder="Descrição do projeto"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500 h-24"
-              ></textarea>
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Cliente</label>
-              <select
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              >
-                <option value="">Selecione um cliente</option>
-                <option value="Empresa ABC">Empresa ABC</option>
-                <option value="Empresa XYZ">Empresa XYZ</option>
-                <option value="Empresa DEF">Empresa DEF</option>
-                <option value="Empresa GHI">Empresa GHI</option>
-                <option value="Empresa JKL">Empresa JKL</option>
-                <option value="Empresa MNO">Empresa MNO</option>
-              </select>
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Gerente do Projeto</label>
-              <select
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              >
-                <option value="">Selecione um gerente</option>
-                <option value="João Silva">João Silva</option>
-                <option value="Maria Santos">Maria Santos</option>
-                <option value="Carlos Rodrigues">Carlos Rodrigues</option>
-                <option value="Ana Oliveira">Ana Oliveira</option>
-                <option value="Sofia Costa">Sofia Costa</option>
-                <option value="António Ferreira">António Ferreira</option>
-              </select>
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Data de Início</label>
-              <input
-                type="date"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Prazo</label>
-              <input
-                type="date"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Status</label>
-              <select
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              >
-                <option value="in_progress">Em Andamento</option>
-                <option value="completed">Concluído</option>
-                <option value="at_risk">Em Risco</option>
-                <option value="on_hold">Em Espera</option>
-              </select>
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Prioridade</label>
-              <select
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              >
-                <option value="high">Alta</option>
-                <option value="medium">Média</option>
-                <option value="low">Baixa</option>
-              </select>
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Orçamento (€)</label>
-              <input
-                type="number"
-                placeholder="0.00"
-                step="0.01"
-                min="0"
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-              />
-            </div>
-            
-            <div className="col-span-full md:col-span-1">
-              <label className="text-sm text-gray-400 mb-1 block">Equipe</label>
-              <select
-                multiple
-                className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500 h-24"
-              >
-                <option value="João Silva">João Silva</option>
-                <option value="Maria Santos">Maria Santos</option>
-                <option value="Carlos Rodrigues">Carlos Rodrigues</option>
-                <option value="Ana Oliveira">Ana Oliveira</option>
-                <option value="Sofia Costa">Sofia Costa</option>
-                <option value="António Ferreira">António Ferreira</option>
-                <option value="Pedro Ferreira">Pedro Ferreira</option>
-                <option value="Miguel Santos">Miguel Santos</option>
-                <option value="Joana Almeida">Joana Almeida</option>
-              </select>
-              <p className="text-xs text-gray-400 mt-1">Pressione Ctrl para selecionar múltiplos</p>
-            </div>
-            
-            <div className="col-span-full flex justify-end mt-2">
-              <button
-                className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
-              >
-                <Plus size={18} />
-                Criar Projeto
-              </button>
-            </div>
-          </div>
+            <p>a</p>
         </Modal>
       )}
     </>

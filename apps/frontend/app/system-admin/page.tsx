@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { SlideFrame } from '../components/SlideFrame'
 import { Nav } from '../components/Nav'
 import { DrawerMenu } from '../components/DrawerMenu'
-import { FilterPanel } from '../components/FilterPanel'
 import { Table } from '../components/Table'
 import { Modal } from '../components/Modal'
 import { Plus, Search, Users, Shield, Settings, Activity, Database, AlertTriangle } from 'lucide-react'
@@ -81,96 +80,21 @@ const systemStats = {
   systemLoad: '45%',
 };
 
-// Filter fields
-const filterFields = [
-  {
-    name: 'role',
-    label: 'Função',
-    type: 'select' as const,
-    options: [
-      { label: 'Administrador', value: 'Administrador' },
-      { label: 'Gestor Financeiro', value: 'Gestor Financeiro' },
-      { label: 'Gestor RH', value: 'Gestor RH' },
-      { label: 'Utilizador', value: 'Utilizador' },
-    ],
-  },
-  {
-    name: 'department',
-    label: 'Departamento',
-    type: 'select' as const,
-    options: [
-      { label: 'TI', value: 'TI' },
-      { label: 'Financeiro', value: 'Financeiro' },
-      { label: 'Vendas', value: 'Vendas' },
-      { label: 'Recursos Humanos', value: 'Recursos Humanos' },
-      { label: 'Marketing', value: 'Marketing' },
-    ],
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    type: 'select' as const,
-    options: [
-      { label: 'Ativo', value: 'active' },
-      { label: 'Inativo', value: 'inactive' },
-      { label: 'Pendente', value: 'pending' },
-      { label: 'Bloqueado', value: 'blocked' },
-    ],
-  },
-];
-
 export default function SystemAdminPage() {
   const [users, setUsers] = useState(mockUsers);
-  const [filteredUsers, setFilteredUsers] = useState(mockUsers);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Handle filter change
-  const handleFilterChange = (name: string, value: any) => {
-    setFilterValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Apply filters
-  const applyFilters = () => {
-    let filtered = [...users];
-
-    // Apply search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
+  // Filter users based on search term
+  const filteredUsers = searchTerm
+    ? users.filter(
         (user) =>
-          user.name.toLowerCase().includes(term) ||
-          user.email.toLowerCase().includes(term) ||
-          user.role.toLowerCase().includes(term) ||
-          user.department.toLowerCase().includes(term)
-      );
-    }
-
-    // Apply other filters
-    Object.entries(filterValues).forEach(([key, value]) => {
-      if (value) {
-        filtered = filtered.filter((user) => {
-          if (typeof user[key as keyof typeof user] === 'string') {
-            return (user[key as keyof typeof user] as string).toLowerCase() === value.toLowerCase();
-          }
-          return user[key as keyof typeof user] === value;
-        });
-      }
-    });
-
-    setFilteredUsers(filtered);
-  };
-
-  // Reset filters
-  const resetFilters = () => {
-    setFilterValues({});
-    setSearchTerm('');
-    setFilteredUsers(users);
-  };
+          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.department.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : users;
 
   // Table columns
   const columns = [
@@ -222,8 +146,6 @@ export default function SystemAdminPage() {
 
   return (
     <>
-      <SlideFrame />
-      <Nav />
       <DrawerMenu tabs={SystemAdminTabs} page="/system-admin" />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
@@ -317,14 +239,7 @@ export default function SystemAdminPage() {
           />
         </div>
 
-        {/* Filters */}
-        <FilterPanel
-          fields={filterFields}
-          values={filterValues}
-          onChange={handleFilterChange}
-          onApply={applyFilters}
-          onReset={resetFilters}
-        />
+
 
         {/* Users table */}
         <div className="bg-[#0d1218] border border-gray-800 rounded-lg overflow-hidden shadow-md">

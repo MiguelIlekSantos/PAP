@@ -453,8 +453,6 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
   if (!project) {
     return (
       <>
-        <SlideFrame />
-        <Nav />
         <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative flex items-center justify-center">
           <p className="text-gray-400">Projeto não encontrado</p>
         </div>
@@ -464,9 +462,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
 
   return (
     <>
-      <SlideFrame />
-      <Nav />
-      <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
+      <div className="min-h-screen bg-base-300 text-white p-6 relative">
         <div className="flex items-center mb-6">
           <Link href="/projects" className="mr-4 text-gray-400 hover:text-violet-400 transition-colors duration-200">
             <ArrowLeft size={24} />

@@ -2,8 +2,6 @@
 
 import React, { useState } from 'react'
 import { SlideFrame } from '../../components/SlideFrame'
-import { Nav } from '../../components/Nav'
-import { FilterPanel } from '../../components/FilterPanel'
 import { Table } from '../../components/Table'
 import { Modal } from '../../components/Modal'
 import { Plus, Search, ArrowLeft, Globe, ExternalLink, Calendar, AlertTriangle } from 'lucide-react'
@@ -91,104 +89,22 @@ const mockDomains = [
   },
 ];
 
-// Filter fields
-const filterFields = [
-  {
-    name: 'type',
-    label: 'Tipo',
-    type: 'select' as const,
-    options: [
-      { label: 'Primário', value: 'primary' },
-      { label: 'Redirecionamento', value: 'redirect' },
-      { label: 'Blog', value: 'blog' },
-      { label: 'Aplicação', value: 'application' },
-      { label: 'Legado', value: 'legacy' },
-    ],
-  },
-  {
-    name: 'registrar',
-    label: 'Registrador',
-    type: 'select' as const,
-    options: [
-      { label: 'GoDaddy', value: 'GoDaddy' },
-      { label: 'Namecheap', value: 'Namecheap' },
-    ],
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    type: 'select' as const,
-    options: [
-      { label: 'Ativo', value: 'active' },
-      { label: 'Expirado', value: 'expired' },
-    ],
-  },
-  {
-    name: 'hosting',
-    label: 'Hospedagem',
-    type: 'select' as const,
-    options: [
-      { label: 'AWS', value: 'AWS' },
-      { label: 'DigitalOcean', value: 'DigitalOcean' },
-      { label: 'Heroku', value: 'Heroku' },
-      { label: 'Nenhuma', value: 'None' },
-    ],
-  },
-];
-
 export default function DomainsPage() {
   const [domains, setDomains] = useState(mockDomains);
-  const [filteredDomains, setFilteredDomains] = useState(mockDomains);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDomainModal, setShowDomainModal] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState<any>(null);
 
-  // Handle filter change
-  const handleFilterChange = (name: string, value: any) => {
-    setFilterValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Apply filters
-  const applyFilters = () => {
-    let filtered = [...domains];
-
-    // Apply search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
+  // Filter domains based on search term
+  const filteredDomains = searchTerm
+    ? domains.filter(
         (domain) =>
-          domain.name.toLowerCase().includes(term) ||
-          domain.registrar.toLowerCase().includes(term) ||
-          domain.hosting.toLowerCase().includes(term)
-      );
-    }
-
-    // Apply other filters
-    Object.entries(filterValues).forEach(([key, value]) => {
-      if (value) {
-        filtered = filtered.filter((domain) => {
-          if (typeof domain[key as keyof typeof domain] === 'string') {
-            return (domain[key as keyof typeof domain] as string).toLowerCase() === value.toLowerCase();
-          }
-          return domain[key as keyof typeof domain] === value;
-        });
-      }
-    });
-
-    setFilteredDomains(filtered);
-  };
-
-  // Reset filters
-  const resetFilters = () => {
-    setFilterValues({});
-    setSearchTerm('');
-    setFilteredDomains(domains);
-  };
+          domain.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          domain.registrar.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          domain.hosting.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : domains;
 
   // Handle domain click
   const handleDomainClick = (domain: any) => {
@@ -290,7 +206,6 @@ export default function DomainsPage() {
   return (
     <>
       <SlideFrame />
-      <Nav />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center mb-6">
           <Link href="/tecnology" className="mr-4 text-gray-400 hover:text-violet-400 transition-colors duration-200">
@@ -324,13 +239,13 @@ export default function DomainsPage() {
         </div>
 
         {/* Filters */}
-        <FilterPanel
+        {/* <FilterPanel
           fields={filterFields}
           values={filterValues}
           onChange={handleFilterChange}
           onApply={applyFilters}
           onReset={resetFilters}
-        />
+        /> */}
 
         {/* Domains table */}
         <div className="bg-[#0d1218] border border-gray-800 rounded-lg overflow-hidden shadow-md">

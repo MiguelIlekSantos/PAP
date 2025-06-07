@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import { SlideFrame } from '../../components/SlideFrame'
-import { Nav } from '../../components/Nav'
 import { FilterPanel } from '../../components/FilterPanel'
 import { Table } from '../../components/Table'
 import { Modal } from '../../components/Modal'
@@ -275,7 +274,6 @@ export default function SystemsPage() {
   return (
     <>
       <SlideFrame />
-      <Nav />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center mb-6">
           <Link href="/tecnology" className="mr-4 text-gray-400 hover:text-violet-400 transition-colors duration-200">

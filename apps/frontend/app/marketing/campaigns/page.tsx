@@ -13,9 +13,6 @@ import { MarketingTabs } from '../../data/tabs'
 export default function CampaignsPage() {
   return (
     <>
-      <SlideFrame />
-      <Nav />
-      <DrawerMenu tabs={MarketingTabs} page="/marketing" />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-white">Campanhas de Marketing</h1>
