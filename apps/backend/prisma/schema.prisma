@@ -14,191 +14,193 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Enterprise {
-  id Int @id @default(autoincrement())
-  legalName String
-  ComercialName String
-  nif String
-  niss String
-  nipc String
-  type String
-  foundationDate DateTime
+  id                Int        @id @default(autoincrement())
+  legalName         String
+  ComercialName     String
+  nif               String
+  niss              String
+  nipc              String
+  type              String
+  foundationDate    DateTime
   registeredCountry String
-  mainLanguage String
-  oficialCurrency String
-  email String
-  phone String
-  logo String
-  branches Branches[]
+  mainLanguage      String
+  oficialCurrency   String
+  email             String
+  phone             String
+  logo              String
+  branches          Branches[]
 }
 
 model Branches {
-  id Int @id @default(autoincrement())
-  address String
-  phone String
-  email String
-  adress String
-  function String
-  
+  id       Int    @id @default(autoincrement())
+  address  String
+  phone    String
+  email    String
+  purpose String
+
   departments Departments[]
 
   enterpriseId Int
-  enterprise Enterprise @relation(fields: [enterpriseId], references: [id])
+  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id])
 }
 
 model Departments {
-  id Int @id @default(autoincrement())
-  name String
-  description String
-  responsible String
+  id             Int     @id @default(autoincrement())
+  name           String
+  description    String
+  responsible    String
   totalEmployees Int
-  budget Budget?
-  
-  
+  budget         Budget?
+
   subDepartments SubDepartments?
-  branches Branches[]
-  employees Employees[]
+  branches       Branches[]
+  employees      Employees[]
 }
 
 model SubDepartments {
-  id Int @id @default(autoincrement())
-  name String
-  description String
-  responsible String
+  id             Int         @id @default(autoincrement())
+  name           String
+  description    String
+  responsible    String
   totalEmployees Int
-  budget Budget?
-  departmentId Int @unique
-  department Departments @relation(fields: [departmentId], references: [id])
+  budget         Budget?
+  departmentId   Int         @unique
+  department     Departments @relation(fields: [departmentId], references: [id])
 }
 
 model Employees {
-  id Int @id @default(autoincrement())
-  name String
-  email String
-  phone String
-  position String
-  salary Float
-  dateOfHire DateTime
-  shiftType String
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String
+  phone        String
+  position     String
+  salary       Float
+  dateOfHire   DateTime
+  shiftType    String
   workingHours Int
-  workingDays Int
-  status String
+  workingDays  Int
+  status       String
 
   departmentId Int
-  department Departments @relation(fields: [departmentId], references: [id])
+  department   Departments @relation(fields: [departmentId], references: [id])
 
   Projects Projects[]
-  Tasks Tasks[]
+  Tasks    Tasks[]
 }
 
 model Products {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int        @id @default(autoincrement())
+  name        String
   description String
-  price Float
-  stock Int
-  category String
+  price       Float
+  stock       Int
+  category    String
   subCategory String
-  brand String
-  model String
-  sku String
-  barcode String
-  weight Float
-  dimensions String
-  imageUrl String
+  brand       String
+  model       String
+  sku         String
+  barcode     String
+  weight      Float
+  dimensions  String
+  imageUrl    String
   wareHouseId Int
-  wareHouse WareHouses @relation(fields: [wareHouseId], references: [id])
-  sales Sales[]
-  requests Requests[]
-  Delivery Delivery[]
+  wareHouse   WareHouses @relation(fields: [wareHouseId], references: [id])
+  sales       Sales[]
+  requests    Requests[]
+  Delivery    Delivery[]
 }
 
-model WareHouses{
-  id Int @id @default(autoincrement())
-  name String
-  location String
-  capacity Int
+model WareHouses {
+  id           Int        @id @default(autoincrement())
+  name         String
+  location     String
+  capacity     Int
   currentStock Int
-  section Int
-  responsible String
-  status String
-  products Products[]
+  section      Int
+  responsible  String
+  status       String
+  products     Products[]
 }
 
 model Equipments {
-  id Int @id @default(autoincrement())
-  name String
-  description String
-  serialNumber String
-  model String
-  brand String
-  purchaseDate DateTime
+  id              Int      @id @default(autoincrement())
+  name            String
+  description     String
+  serialNumber    String
+  model           String
+  brand           String
+  purchaseDate    DateTime
   warrantyEndDate DateTime
-  status String
-  location String
+  status          String
+  location        String
 }
 
 model Transactions {
-  id Int @id @default(autoincrement())
-  amount Float
-  date DateTime
-  category String
+  id          Int      @id @default(autoincrement())
+  amount      Float
+  date        DateTime
+  category    String
   description String
-  banckAccount String
-  status String
+  bankAccount String
+  status      String
 }
 
-model Taxes{
-  id Int @id @default(autoincrement())
-  type String
-  period String
+model Taxes {
+  id          Int      @id @default(autoincrement())
+  type        String
+  period      String
   description String
-  endDate DateTime
-  amount Float
+  endDate     DateTime
+  amount      Float
 }
 
-model Budget{
-  id Int @id @default(autoincrement())
-  name String
-  amount Float
-  usedAmount Float
+model Budget {
+  id              Int    @id @default(autoincrement())
+  name            String
+  amount          Float
+  usedAmount      Float
   remainingAmount Float
-  status String
-  period String
-  category String
-  salesId Int
-  sale Sales @relation(fields:[salesId],references:[id])
-  DepartmentId Int @unique
-  Department Departments @relation(fields:[DepartmentId],references:[id])
-  SubDepartmentId Int @unique
-  SubDepartment SubDepartments @relation(fields:[SubDepartmentId],references:[id])
-  projectsId Int @unique
-  Project Projects @relation(fields:[projectsId],references:[id])
-  campaigns Int @unique
-  campaign Campaigns @relation(fields:[campaigns],references:[id])
+  status          String
+  period          String
+  category        String
+
+  departmentId    Int? @unique
+  subDepartmentId Int? @unique
+  projectId       Int? @unique
+  campaignId      Int? @unique
+  saleId          Int? @unique
+
+  department    Departments?    @relation(fields: [departmentId], references: [id])
+  subDepartment SubDepartments? @relation(fields: [subDepartmentId], references: [id])
+  project       Projects?       @relation(fields: [projectId], references: [id])
+  campaign      Campaigns?      @relation(fields: [campaignId], references: [id])
+  sale          Sales?          @relation(fields: [saleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Sales{
-  id Int @id @default(autoincrement())
-  Status String
-  Total Float
+model Sales {
+  id            Int        @id @default(autoincrement())
+  Status        String
+  Total         Float
   PaymentMethod String
-  lastPurchase DateTime
-  Products Products[] 
-  Budget Budget[]
-  ClientId Int
-  Client Clients @relation(fields:[ClientId],references:[id])
+  lastPurchase  DateTime
+  Products      Products[]
+  Budget        Budget?
+  ClientId      Int
+  Client        Clients    @relation(fields: [ClientId], references: [id])
 }
 
 model Clients {
-  id Int @id @default(autoincrement())
-  name String
-  email String
-  phone String
-  type String
-  address String
-  Sales Sales[]
+  id       Int        @id @default(autoincrement())
+  name     String
+  email    String
+  phone    String
+  type     String
+  address  String
+  Sales    Sales[]
   Requests Requests[]
   Invoices Invoices[]
   Delivery Delivery[]
@@ -206,213 +208,210 @@ model Clients {
 }
 
 model Requests {
-  id Int @id @default(autoincrement())
-  number String
-  products Products[]
-  clientId Int
-  Client Clients @relation(fields:[clientId],references:[id])
+  id           Int        @id @default(autoincrement())
+  number       String
+  products     Products[]
+  clientId     Int
+  Client       Clients    @relation(fields: [clientId], references: [id])
   deliveryDate DateTime
-  status String
+  status       String
 }
 
 model Invoices {
-  id Int @id @default(autoincrement())
-  number String
-  ClientId Int
-  Client Clients @relation(fields:[ClientId],references:[id])
+  id           Int      @id @default(autoincrement())
+  number       String
+  ClientId     Int
+  Client       Clients  @relation(fields: [ClientId], references: [id])
   registerdate DateTime
-  dueDate DateTime
-  paymentDate DateTime
-  total Float
-  status String
+  dueDate      DateTime
+  paymentDate  DateTime
+  total        Float
+  status       String
 }
 
 model Suppliers {
-  id Int @id @default(autoincrement())
-  name String
-  email String
-  phone String
-  address String
+  id        Int         @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  address   String
   purchases Purchases[]
 }
 
 model Purchases {
-  id Int @id @default(autoincrement())
-  number String
-  name String
+  id          Int       @id @default(autoincrement())
+  number      String
+  name        String
   description String
-  price Float
-  category String
+  price       Float
+  category    String
   subCategory String
-  brand String
-  model String
-  sku String
-  weight Float
-  dimensions String
-  imageUrl String
-  supplierId Int
-  Supplier Suppliers @relation(fields:[supplierId],references:[id])
+  brand       String
+  model       String
+  sku         String
+  weight      Float
+  dimensions  String
+  imageUrl    String
+  supplierId  Int
+  Supplier    Suppliers @relation(fields: [supplierId], references: [id])
 }
 
 model Transporters {
-  id Int @id @default(autoincrement())
-  vehicleType String
-  status String
-  extEnterprise String
-  phone String
+  id             Int        @id @default(autoincrement())
+  vehicleType    String
+  status         String
+  extEnterprise  String
+  phone          String
   representative String
-  operationArea String
-  pricePerKm Float
-  rating Float
-  delivery Delivery[]
+  operationArea  String
+  pricePerKm     Float
+  rating         Float
+  delivery       Delivery[]
 }
 
 model Delivery {
-  id Int @id @default(autoincrement())
-  expectedDate DateTime
-  deliveryDate DateTime
-  status String
-  products Products[]
-  clientId Int
-  Client Clients @relation(fields:[clientId],references:[id])
+  id            Int          @id @default(autoincrement())
+  expectedDate  DateTime
+  deliveryDate  DateTime
+  status        String
+  products      Products[]
+  clientId      Int
+  Client        Clients      @relation(fields: [clientId], references: [id])
   transporterId Int
-  Transporter Transporters @relation(fields:[transporterId],references:[id])
+  Transporter   Transporters @relation(fields: [transporterId], references: [id])
 }
 
 model Tasks {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int       @id @default(autoincrement())
+  name        String
   description String
-  assignedTo String
-  dueDate DateTime
-  completed Boolean
+  assignedTo  String
+  dueDate     DateTime
+  completed   Boolean
   completedAt DateTime
-  projectId Int
-  status String
-  priority String
+  projectId   Int
+  status      String
+  priority    String
   responsible Int
-  Employee Employees @relation(fields:[responsible],references:[id])
-  Project Projects @relation(fields:[projectId],references:[id])
+  Employee    Employees @relation(fields: [responsible], references: [id])
+  Project     Projects  @relation(fields: [projectId], references: [id])
 }
 
 model Projects {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int         @id @default(autoincrement())
+  name        String
   description String
-  startDate DateTime
-  endDate DateTime
-  status String
-  budget Budget[]
-  progress Float
-  priority String
-  manager String
-  clientId Int
-  Client Clients @relation(fields:[clientId],references:[id])
-  Employees Employees[]
-  Tasks Tasks[]
-  chat Chats?
+  startDate   DateTime
+  endDate     DateTime
+  status      String
+  budget      Budget?
+  progress    Float
+  priority    String
+  manager     String
+  clientId    Int
+  Client      Clients     @relation(fields: [clientId], references: [id])
+  Employees   Employees[]
+  Tasks       Tasks[]
+  chat        Chats?
 }
 
-model Messages{
-  id Int @id @default(autoincrement())
-  content String
-  sender String
+model Messages {
+  id        Int      @id @default(autoincrement())
+  content   String
+  sender    String
   createdAt DateTime
-  chatId Int
-  chat Chats @relation(fields:[chatId],references:[id])
+  chatId    Int
+  chat      Chats    @relation(fields: [chatId], references: [id])
 }
 
-model Chats{
-  id Int @id @default(autoincrement())
-  projectId Int @unique
-  project Projects @relation(fields:[projectId],references:[id])
-  Messages Messages[]
+model Chats {
+  id        Int        @id @default(autoincrement())
+  projectId Int        @unique
+  project   Projects   @relation(fields: [projectId], references: [id])
+  Messages  Messages[]
 }
 
-model Documents{
-  id Int @id @default(autoincrement())
-  name String
+model Documents {
+  id          Int    @id @default(autoincrement())
+  name        String
   description String
-  type String
-  size Float
-  path String
+  type        String
+  size        Float
+  path        String
 }
 
-model Domains{
-  id Int @id @default(autoincrement())
-  name String
-  type String
-  registrator String
+model Domains {
+  id             Int      @id @default(autoincrement())
+  name           String
+  type           String
+  registrator    String
   expirationDate DateTime
-  hosting String
-  status String
+  hosting        String
+  status         String
 }
 
-model InternSystems{
-  id Int @id @default(autoincrement())
-  name String
-  type String
-  version String
+model InternSystems {
+  id          Int    @id @default(autoincrement())
+  name        String
+  type        String
+  version     String
   environment String
-  tecnology String
-  status String
-  Logs Logs[]
+  tecnology   String
+  status      String
+  Logs        Logs[]
 }
 
-model User{
-  id Int @id @default(autoincrement())
-  name String
-  email String
-  password String
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  password    String
   permissions String
-  role String
-  active Boolean
-  created_at DateTime @default(now())
-  Logs Logs[]
+  role        String
+  active      Boolean
+  created_at  DateTime @default(now())
+  Logs        Logs[]
 }
 
-model Logs{
-  id Int @id @default(autoincrement())
-  action String
-  level String
-  timestamp DateTime
-  category String
+model Logs {
+  id             Int           @id @default(autoincrement())
+  action         String
+  level          String
+  timestamp      DateTime
+  category       String
   InternSystemId Int
-  InternSystem InternSystems @relation(fields:[InternSystemId],references:[id])
-  userId Int
-  User User @relation(fields:[userId],references:[id])
+  InternSystem   InternSystems @relation(fields: [InternSystemId], references: [id])
+  userId         Int
+  User           User          @relation(fields: [userId], references: [id])
 }
 
-model Campaigns{
-  id Int @id @default(autoincrement())
-  name String
-  type String
-  status String
-  budget Budget[]
-  leads Int
+model Campaigns {
+  id          Int      @id @default(autoincrement())
+  name        String
+  type        String
+  status      String
+  budget      Budget?
+  leads       Int
   conversions Int
-  roi Float
+  roi         Float
 }
 
-model SocialMedia{
-  id Int @id @default(autoincrement())
-  platform String
-  username String
-  followers Int
+model SocialMedia {
+  id             Int    @id @default(autoincrement())
+  platform       String
+  username       String
+  followers      Int
   engagementRate Float
 }
 
-model Reports{
-  id Int @id @default(autoincrement())
-  name String
-  type String
-  frequency String
-  status String
+model Reports {
+  id         Int      @id @default(autoincrement())
+  name       String
+  type       String
+  frequency  String
+  status     String
   lastUpdate DateTime
   nextUpdate DateTime
-  downloads Int
-  path String
+  downloads  Int
+  path       String
 }
-
-
-
