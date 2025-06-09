@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateEnterpriseManagementDto } from './dto/create-enterprise-management.dto';
-import { UpdateEnterpriseManagementDto } from './dto/update-enterprise-management.dto';
+
+import { CreateEnterpriseDto } from '../DTO/enterprise.dto';
 
 @Injectable()
 export class EnterpriseManagementService {
-  create(createEnterpriseManagementDto: CreateEnterpriseManagementDto) {
+  create(createEnterpriseManagementDto: CreateEnterpriseDto) {
     return 'This action adds a new enterpriseManagement';
   }
 
