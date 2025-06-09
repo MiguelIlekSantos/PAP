@@ -26,7 +26,7 @@ export class JoiValidationPipe implements PipeTransform {
             allowUnknown: this.options?.allowUnknown || false, // doesnt allow extra properties
         });
 
-        if (result.error) {
+        if (result.error) {      // error handling
             let errorMessages = ""
             result.error.details.forEach(error => {
                 errorMessages += error + ";"
