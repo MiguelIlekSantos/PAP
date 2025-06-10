@@ -1,6 +1,7 @@
+import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
-export const CreateTransactionsDto = Joi.object({
+@JoiDtoSchema(Joi.object({
   amount: Joi.number().required().messages({
     'number.base': 'Amount must be a number',
     'any.required': 'Amount is required'
@@ -25,9 +26,11 @@ export const CreateTransactionsDto = Joi.object({
     'string.empty': 'Status is required',
     'any.required': 'Status is required'
   })
-});
+}))
 
-export const UpdateTransactionsDto = Joi.object({
+export class CreateTransactionsDto {}
+
+@JoiDtoSchema(Joi.object({
   amount: Joi.number().optional().messages({
     'number.base': 'Amount must be a number'
   }),
@@ -38,13 +41,17 @@ export const UpdateTransactionsDto = Joi.object({
   description: Joi.string().optional(),
   bankAccount: Joi.string().optional(),
   status: Joi.string().optional()
-});
+}))
 
-export const DeleteTransactionsDto = Joi.object({
+export class UpdateTransactionsDto {}
+
+@JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
     'number.base': 'ID must be a number',
     'number.integer': 'ID must be an integer',
     'number.positive': 'ID must be positive',
     'any.required': 'ID is required'
   })
-});
+}))
+
+export class DeleteTransactionsDto {}

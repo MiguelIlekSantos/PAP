@@ -1,6 +1,7 @@
+import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
-export const CreateSocialMediaDto = Joi.object({
+@JoiDtoSchema(Joi.object({
   platform: Joi.string().required().messages({
     'string.empty': 'Platform is required',
     'any.required': 'Platform is required'
@@ -21,9 +22,11 @@ export const CreateSocialMediaDto = Joi.object({
     'number.max': 'Engagement rate cannot exceed 100',
     'any.required': 'Engagement rate is required'
   })
-});
+}))
 
-export const UpdateSocialMediaDto = Joi.object({
+export class CreateSocialMediaDto {}
+
+@JoiDtoSchema(Joi.object({
   platform: Joi.string().optional(),
   username: Joi.string().optional(),
   followers: Joi.number().integer().min(0).optional().messages({
@@ -36,13 +39,17 @@ export const UpdateSocialMediaDto = Joi.object({
     'number.min': 'Engagement rate must be at least 0',
     'number.max': 'Engagement rate cannot exceed 100'
   })
-});
+}))
 
-export const DeleteSocialMediaDto = Joi.object({
+export class UpdateSocialMediaDto {}
+
+@JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
     'number.base': 'ID must be a number',
     'number.integer': 'ID must be an integer',
     'number.positive': 'ID must be positive',
     'any.required': 'ID is required'
   })
-});
+}))
+
+export class DeleteSocialMediaDto {}

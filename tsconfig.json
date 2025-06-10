@@ -16,9 +16,6 @@
       "path": "./apps/frontend"
     },
     {
-      "path": "./utils"
-    },
-    {
       "path": "./libs/utils"
     },
     {

@@ -1,6 +1,7 @@
+import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
-export const CreateBudgetDto = Joi.object({
+@JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',
     'any.required': 'Name is required'
@@ -57,9 +58,11 @@ export const CreateBudgetDto = Joi.object({
     'number.integer': 'Sale ID must be an integer',
     'number.positive': 'Sale ID must be positive'
   })
-});
+}))
 
-export const UpdateBudgetDto = Joi.object({
+export class CreateBudgetDto {}
+
+@JoiDtoSchema(Joi.object({
   name: Joi.string().optional(),
   amount: Joi.number().positive().optional().messages({
     'number.base': 'Amount must be a number',
@@ -101,13 +104,17 @@ export const UpdateBudgetDto = Joi.object({
     'number.integer': 'Sale ID must be an integer',
     'number.positive': 'Sale ID must be positive'
   })
-});
+}))
 
-export const DeleteBudgetDto = Joi.object({
+export class UpdateBudgetDto {}
+
+@JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
     'number.base': 'ID must be a number',
     'number.integer': 'ID must be an integer',
     'number.positive': 'ID must be positive',
     'any.required': 'ID is required'
   })
-});
+}))
+
+export class DeleteBudgetDto {}

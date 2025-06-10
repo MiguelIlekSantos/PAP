@@ -1,6 +1,7 @@
+import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
-export const CreateMessagesDto = Joi.object({
+@JoiDtoSchema(Joi.object({
   content: Joi.string().required().messages({
     'string.empty': 'Content is required',
     'any.required': 'Content is required'
@@ -19,9 +20,11 @@ export const CreateMessagesDto = Joi.object({
     'number.positive': 'Chat ID must be positive',
     'any.required': 'Chat ID is required'
   })
-});
+}))
 
-export const UpdateMessagesDto = Joi.object({
+export class CreateMessagesDto {}
+
+@JoiDtoSchema(Joi.object({
   content: Joi.string().optional(),
   sender: Joi.string().optional(),
   createdAt: Joi.date().optional().messages({
@@ -32,13 +35,17 @@ export const UpdateMessagesDto = Joi.object({
     'number.integer': 'Chat ID must be an integer',
     'number.positive': 'Chat ID must be positive'
   })
-});
+}))
 
-export const DeleteMessagesDto = Joi.object({
+export class UpdateMessagesDto {}
+
+@JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
     'number.base': 'ID must be a number',
     'number.integer': 'ID must be an integer',
     'number.positive': 'ID must be positive',
     'any.required': 'ID is required'
   })
-});
+}))
+
+export class DeleteMessagesDto {}

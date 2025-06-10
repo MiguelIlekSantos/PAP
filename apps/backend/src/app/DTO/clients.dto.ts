@@ -1,6 +1,7 @@
+import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
-export const CreateClientsDto = Joi.object({
+@JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',
     'any.required': 'Name is required'
@@ -22,9 +23,11 @@ export const CreateClientsDto = Joi.object({
     'string.empty': 'Address is required',
     'any.required': 'Address is required'
   })
-});
+}))
 
-export const UpdateClientsDto = Joi.object({
+export class CreateClientsDto {}
+
+@JoiDtoSchema(Joi.object({
   name: Joi.string().optional(),
   email: Joi.string().email().optional().messages({
     'string.email': 'Email must be a valid email address'
@@ -32,13 +35,17 @@ export const UpdateClientsDto = Joi.object({
   phone: Joi.string().optional(),
   type: Joi.string().optional(),
   address: Joi.string().optional()
-});
+}))
 
-export const DeleteClientsDto = Joi.object({
+export class UpdateClientsDto {}
+
+@JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
     'number.base': 'ID must be a number',
     'number.integer': 'ID must be an integer',
     'number.positive': 'ID must be positive',
     'any.required': 'ID is required'
   })
-});
+}))
+
+export class DeleteClientsDto {}

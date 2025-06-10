@@ -1,6 +1,7 @@
+import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
-export const CreateDepartmentsDto = Joi.object({
+@JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',
     'any.required': 'Name is required'
@@ -19,9 +20,11 @@ export const CreateDepartmentsDto = Joi.object({
     'number.min': 'Total employees must be at least 0',
     'any.required': 'Total employees is required'
   })
-});
+}))
 
-export const UpdateDepartmentsDto = Joi.object({
+export class CreateDepartmentsDto {}
+
+@JoiDtoSchema(Joi.object({
   name: Joi.string().optional(),
   description: Joi.string().optional(),
   responsible: Joi.string().optional(),
@@ -30,13 +33,17 @@ export const UpdateDepartmentsDto = Joi.object({
     'number.integer': 'Total employees must be an integer',
     'number.min': 'Total employees must be at least 0'
   })
-});
+}))
 
-export const DeleteDepartmentsDto = Joi.object({
+export class UpdateDepartmentsDto {}
+
+@JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
     'number.base': 'ID must be a number',
     'number.integer': 'ID must be an integer',
     'number.positive': 'ID must be positive',
     'any.required': 'ID is required'
   })
-});
+}))
+
+export class DeleteDepartmentsDto {}

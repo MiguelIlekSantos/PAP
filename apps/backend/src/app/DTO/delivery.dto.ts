@@ -1,6 +1,7 @@
+import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
-export const CreateDeliveryDto = Joi.object({
+@JoiDtoSchema(Joi.object({
   expectedDate: Joi.date().required().messages({
     'date.base': 'Expected date must be a valid date',
     'any.required': 'Expected date is required'
@@ -25,9 +26,11 @@ export const CreateDeliveryDto = Joi.object({
     'number.positive': 'Transporter ID must be positive',
     'any.required': 'Transporter ID is required'
   })
-});
+}))
 
-export const UpdateDeliveryDto = Joi.object({
+export class CreateDeliveryDto {}
+
+@JoiDtoSchema(Joi.object({
   expectedDate: Joi.date().optional().messages({
     'date.base': 'Expected date must be a valid date'
   }),
@@ -45,13 +48,17 @@ export const UpdateDeliveryDto = Joi.object({
     'number.integer': 'Transporter ID must be an integer',
     'number.positive': 'Transporter ID must be positive'
   })
-});
+}))
 
-export const DeleteDeliveryDto = Joi.object({
+export class UpdateDeliveryDto {}
+
+@JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
     'number.base': 'ID must be a number',
     'number.integer': 'ID must be an integer',
     'number.positive': 'ID must be positive',
     'any.required': 'ID is required'
   })
-});
+}))
+
+export class DeleteDeliveryDto {}

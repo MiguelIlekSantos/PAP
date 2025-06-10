@@ -1,6 +1,7 @@
+import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
-export const CreateReportsDto = Joi.object({
+@JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',
     'any.required': 'Name is required'
@@ -35,9 +36,11 @@ export const CreateReportsDto = Joi.object({
     'string.empty': 'Path is required',
     'any.required': 'Path is required'
   })
-});
+}))
 
-export const UpdateReportsDto = Joi.object({
+export class CreateReportsDto {}
+
+@JoiDtoSchema(Joi.object({
   name: Joi.string().optional(),
   type: Joi.string().optional(),
   frequency: Joi.string().optional(),
@@ -54,13 +57,17 @@ export const UpdateReportsDto = Joi.object({
     'number.min': 'Downloads must be at least 0'
   }),
   path: Joi.string().optional()
-});
+}))
 
-export const DeleteReportsDto = Joi.object({
+export class UpdateReportsDto {}
+
+@JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
     'number.base': 'ID must be a number',
     'number.integer': 'ID must be an integer',
     'number.positive': 'ID must be positive',
     'any.required': 'ID is required'
   })
-});
+}))
+
+export class DeleteReportsDto {}

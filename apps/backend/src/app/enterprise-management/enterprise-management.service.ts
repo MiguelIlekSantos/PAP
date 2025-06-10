@@ -9,16 +9,16 @@ export class EnterpriseManagementService {
   }
 
   findAll() {
-    return `This action returns all enterpriseManagement`;
+    return `returning something`;
   }
 
   findOne(id: number) {
     return `This action returns a #${id} enterpriseManagement`;
   }
 
-  update(id: number, updateEnterpriseManagementDto: UpdateEnterpriseManagementDto) {
-    return `This action updates a #${id} enterpriseManagement`;
-  }
+  // update(id: number, updateEnterpriseManagementDto: UpdateEnterpriseManagementDto) {
+  //   return `This action updates a #${id} enterpriseManagement`;
+  // }
 
   remove(id: number) {
     return `This action removes a #${id} enterpriseManagement`;

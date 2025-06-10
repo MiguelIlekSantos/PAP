@@ -1,6 +1,7 @@
+import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
-export const CreateLogsDto = Joi.object({
+@JoiDtoSchema(Joi.object({
   action: Joi.string().required().messages({
     'string.empty': 'Action is required',
     'any.required': 'Action is required'
@@ -29,9 +30,11 @@ export const CreateLogsDto = Joi.object({
     'number.positive': 'User ID must be positive',
     'any.required': 'User ID is required'
   })
-});
+}))
 
-export const UpdateLogsDto = Joi.object({
+export class CreateLogsDto {}
+
+@JoiDtoSchema(Joi.object({
   action: Joi.string().optional(),
   level: Joi.string().optional(),
   timestamp: Joi.date().optional().messages({
@@ -48,13 +51,17 @@ export const UpdateLogsDto = Joi.object({
     'number.integer': 'User ID must be an integer',
     'number.positive': 'User ID must be positive'
   })
-});
+}))
 
-export const DeleteLogsDto = Joi.object({
+export class UpdateLogsDto {}
+
+@JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
     'number.base': 'ID must be a number',
     'number.integer': 'ID must be an integer',
     'number.positive': 'ID must be positive',
     'any.required': 'ID is required'
   })
-});
+}))
+
+export class DeleteLogsDto {}

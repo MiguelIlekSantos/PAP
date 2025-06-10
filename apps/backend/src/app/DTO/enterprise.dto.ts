@@ -17,30 +17,31 @@ import * as Joi from 'joi';
   phone: Joi.string().required(),
   logo: Joi.string().required()
 }))
+
 export class CreateEnterpriseDto {}
 
 
-export const UpdateEnterpriseDto = Joi.object({
-    legalName: Joi.string().optional(),
-    ComercialName: Joi.string().optional(),
-    nif: Joi.string().optional(),
-    niss: Joi.string().optional(),
-    nipc: Joi.string().optional(),
-    type: Joi.string().optional(),
-    foundationDate: Joi.date().optional(),
-    registeredCountry: Joi.string().optional(),
-    mainLanguage: Joi.string().optional(),
-    oficialCurrency: Joi.string().optional(),
-    email: Joi.string().email().optional().messages({'string.email': 'Email must be a valid email address'}),
-    phone: Joi.string().optional(),
-    logo: Joi.string().optional()
-});
+@JoiDtoSchema(Joi.object({
+  legalName: Joi.string().optional(),
+  ComercialName: Joi.string().optional(),
+  nif: Joi.string().pattern(/^\d{9}$/).optional().messages({ 'string.pattern.base': 'NIF must be a 9-digit number' }),
+  niss: Joi.string().pattern(/^\d{11}$/).optional().messages({ 'string.pattern.base': 'NISS must be an 11-digit number' }),
+  nipc: Joi.string().pattern(/^\d{9}$/).optional().messages({ 'string.pattern.base': 'NIPC must be a 9-digit number' }),
+  type: Joi.string().optional(),
+  foundationDate: Joi.date().iso().optional().messages({ 'date.format': 'Foundation date must be in ISO format (YYYY-MM-DD)' }),
+  registeredCountry: Joi.string().optional(),
+  mainLanguage: Joi.string().optional(),
+  oficialCurrency: Joi.string().optional(),
+  email: Joi.string().email().optional().messages({ 'string.email': 'Email must be a valid email address' }),
+  phone: Joi.string().optional(),
+  logo: Joi.string().optional()
+}))
 
-export const DeleteEnterpriseDto = Joi.object({
-    id: Joi.number().integer().positive().required().messages({
-        'number.base': 'ID must be a number',
-        'number.integer': 'ID must be an integer',
-        'number.positive': 'ID must be positive',
-        'any.required': 'ID is required'
-    })
-});
+export class UpdateEnterpriseDto {}
+
+
+@JoiDtoSchema(Joi.object({
+    id: Joi.number().integer().positive().required()
+}))
+
+export class DeleteEnterpriseDto {}

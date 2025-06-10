@@ -1,6 +1,7 @@
+import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
-export const CreateDomainsDto = Joi.object({
+@JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',
     'any.required': 'Name is required'
@@ -25,9 +26,11 @@ export const CreateDomainsDto = Joi.object({
     'string.empty': 'Status is required',
     'any.required': 'Status is required'
   })
-});
+}))
 
-export const UpdateDomainsDto = Joi.object({
+export class CreateDomainsDto {}
+
+@JoiDtoSchema(Joi.object({
   name: Joi.string().optional(),
   type: Joi.string().optional(),
   registrator: Joi.string().optional(),
@@ -36,13 +39,17 @@ export const UpdateDomainsDto = Joi.object({
   }),
   hosting: Joi.string().optional(),
   status: Joi.string().optional()
-});
+}))
 
-export const DeleteDomainsDto = Joi.object({
+export class UpdateDomainsDto {}
+
+@JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
     'number.base': 'ID must be a number',
     'number.integer': 'ID must be an integer',
     'number.positive': 'ID must be positive',
     'any.required': 'ID is required'
   })
-});
+}))
+
+export class DeleteDomainsDto {}

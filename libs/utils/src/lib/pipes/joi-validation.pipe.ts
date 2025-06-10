@@ -29,7 +29,7 @@ export class JoiValidationPipe implements PipeTransform {
         if (result.error) {      // error handling
             let errorMessages = ""
             result.error.details.forEach(error => {
-                errorMessages += error + ";"
+                errorMessages += error.message + " || "
             });
 
             throw new BadRequestException(`Validation Error ${errorMessages}`)

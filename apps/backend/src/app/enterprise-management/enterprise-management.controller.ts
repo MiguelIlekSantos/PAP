@@ -1,15 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes } from '@nestjs/common';
 import { EnterpriseManagementService } from './enterprise-management.service';
-import { CreateEnterpriseManagementDto } from './dto/create-enterprise-management.dto';
-import { UpdateEnterpriseManagementDto } from './dto/update-enterprise-management.dto';
+import { CreateEnterpriseDto } from '../DTO/enterprise.dto';
+import { JoiValidationPipe } from '@pap/utils';
 
-@Controller('enterprise-management')
+@Controller('enterprises')
 export class EnterpriseManagementController {
   constructor(private readonly enterpriseManagementService: EnterpriseManagementService) {}
 
   @Post()
-  create(@Body() createEnterpriseManagementDto: CreateEnterpriseManagementDto) {
-    return this.enterpriseManagementService.create(createEnterpriseManagementDto);
+  @UsePipes(new JoiValidationPipe)
+  create(@Body() createEnterpriseDto: CreateEnterpriseDto) {
+    return this.enterpriseManagementService.create(createEnterpriseDto);
   }
 
   @Get()
@@ -22,10 +23,10 @@ export class EnterpriseManagementController {
     return this.enterpriseManagementService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEnterpriseManagementDto: UpdateEnterpriseManagementDto) {
-    return this.enterpriseManagementService.update(+id, updateEnterpriseManagementDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateEnterpriseManagementDto: UpdateEnterpriseManagementDto) {
+  //   return this.enterpriseManagementService.update(+id, updateEnterpriseManagementDto);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

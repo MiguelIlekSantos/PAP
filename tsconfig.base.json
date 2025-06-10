@@ -18,7 +18,8 @@
     "target": "es2022",
     "customConditions": ["development"],
     "paths": {
-      "@utils/JoiValidator": ["utils/src/lib/decorators/index.ts"]
+      "@components": ["libs/components/src/lib/index.ts"],
+      "@utils": ["libs/utils/src/lib/index.ts"]
     }
   }
 }
