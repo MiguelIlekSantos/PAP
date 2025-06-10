@@ -1,16 +1,14 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { SystemManagementService } from './system-management.service';
-import { CreateSystemManagementDto } from './dto/create-system-management.dto';
-import { UpdateSystemManagementDto } from './dto/update-system-management.dto';
 
 @Controller('system-management')
 export class SystemManagementController {
   constructor(private readonly systemManagementService: SystemManagementService) {}
 
-  @Post()
-  create(@Body() createSystemManagementDto: CreateSystemManagementDto) {
-    return this.systemManagementService.create(createSystemManagementDto);
-  }
+  // @Post()
+  // create(@Body() createSystemManagementDto: CreateSystemManagementDto) {
+  //   return this.systemManagementService.create(createSystemManagementDto);
+  // }
 
   @Get()
   findAll() {
@@ -22,10 +20,10 @@ export class SystemManagementController {
     return this.systemManagementService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSystemManagementDto: UpdateSystemManagementDto) {
-    return this.systemManagementService.update(+id, updateSystemManagementDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateSystemManagementDto: UpdateSystemManagementDto) {
+  //   return this.systemManagementService.update(+id, updateSystemManagementDto);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

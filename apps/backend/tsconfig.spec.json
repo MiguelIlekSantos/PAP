@@ -1,6 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@utils": [""]
+    },
     "outDir": "./out-tsc/jest",
     "types": [
       "jest",

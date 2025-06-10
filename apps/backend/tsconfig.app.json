@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@utils/JoiValidator": [""]
+      "@utils": [""]
     },
     "outDir": "dist",
     "types": ["node"],

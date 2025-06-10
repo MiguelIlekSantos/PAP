@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFinancialManagementDto } from './dto/create-financial-management.dto';
-import { UpdateFinancialManagementDto } from './dto/update-financial-management.dto';
 
 @Injectable()
 export class FinancialManagementService {
-  create(createFinancialManagementDto: CreateFinancialManagementDto) {
-    return 'This action adds a new financialManagement';
-  }
+  // create(createFinancialManagementDto: CreateFinancialManagementDto) {
+  //   return 'This action adds a new financialManagement';
+  // }
 
   findAll() {
     return `This action returns all financialManagement`;
@@ -16,9 +14,9 @@ export class FinancialManagementService {
     return `This action returns a #${id} financialManagement`;
   }
 
-  update(id: number, updateFinancialManagementDto: UpdateFinancialManagementDto) {
-    return `This action updates a #${id} financialManagement`;
-  }
+  // update(id: number, updateFinancialManagementDto: UpdateFinancialManagementDto) {
+  //   return `This action updates a #${id} financialManagement`;
+  // }
 
   remove(id: number) {
     return `This action removes a #${id} financialManagement`;
