@@ -1,57 +1,59 @@
 import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
+export interface BranchesDTO {
+  id: number;
+  address: string;
+  phone: string;
+  email: string;
+  purpose: string;
+  enterpriseId: number;
+}
+
 @JoiDtoSchema(Joi.object({
-  address: Joi.string().required().messages({
-    'string.empty': 'Address is required',
-    'any.required': 'Address is required'
-  }),
-  phone: Joi.string().required().messages({
-    'string.empty': 'Phone is required',
-    'any.required': 'Phone is required'
-  }),
-  email: Joi.string().email().required().messages({
-    'string.email': 'Email must be a valid email address',
-    'string.empty': 'Email is required',
-    'any.required': 'Email is required'
-  }),
-  purpose: Joi.string().required().messages({
-    'string.empty': 'Purpose is required',
-    'any.required': 'Purpose is required'
-  }),
-  enterpriseId: Joi.number().integer().positive().required().messages({
-    'number.base': 'Enterprise ID must be a number',
-    'number.integer': 'Enterprise ID must be an integer',
-    'number.positive': 'Enterprise ID must be positive',
-    'any.required': 'Enterprise ID is required'
-  })
+  address: Joi.string().required().messages({ 'string.empty': 'Address is required', 'any.required': 'Address is required' }),
+  phone: Joi.string().required().messages({ 'string.empty': 'Phone is required', 'any.required': 'Phone is required' }),
+  email: Joi.string().email().required().messages({ 'string.email': 'Email must be a valid email address', 'string.empty': 'Email is required', 'any.required': 'Email is required' }),
+  purpose: Joi.string().required().messages({ 'string.empty': 'Purpose is required', 'any.required': 'Purpose is required' }),
+  enterpriseId: Joi.number().integer().positive().required().messages({ 'number.base': 'Enterprise ID must be a number', 'number.integer': 'Enterprise ID must be an integer', 'number.positive': 'Enterprise ID must be positive', 'any.required': 'Enterprise ID is required' })
 }))
 
-export class CreateBranchesDto {}
+export class CreateBranchesDto {
+  address: string;
+  phone?: string;
+  email?: string;
+  purpose?: string;
+  enterpriseId?: number;
+  
+  constructor(address: string) {
+    this.address = address;
+  }
+}
 
 @JoiDtoSchema(Joi.object({
   address: Joi.string().optional(),
   phone: Joi.string().optional(),
-  email: Joi.string().email().optional().messages({
-    'string.email': 'Email must be a valid email address'
-  }),
+  email: Joi.string().email().optional().messages({ 'string.email': 'Email must be a valid email address' }),
   purpose: Joi.string().optional(),
-  enterpriseId: Joi.number().integer().positive().optional().messages({
-    'number.base': 'Enterprise ID must be a number',
-    'number.integer': 'Enterprise ID must be an integer',
-    'number.positive': 'Enterprise ID must be positive'
-  })
+  enterpriseId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Enterprise ID must be a number', 'number.integer': 'Enterprise ID must be an integer', 'number.positive': 'Enterprise ID must be positive' })
 }))
 
-export class UpdateBranchesDto {}
+export class UpdateBranchesDto {
+  address?: string;
+  phone?: string;
+  email?: string;
+  purpose?: string;
+  enterpriseId?: number;
+}
 
 @JoiDtoSchema(Joi.object({
-  id: Joi.number().integer().positive().required().messages({
-    'number.base': 'ID must be a number',
-    'number.integer': 'ID must be an integer',
-    'number.positive': 'ID must be positive',
-    'any.required': 'ID is required'
-  })
+  id: Joi.number().integer().positive().required().messages({ 'number.base': 'ID must be a number', 'number.integer': 'ID must be an integer', 'number.positive': 'ID must be positive', 'any.required': 'ID is required' })
 }))
 
-export class DeleteBranchesDto {}
+export class DeleteBranchesDto {
+  id: number;
+  
+  constructor(id: number) {
+    this.id = id;
+  }
+}

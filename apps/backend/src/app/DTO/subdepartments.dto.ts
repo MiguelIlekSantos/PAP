@@ -1,6 +1,15 @@
 import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
+export interface SubDepartmentsDTO {
+  id: number;
+  name: string;
+  description: string;
+  responsible: string;
+  totalEmployees: number;
+  departmentId: number;
+}
+
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',
@@ -28,7 +37,17 @@ import * as Joi from 'joi';
   })
 }))
 
-export class CreateSubDepartmentsDto {}
+export class CreateSubDepartmentsDto {
+  name: string;
+  description?: string;
+  responsible?: string;
+  totalEmployees?: number;
+  departmentId?: number;
+  
+  constructor(name: string) {
+    this.name = name;
+  }
+}
 
 @JoiDtoSchema(Joi.object({
   name: Joi.string().optional(),
@@ -46,7 +65,13 @@ export class CreateSubDepartmentsDto {}
   })
 }))
 
-export class UpdateSubDepartmentsDto {}
+export class UpdateSubDepartmentsDto {
+  name?: string;
+  description?: string;
+  responsible?: string;
+  totalEmployees?: number;
+  departmentId?: number;
+}
 
 @JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
@@ -57,4 +82,10 @@ export class UpdateSubDepartmentsDto {}
   })
 }))
 
-export class DeleteSubDepartmentsDto {}
+export class DeleteSubDepartmentsDto {
+  id: number;
+  
+  constructor(id: number) {
+    this.id = id;
+  }
+}

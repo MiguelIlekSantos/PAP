@@ -1,6 +1,15 @@
 import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
+export interface ClientsDTO {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  type: string;
+  address: string;
+}
+
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',
@@ -25,7 +34,17 @@ import * as Joi from 'joi';
   })
 }))
 
-export class CreateClientsDto {}
+export class CreateClientsDto {
+  name: string;
+  email?: string;
+  phone?: string;
+  type?: string;
+  address?: string;
+  
+  constructor(name: string) {
+    this.name = name;
+  }
+}
 
 @JoiDtoSchema(Joi.object({
   name: Joi.string().optional(),
@@ -37,7 +56,13 @@ export class CreateClientsDto {}
   address: Joi.string().optional()
 }))
 
-export class UpdateClientsDto {}
+export class UpdateClientsDto {
+  name?: string;
+  email?: string;
+  phone?: string;
+  type?: string;
+  address?: string;
+}
 
 @JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
@@ -48,4 +73,10 @@ export class UpdateClientsDto {}
   })
 }))
 
-export class DeleteClientsDto {}
+export class DeleteClientsDto {
+  id: number;
+  
+  constructor(id: number) {
+    this.id = id;
+  }
+}

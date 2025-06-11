@@ -1,6 +1,18 @@
 import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
+export interface ReportsDTO {
+  id: number;
+  name: string;
+  type: string;
+  frequency: string;
+  status: string;
+  lastUpdate: Date;
+  nextUpdate: Date;
+  downloads: number;
+  path: string;
+}
+
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',
@@ -38,7 +50,20 @@ import * as Joi from 'joi';
   })
 }))
 
-export class CreateReportsDto {}
+export class CreateReportsDto {
+  name: string;
+  type?: string;
+  frequency?: string;
+  status?: string;
+  lastUpdate?: Date;
+  nextUpdate?: Date;
+  downloads?: number;
+  path?: string;
+  
+  constructor(name: string) {
+    this.name = name;
+  }
+}
 
 @JoiDtoSchema(Joi.object({
   name: Joi.string().optional(),
@@ -59,7 +84,16 @@ export class CreateReportsDto {}
   path: Joi.string().optional()
 }))
 
-export class UpdateReportsDto {}
+export class UpdateReportsDto {
+  name?: string;
+  type?: string;
+  frequency?: string;
+  status?: string;
+  lastUpdate?: Date;
+  nextUpdate?: Date;
+  downloads?: number;
+  path?: string;
+}
 
 @JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
@@ -70,4 +104,10 @@ export class UpdateReportsDto {}
   })
 }))
 
-export class DeleteReportsDto {}
+export class DeleteReportsDto {
+  id: number;
+  
+  constructor(id: number) {
+    this.id = id;
+  }
+}

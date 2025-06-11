@@ -1,6 +1,14 @@
 import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
+export interface SocialMediaDTO {
+  id: number;
+  platform: string;
+  username: string;
+  followers: number;
+  engagementRate: number;
+}
+
 @JoiDtoSchema(Joi.object({
   platform: Joi.string().required().messages({
     'string.empty': 'Platform is required',
@@ -24,7 +32,16 @@ import * as Joi from 'joi';
   })
 }))
 
-export class CreateSocialMediaDto {}
+export class CreateSocialMediaDto {
+  platform: string;
+  username?: string;
+  followers?: number;
+  engagementRate?: number;
+  
+  constructor(platform: string) {
+    this.platform = platform;
+  }
+}
 
 @JoiDtoSchema(Joi.object({
   platform: Joi.string().optional(),
@@ -41,7 +58,12 @@ export class CreateSocialMediaDto {}
   })
 }))
 
-export class UpdateSocialMediaDto {}
+export class UpdateSocialMediaDto {
+  platform?: string;
+  username?: string;
+  followers?: number;
+  engagementRate?: number;
+}
 
 @JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
@@ -52,4 +74,10 @@ export class UpdateSocialMediaDto {}
   })
 }))
 
-export class DeleteSocialMediaDto {}
+export class DeleteSocialMediaDto {
+  id: number;
+  
+  constructor(id: number) {
+    this.id = id;
+  }
+}

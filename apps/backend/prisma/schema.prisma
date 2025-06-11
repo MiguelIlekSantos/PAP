@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -17,18 +16,18 @@ datasource db {
 model Enterprise {
   id                Int        @id @default(autoincrement())
   legalName         String
-  ComercialName     String
-  nif               String
-  niss              String
-  nipc              String
-  type              String
-  foundationDate    DateTime
-  registeredCountry String
-  mainLanguage      String
-  oficialCurrency   String
-  email             String
-  phone             String
-  logo              String
+  ComercialName     String?
+  nif               String?
+  niss              String?
+  nipc              String?
+  type              String?
+  foundationDate    DateTime?
+  registeredCountry String?
+  mainLanguage      String?
+  oficialCurrency   String?
+  email             String?
+  phone             String?
+  logo              String?
   branches          Branches[]
 }
 

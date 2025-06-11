@@ -1,6 +1,23 @@
 import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
+export interface PurchasesDTO {
+  id: number;
+  number: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  subCategory: string;
+  brand: string;
+  model: string;
+  sku: string;
+  weight: number;
+  dimensions: string;
+  imageUrl: string;
+  supplierId: number;
+}
+
 @JoiDtoSchema(Joi.object({
   number: Joi.string().required().messages({
     'string.empty': 'Number is required',
@@ -61,7 +78,25 @@ import * as Joi from 'joi';
   })
 }))
 
-export class CreatePurchasesDto {}
+export class CreatePurchasesDto {
+  number: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  subCategory?: string;
+  brand?: string;
+  model?: string;
+  sku?: string;
+  weight?: number;
+  dimensions?: string;
+  imageUrl?: string;
+  supplierId?: number;
+  
+  constructor(number: string) {
+    this.number = number;
+  }
+}
 
 @JoiDtoSchema(Joi.object({
   number: Joi.string().optional(),
@@ -91,7 +126,21 @@ export class CreatePurchasesDto {}
   })
 }))
 
-export class UpdatePurchasesDto {}
+export class UpdatePurchasesDto {
+  number?: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  subCategory?: string;
+  brand?: string;
+  model?: string;
+  sku?: string;
+  weight?: number;
+  dimensions?: string;
+  imageUrl?: string;
+  supplierId?: number;
+}
 
 @JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
@@ -102,4 +151,10 @@ export class UpdatePurchasesDto {}
   })
 }))
 
-export class DeletePurchasesDto {}
+export class DeletePurchasesDto {
+  id: number;
+  
+  constructor(id: number) {
+    this.id = id;
+  }
+}

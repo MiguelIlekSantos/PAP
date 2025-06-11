@@ -1,6 +1,17 @@
 import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
+export interface InvoicesDTO {
+  id: number;
+  number: string;
+  ClientId: number;
+  registerdate: Date;
+  dueDate: Date;
+  paymentDate: Date;
+  total: number;
+  status: string;
+}
+
 @JoiDtoSchema(Joi.object({
   number: Joi.string().required().messages({
     'string.empty': 'Number is required',
@@ -35,7 +46,19 @@ import * as Joi from 'joi';
   })
 }))
 
-export class CreateInvoicesDto {}
+export class CreateInvoicesDto {
+  number: string;
+  ClientId?: number;
+  registerdate?: Date;
+  dueDate?: Date;
+  paymentDate?: Date;
+  total?: number;
+  status?: string;
+  
+  constructor(number: string) {
+    this.number = number;
+  }
+}
 
 @JoiDtoSchema(Joi.object({
   number: Joi.string().optional(),
@@ -60,7 +83,15 @@ export class CreateInvoicesDto {}
   status: Joi.string().optional()
 }))
 
-export class UpdateInvoicesDto {}
+export class UpdateInvoicesDto {
+  number?: string;
+  ClientId?: number;
+  registerdate?: Date;
+  dueDate?: Date;
+  paymentDate?: Date;
+  total?: number;
+  status?: string;
+}
 
 @JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
@@ -71,4 +102,10 @@ export class UpdateInvoicesDto {}
   })
 }))
 
-export class DeleteInvoicesDto {}
+export class DeleteInvoicesDto {
+  id: number;
+  
+  constructor(id: number) {
+    this.id = id;
+  }
+}

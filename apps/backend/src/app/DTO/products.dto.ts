@@ -1,6 +1,24 @@
 import { JoiDtoSchema } from '@pap/utils';
 import * as Joi from 'joi';
 
+export interface ProductsDTO {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  category: string;
+  subCategory: string;
+  brand: string;
+  model: string;
+  sku: string;
+  barcode: string;
+  weight: number;
+  dimensions: string;
+  imageUrl: string;
+  wareHouseId: number;
+}
+
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',
@@ -67,7 +85,26 @@ import * as Joi from 'joi';
   })
 }))
 
-export class CreateProductsDto {}
+export class CreateProductsDto {
+  name: string;
+  description?: string;
+  price?: number;
+  stock?: number;
+  category?: string;
+  subCategory?: string;
+  brand?: string;
+  model?: string;
+  sku?: string;
+  barcode?: string;
+  weight?: number;
+  dimensions?: string;
+  imageUrl?: string;
+  wareHouseId?: number;
+  
+  constructor(name: string) {
+    this.name = name;
+  }
+}
 
 @JoiDtoSchema(Joi.object({
   name: Joi.string().optional(),
@@ -102,7 +139,22 @@ export class CreateProductsDto {}
   })
 }))
 
-export class UpdateProductsDto {}
+export class UpdateProductsDto {
+  name?: string;
+  description?: string;
+  price?: number;
+  stock?: number;
+  category?: string;
+  subCategory?: string;
+  brand?: string;
+  model?: string;
+  sku?: string;
+  barcode?: string;
+  weight?: number;
+  dimensions?: string;
+  imageUrl?: string;
+  wareHouseId?: number;
+}
 
 @JoiDtoSchema(Joi.object({
   id: Joi.number().integer().positive().required().messages({
@@ -113,4 +165,10 @@ export class UpdateProductsDto {}
   })
 }))
 
-export class DeleteProductsDto {}
+export class DeleteProductsDto {
+  id: number;
+  
+  constructor(id: number) {
+    this.id = id;
+  }
+}
