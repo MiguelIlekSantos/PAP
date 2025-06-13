@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@utils": [""]
+      "@utils": ["pap/libs/utils/src"]
     },
     "outDir": "dist",
     "types": ["node"],
@@ -24,9 +24,5 @@
     "eslint.config.cjs",
     "eslint.config.mjs"
   ],
-  "references": [
-    {
-      "path": "../../libs/utils/tsconfig.lib.json"
-    }
-  ]
+  "references": []
 }
