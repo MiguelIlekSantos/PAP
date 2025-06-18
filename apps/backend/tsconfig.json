@@ -9,5 +9,11 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@utils": ["pap/libs/utils/src/index.ts"]
+    }
+  }
 }

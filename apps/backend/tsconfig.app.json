@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@utils": ["pap/libs/utils/src"]
+      "@utils": ["pap/libs/utils/src/index.ts"]
     },
     "outDir": "dist",
     "types": ["node"],

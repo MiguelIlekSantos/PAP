@@ -16,10 +16,10 @@
       "path": "./apps/frontend"
     },
     {
-      "path": "./libs/utils"
-    },
-    {
       "path": "./libs/components"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "baseUrl": "."
+  }
 }

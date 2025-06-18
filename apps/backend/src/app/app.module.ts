@@ -10,7 +10,9 @@ import { SystemManagementModule } from './system-management/system-management.mo
 import { PurchasesModule } from './purchases/purchases.module';
 import { ReportsModule } from './reports/reports.module';
 import { InventoryManagementModule } from './inventory-management/inventory-management.module';
-
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtGuard, JwtStrategy, VerifyService } from '../lib';
 
 @Module({
   imports: [
@@ -24,9 +26,16 @@ import { InventoryManagementModule } from './inventory-management/inventory-mana
     SystemManagementModule,
     PurchasesModule,
     ReportsModule,
-    InventoryManagementModule
+    InventoryManagementModule,
+
+    PassportModule,
+    JwtModule.register({}),
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    VerifyService,
+    JwtStrategy,
+    JwtGuard,
+  ],
 })
-export class AppModule {}
+export class AppModule { }

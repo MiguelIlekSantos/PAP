@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { JoiDtoSchema } from '@pap/utils';
+import { JoiDtoSchema } from '../../../lib';
 
 
 @JoiDtoSchema(

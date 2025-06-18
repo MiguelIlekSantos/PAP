@@ -1,4 +1,4 @@
-import { JoiDtoSchema } from '@pap/utils';
+import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
 export interface CampaignsDTO {

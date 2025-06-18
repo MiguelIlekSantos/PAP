@@ -1,20 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, Query, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, Query, Put, UseGuards } from '@nestjs/common';
 import { EnterpriseManagementService } from './enterprise-management.service';
 import { CreateEnterpriseDto, UpdateEnterpriseDto } from '../DTO/enterprise.dto';
-import { JoiValidationPipe, ListResponse } from '@pap/utils';
+import { JoiValidationPipe } from '../../lib/pipes/joi-validation.pipe';
+import { ListResponse } from '../../lib/interfaces/responses.interface';
 import { Enterprise } from '@prisma/client';
 import { ListParametersDto } from '../DTO/list/list.dto';
+import { Roles, RolesGuard } from '../../lib';
 
+@UseGuards(RolesGuard)
 @Controller('enterprises')
 export class EnterpriseManagementController {
   constructor(private readonly enterpriseManagementService: EnterpriseManagementService) { }
 
-
+  // @Roles(["permission1"])
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.enterpriseManagementService.findOne(+id);
   }
 
+  // @Roles(["permission2"])
   @Get()
   @UsePipes(new JoiValidationPipe)
   findAll(@Query() parameters: ListParametersDto): Promise<ListResponse<Enterprise>> {

@@ -1,8 +1,6 @@
 import React from 'react'
 import { OptBtn } from './OptBtn'
 import { Buttons } from "../data/painelBtns"
-import { Nav } from './Nav'
-import { DrawerMenu } from './DrawerMenu'
 
 export const OptPanel = () => { 
 

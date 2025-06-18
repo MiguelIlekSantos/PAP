@@ -39,14 +39,16 @@ export const DrawerMenu = ({ tabs, page }: Props) => {
 			</button>
 
 			{/* Logo */}
-			<div className="w-full flex justify-center mb-8">
-				<Image
-					src="/icons/logo.png"
-					alt="Logo"
-					width={40}
-					height={40}
-					className="rounded"
-				/>
+			<div className="w-full flex justify-center items-center mb-8">
+				<div className='bg-white rounded-lg'>
+					<Image
+						src="/logo/logoAIMS.png"
+						alt="Logo"
+						width={100}
+						height={100}
+						className="rounded"
+					/>
+				</div>
 			</div>
 
 			{/* Menu Items */}

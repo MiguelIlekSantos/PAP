@@ -1,7 +1,7 @@
 // src/base/base.service.ts
 
 import { PrismaService } from 'src/prisma.service';
-import { ListResponse } from '@pap/utils';
+import { ListResponse } from '../lib/interfaces/responses.interface';
 
 type OrderDirection = 'asc' | 'desc';
 
