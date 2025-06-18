@@ -12,19 +12,20 @@ import { Roles, RolesGuard } from '../../lib';
 export class EnterpriseManagementController {
   constructor(private readonly enterpriseManagementService: EnterpriseManagementService) { }
 
-  // @Roles(["permission1"])
+  @Roles(["permission1"])
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.enterpriseManagementService.findOne(+id);
   }
 
-  // @Roles(["permission2"])
+  @Roles(["permission2"])
   @Get()
   @UsePipes(new JoiValidationPipe)
   findAll(@Query() parameters: ListParametersDto): Promise<ListResponse<Enterprise>> {
     return this.enterpriseManagementService.findAll(parameters);
   }
 
+  @Roles(["permission3"])
   @Post()
   @UsePipes(new JoiValidationPipe)
   create(@Body() createEnterpriseDto: CreateEnterpriseDto) {

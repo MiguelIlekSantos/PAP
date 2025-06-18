@@ -20,7 +20,13 @@ export class RolesGuard implements CanActivate {
         }
 
         const request = context.switchToHttp().getRequest();  // get info from request
-        const result = request.user?.perms.indexOf(permitions) > -1; // check if user has permission
+        const userPerms = request.user?.perms ?? [];
+
+        const result = permitions.some((perm) => userPerms.includes(perm));
+
+        console.log(permitions)
+        console.log(request.user?.perms)
+        console.log(result)
 
         return result;
     }

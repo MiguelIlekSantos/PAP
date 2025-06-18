@@ -20,17 +20,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
         try {
             const { idUser, email, persistent, isMachine } = payload;
-            const perms = await this.verifyService.getPermissions(idUser);
+            const perms = await this.verifyService.getPermissions(+idUser);
 
             return {
-            idUser,
-            email,
-            persistent: persistent ?? false,
-            isMachine: isMachine ?? false,
-            perms,
+                idUser,
+                email,
+                persistent: persistent ?? false,
+                isMachine: isMachine ?? false,
+                perms,
             };
         }
-        catch(err){
+        catch (err) {
             console.log("error in strategy", err);
             return null;
         }
