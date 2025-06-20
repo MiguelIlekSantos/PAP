@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { Permissions } from "../../data/permissionsList";
 
 
 
@@ -7,8 +8,8 @@ import { Injectable } from "@nestjs/common";
 export class VerifyService{
 
     async getPermissions(id: number) : Promise<string[]>{
-        if (id === 100){
-            return ['permission1', 'permission3']
+        if (id === 747){
+            return [Permissions.ADMIN]
         }
 
         return []

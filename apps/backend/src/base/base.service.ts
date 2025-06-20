@@ -2,25 +2,36 @@
 
 import { PrismaService } from 'src/prisma.service';
 import { ListResponse } from '../lib/interfaces/responses.interface';
+import { Logger } from '@nestjs/common';
 
 type OrderDirection = 'asc' | 'desc';
 
-export class BaseService<T> {
+type parameters = {
+	page ?: number;
+	quantity ?: number;
+	term ?: string;
+	orderDir ?: OrderDirection;
+	orderBy ?: string;
+}
+
+export class BaseService {
+	private readonly logger = new Logger(BaseService.name);
+
 	constructor(
 		protected readonly prisma: PrismaService,
-		private readonly modelAccessor: keyof PrismaService, // Ex: 'enterprise', 'license'
+		// private readonly modelAccessor: keyof PrismaService, // Ex: 'enterprise', 'license
 	) { }
 
-	async findAll(
-		parameters?: {
-			page?: number;
-			quantity?: number;
-			term?: string;
-			orderDir?: OrderDirection;
-			orderBy?: string;
-		},
-		searchableField = 'name' // campo padrão para buscar
+	async findAll<T>(
+		modelAccessor: keyof PrismaService,
+		parameters?: parameters,
+		searchableField = 'name'
 	): Promise<ListResponse<T>> {
+		console.log(parameters)
+		console.log(searchableField)
+		console.log(typeof(modelAccessor))
+		
+
 		const {
 			page = 1,
 			quantity = 10,
@@ -29,7 +40,7 @@ export class BaseService<T> {
 			orderBy = 'id',
 		} = parameters ?? {};
 
-		const model = this.prisma[this.modelAccessor] as any;
+		const model = this.prisma[modelAccessor] as any;
 
 		const where = term
 			? {
@@ -65,19 +76,19 @@ export class BaseService<T> {
 		};
 	}
 
-	async findOne(id: number): Promise<T | null> {
-		const model = this.prisma[this.modelAccessor] as any;
+	async findOne<T>(modelAccessor: keyof PrismaService, id: number): Promise<T | null> {
+		const model = this.prisma[modelAccessor] as any;
 		return model.findFirst({ where: { id } });
 	}
 
-	async create<INFO = Partial<T>>(data: INFO): Promise<T> {
-		const model = this.prisma[this.modelAccessor] as any;
+	async create<T, INFO = Partial<T>>(modelAccessor: keyof PrismaService, data: INFO): Promise<T> {
+		const model = this.prisma[modelAccessor] as any;
 		const created = await model.create({ data });
 		return created;
 	}
 
-	async update<INFO = Partial<T>>(id: number, data: INFO): Promise<T> {
-		const model = this.prisma[this.modelAccessor] as any;
+	async update<T, INFO = Partial<T>>(modelAccessor: keyof PrismaService, id: number, data: INFO): Promise<T> {
+		const model = this.prisma[modelAccessor] as any;
 		const items = await model.update({
 			where: {
 				id: id
@@ -88,8 +99,8 @@ export class BaseService<T> {
 		return items;
 	}
 
-	async delete(id: number): Promise<boolean> {
-		const model = this.prisma[this.modelAccessor] as any;
+	async delete<T>(modelAccessor: keyof PrismaService, id: number): Promise<boolean> {
+		const model = this.prisma[modelAccessor] as any;
 		const items = await model.delete({
 			where: {
 				id: id

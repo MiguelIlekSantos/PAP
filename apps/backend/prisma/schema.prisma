@@ -34,9 +34,9 @@ model Enterprise {
 model Branches {
   id       Int    @id @default(autoincrement())
   address  String
-  phone    String
-  email    String
-  purpose String
+  phone    String?
+  email    String?
+  purpose String?
 
   departments Departments[]
 
