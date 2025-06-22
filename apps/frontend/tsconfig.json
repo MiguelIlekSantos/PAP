@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "jsx": "preserve",
     "noEmit": true,
     "emitDeclarationOnly": false,
@@ -24,8 +25,9 @@
     ],
     "paths": {
       "@/*": [
-        "./*"
-      ]
+        "./*",
+      ],
+       "@api/*": ["lib"]
     },
     "types": [
       "jest",
@@ -42,7 +44,8 @@
     "app/**/*.ts",
     "app/**/*.tsx",
     "next-env.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "lib/**/*", 
   ],
   "exclude": [
     "out-tsc",

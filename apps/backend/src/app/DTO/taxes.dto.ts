@@ -1,6 +1,16 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
+
+export interface TaxesDto {
+  type: string
+  period: string
+  description: string
+  endDate: string
+  amount: number
+}
+
+
 @JoiDtoSchema(Joi.object({
   type: Joi.string().required().messages({
     'string.empty': 'Type is required',

@@ -1,6 +1,14 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
+export interface SuppliersDto {
+  name: string
+  email: string
+  phone: string
+  address: string
+}
+
+
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',

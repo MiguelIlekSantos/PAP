@@ -2,6 +2,17 @@ import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
 
+export interface WareHousesDto {
+  name: string
+  location: string
+  capacity: number
+  currentStock: number
+  section: number
+  responsible: string
+  status: string
+}
+
+
 @JoiDtoSchema(
   Joi.object({
   name: Joi.string().required(),

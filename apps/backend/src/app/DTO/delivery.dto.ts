@@ -1,6 +1,15 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
+
+export interface DeliveryDto {
+  expectedDate: string
+  deliveryDate: string
+  status: string
+  clientId: number
+  transporterId: number
+}
+
 @JoiDtoSchema(Joi.object({
   expectedDate: Joi.date().required().messages({
     'date.base': 'Expected date must be a valid date',

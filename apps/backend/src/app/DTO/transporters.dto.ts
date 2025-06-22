@@ -1,6 +1,20 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
+
+export interface TransportersDto {
+  vehicleType: string
+  status: string
+  extEnterprise: string
+  phone: string
+  representative: string
+  operationArea: string
+  pricePerKm: number
+  rating: number
+}
+
+
+
 @JoiDtoSchema(
   Joi.object({
   vehicleType: Joi.string().required(),
