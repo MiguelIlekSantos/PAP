@@ -1,13 +1,35 @@
 'use client';
+import { create, CreateEnterpriseDTO } from '@/lib/api';
+import { Enterprise } from '@prisma/client';
 import React, { ReactNode, useEffect, useState } from 'react';
+
+type Dicitionary<T> = {
+    [key: string]: T;
+};
 
 type Props = {
     onclick: () => void;
+    setInputData: React.Dispatch<React.SetStateAction<Partial<CreateEnterpriseDTO>>>;
+    createEnterprise: () => void;
     children: ReactNode;
 };
 
-export const ModalForms = ({ onclick, children }: Props) => {
+export const ModalForms = (props: Props) => {
+
     const [isClosing, setIsClosing] = useState<boolean>(false);
+
+    function changeData<Key extends keyof CreateEnterpriseDTO>(
+        key: Key,
+        value: string
+    ) {
+        props.setInputData((prev) => ({
+            ...prev,
+            [key]: key === 'foundationDate'
+                ? (new Date(value) as any)    
+                : (value as any),
+        }))
+    }
+
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -19,9 +41,18 @@ export const ModalForms = ({ onclick, children }: Props) => {
     const handleClick = () => {
         setIsClosing(true);
         setTimeout(() => {
-            onclick();
+            props.onclick();
         }, 300);
     };
+
+    const childrenWithMethods = React.Children.map(props.children, (child) => {
+        if (React.isValidElement(child)) {
+            return React.cloneElement(child as React.ReactElement<any>, {
+                changeData: changeData
+            })
+        }
+        return child;
+    })
 
     return (
         <>
@@ -35,10 +66,10 @@ export const ModalForms = ({ onclick, children }: Props) => {
                     w-full max-w-[90vw] max-h-[90vh] overflow-y-auto"
                 >
                     <div className="flex flex-col items-center">
-                        {children}
+                        {childrenWithMethods}
 
                         <div className="w-full flex items-center justify-center mt-5 gap-5">
-                            <button className="btn btn-success w-32">Create</button>
+                            <button className="btn btn-success w-32" onClick={props.createEnterprise}>Create</button>
                             <button className="btn btn-error w-32" onClick={handleClick}>
                                 Cancel
                             </button>
@@ -49,3 +80,6 @@ export const ModalForms = ({ onclick, children }: Props) => {
         </>
     );
 };
+
+
+

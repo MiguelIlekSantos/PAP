@@ -3,8 +3,10 @@ import { convertISOtoDate } from '@/lib/functions';
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import { useEnterpriseStore } from '@/lib/store/items/enterprise.store';
 
 type Props = {
+    id: number
     name: string | null;
     email?: string | null;
     imgUrl?: string | null;
@@ -13,6 +15,9 @@ type Props = {
 
 
 export const Card = (props: Props) => {
+
+    const { setEnterprise } = useEnterpriseStore()
+
     return (
         <>
             <div className='w-96 h-96'>
@@ -41,7 +46,7 @@ export const Card = (props: Props) => {
                         <p>{props.email}</p>
                         <p>{convertISOtoDate(props.foundationDate?.toString())}</p>
                         <div className="card-actions justify-end">
-                            <Link href={"/details"}>
+                            <Link href={"/details"} onClick={() => setEnterprise(props.id)}>
                                 <button className="btn btn-primary hover:border hover:border-purple-500">Open</button>
                             </Link>
                         </div>

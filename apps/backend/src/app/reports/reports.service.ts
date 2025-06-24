@@ -1,24 +1,36 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma.service';
+import { Reports } from '@prisma/client';
+import { BaseService } from '../../base/base.service';
+import { ListParametersDto } from '../DTO/list/list.dto';
+import { CreateReportsDto, UpdateReportsDto } from '../DTO/reports.dto';
 
 @Injectable()
-export class ReportsService {
-  // create(createReportDto: CreateReportDto) {
-  //   return 'This action adds a new report';
-  // }
-
-  findAll() {
-    return `This action returns all reports`;
+export class ReportsService extends BaseService {
+  constructor(prisma: PrismaService) {
+    super(prisma);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} report`;
+  private readonly reportModel: keyof PrismaService = 'reports';
+
+  // ----------------- Reports -----------------
+  async getReports(parameters: ListParametersDto) {
+    return this.findAll<Reports>(this.reportModel, parameters, 'name');
   }
 
-  // update(id: number, updateReportDto: UpdateReportDto) {
-  //   return `This action updates a #${id} report`;
-  // }
+  async getReportById(id: number) {
+    return this.findOne(this.reportModel, id);
+  }
 
-  remove(id: number) {
-    return `This action removes a #${id} report`;
+  async createReport(data: CreateReportsDto) {
+    return this.create<Reports, CreateReportsDto>(this.reportModel, data);
+  }
+
+  async updateReport(id: number, data: UpdateReportsDto) {
+    return this.update<Reports, UpdateReportsDto>(this.reportModel, id, data);
+  }
+
+  async deleteReport(id: number) {
+    return this.delete<Reports>(this.reportModel, id);
   }
 }

@@ -6,7 +6,8 @@ import Link from 'next/link'
 
 
 type Props = {
-    isSimple?: boolean,
+    isSimple?: boolean
+    name?: string | "Enterprise name"
 }
 
 export const Nav = (props: Props) => {
@@ -19,7 +20,13 @@ export const Nav = (props: Props) => {
         <>
             <div className="navbar bg-black/30 shadow-sm fixed z-10">
                 <div className="flex-1">
-                    <a className="pl-10 text-xl">Enterprises management</a>
+                    <a className="pl-10 text-xl">
+                        {props.isSimple ? 
+                            `${props.name}`
+                            :
+                            "Enterprises management"
+                        }
+                    </a>
                 </div>
                 <div className="flex gap-2">
                     {props.isSimple ?

@@ -18,22 +18,42 @@ export async function getAll<TResponse>(url: string): Promise<TResponse> {
 
 // localStorage.getItem('token')
 
-export async function getById<TResponse>(url: string, id: string | number): Promise<TResponse> {
-    const { data } = await axios.get<TResponse>(`${BASE_URL}/${url}/${id}`)
+export async function getById<TResponse>(url: string, id: number): Promise<TResponse> {
+    console.log(`${BASE_URL}/${url}/${id}`)
+    const { data } = await axios.get<TResponse>(`${BASE_URL}/${url}/${id}`, {
+        headers: {
+            Authorization: `Bearer ${TOKEN}`,
+        }
+    })
     return data
 }
 
 export async function create<TRequest, TResponse>(url: string, body: TRequest): Promise<TResponse> {
-    const { data } = await axios.post<TResponse>(`${BASE_URL}/${url}`, body)
+    console.log(`${BASE_URL}/${url}`)
+    console.log(`${body}`)
+    
+    const { data } = await axios.post<TResponse>(`${BASE_URL}/${url}`, body, {
+        headers: {
+            Authorization: `Bearer ${TOKEN}`,
+        }
+    })
     return data
 }
 
 export async function update<TRequest, TResponse>(url: string, id: string | number, body: TRequest): Promise<TResponse> {
-    const { data } = await axios.patch<TResponse>(`${BASE_URL}/${url}/${id}`, body)
+    const { data } = await axios.patch<TResponse>(`${BASE_URL}/${url}/${id}`, body, {
+        headers: {
+            Authorization: `Bearer ${TOKEN}`,
+        }
+    })
     return data
 }
 
 export async function remove<TResponse>(url: string, id: string | number): Promise<TResponse> {
-    const { data } = await axios.delete<TResponse>(`${BASE_URL}/${url}/${id}`)
+    const { data } = await axios.delete<TResponse>(`${BASE_URL}/${url}/${id}`, {
+        headers: {
+            Authorization: `Bearer ${TOKEN}`,
+        }
+    })
     return data
 }

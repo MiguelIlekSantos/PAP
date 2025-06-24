@@ -16,7 +16,7 @@ datasource db {
 model Enterprise {
   id                Int        @id @default(autoincrement())
   legalName         String
-  ComercialName     String?
+  comercialName     String?
   nif               String?
   niss              String?
   nipc              String?
