@@ -9,6 +9,8 @@ export interface CampaignsDTO {
   leads: number;
   conversions: number;
   roi: number;
+  budget: number;
+  enterpriseId: number;
 }
 
 @JoiDtoSchema(Joi.object({
@@ -17,19 +19,24 @@ export interface CampaignsDTO {
   status: Joi.string().required().messages({ 'string.empty': 'Status is required', 'any.required': 'Status is required' }),
   leads: Joi.number().integer().min(0).required().messages({ 'number.base': 'Leads must be a number', 'number.integer': 'Leads must be an integer', 'number.min': 'Leads must be at least 0', 'any.required': 'Leads is required' }),
   conversions: Joi.number().integer().min(0).required().messages({ 'number.base': 'Conversions must be a number', 'number.integer': 'Conversions must be an integer', 'number.min': 'Conversions must be at least 0', 'any.required': 'Conversions is required' }),
-  roi: Joi.number().required().messages({ 'number.base': 'ROI must be a number', 'any.required': 'ROI is required' })
+  roi: Joi.number().required().messages({ 'number.base': 'ROI must be a number', 'any.required': 'ROI is required' }),
+  budget: Joi.number().optional(),
+  enterpriseId: Joi.number().required(),
 }))
 
 export class CreateCampaignsDto {
   name: string;
+  enterpriseId: number;
   type?: string;
   status?: string;
   leads?: number;
   conversions?: number;
   roi?: number;
-  
-  constructor(name: string) {
+  budget?: number;
+
+  constructor(name: string, enterpriseId: number) {
     this.name = name;
+    this.enterpriseId = enterpriseId;
   }
 }
 
@@ -49,16 +56,4 @@ export class UpdateCampaignsDto {
   leads?: number;
   conversions?: number;
   roi?: number;
-}
-
-@JoiDtoSchema(Joi.object({
-  id: Joi.number().integer().positive().required().messages({ 'number.base': 'ID must be a number', 'number.integer': 'ID must be an integer', 'number.positive': 'ID must be positive', 'any.required': 'ID is required' })
-}))
-
-export class DeleteCampaignsDto {
-  id: number;
-  
-  constructor(id: number) {
-    this.id = id;
-  }
 }

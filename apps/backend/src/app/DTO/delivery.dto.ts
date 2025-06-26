@@ -1,23 +1,21 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-
 export interface DeliveryDto {
-  expectedDate: string
-  deliveryDate: string
-  status: string
-  clientId: number
-  transporterId: number
+  expectedDate?: string; // DateTime?
+  deliveryDate?: string; // DateTime?
+  status: string;
+  clientId: number;
+  transporterId: number;
+  products?: number[]; // IDs dos produtos
 }
 
 @JoiDtoSchema(Joi.object({
-  expectedDate: Joi.date().required().messages({
-    'date.base': 'Expected date must be a valid date',
-    'any.required': 'Expected date is required'
+  expectedDate: Joi.date().optional().messages({
+    'date.base': 'Expected date must be a valid date'
   }),
-  deliveryDate: Joi.date().required().messages({
-    'date.base': 'Delivery date must be a valid date',
-    'any.required': 'Delivery date is required'
+  deliveryDate: Joi.date().optional().messages({
+    'date.base': 'Delivery date must be a valid date'
   }),
   status: Joi.string().required().messages({
     'string.empty': 'Status is required',
@@ -34,9 +32,9 @@ export interface DeliveryDto {
     'number.integer': 'Transporter ID must be an integer',
     'number.positive': 'Transporter ID must be positive',
     'any.required': 'Transporter ID is required'
-  })
+  }),
+  products: Joi.array().items(Joi.number().integer().positive()).optional()
 }))
-
 export class CreateDeliveryDto {}
 
 @JoiDtoSchema(Joi.object({
@@ -56,18 +54,7 @@ export class CreateDeliveryDto {}
     'number.base': 'Transporter ID must be a number',
     'number.integer': 'Transporter ID must be an integer',
     'number.positive': 'Transporter ID must be positive'
-  })
+  }),
+  products: Joi.array().items(Joi.number().integer().positive()).optional()
 }))
-
 export class UpdateDeliveryDto {}
-
-@JoiDtoSchema(Joi.object({
-  id: Joi.number().integer().positive().required().messages({
-    'number.base': 'ID must be a number',
-    'number.integer': 'ID must be an integer',
-    'number.positive': 'ID must be positive',
-    'any.required': 'ID is required'
-  })
-}))
-
-export class DeleteDeliveryDto {}

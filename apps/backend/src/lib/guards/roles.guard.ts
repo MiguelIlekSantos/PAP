@@ -3,9 +3,6 @@ import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 import { Roles } from "../decorators/roles.decorator.js";
 
-
-
-
 @Injectable()
 export class RolesGuard implements CanActivate {
 

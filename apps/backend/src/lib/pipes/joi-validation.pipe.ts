@@ -5,8 +5,8 @@ import {
     PipeTransform,
 } from '@nestjs/common';
 import { Schema } from 'joi';
-import { JoiValidationOptions } from '../interfaces/joi-validation-options.interface.js';
 import { JOI_SCHEMA_KEY } from '../decorators/joi-dto-schema.decorator.js';
+import type { JoiValidationOptions } from '../interfaces/joi-validation-options.interface.js';
 
 
 @Injectable()
@@ -38,3 +38,4 @@ export class JoiValidationPipe implements PipeTransform {
         return result.value;
     }
 }
+    

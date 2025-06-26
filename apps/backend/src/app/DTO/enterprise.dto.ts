@@ -4,10 +4,10 @@ import * as Joi from 'joi';
 export interface EnterpriseDTO {
   id: number;
   legalName: string;
-  ComercialName?: string;
-  nif?: string;
-  niss?: string;
-  nipc?: string;
+  comercialName?: string;
+  registerNumber?: string;
+  registerCountry?: string;
+  registerType?: string;
   type?: string;
   foundationDate?: Date | null;
   registeredCountry?: string;
@@ -16,30 +16,78 @@ export interface EnterpriseDTO {
   email?: string;
   phone?: string;
   logo?: string;
+
+  // Relações
+  branches: number[];
+  wareHouses: number[];
+  equipments: number[];
+  transactions: number[];
+  taxes: number[];
+  clients: number[];
+  suppliers: number[];
+  transporters: number[];
+  documents: number[];
+  domains: number[];
+  internSystems: number[];
+  users: number[];
+  campaigns: number[];
+  socialMedia: number[];
+  reports: number[];
 }
 
 @JoiDtoSchema(Joi.object({
-  legalName: Joi.string().required(),
-  ComercialName: Joi.string(),
-  nif: Joi.string().pattern(/^\d{9}$/).messages({ 'string.pattern.base': 'NIF must be a 9-digit number' }),
-  niss: Joi.string().pattern(/^\d{11}$/).messages({ 'string.pattern.base': 'NISS must be an 11-digit number' }),
-  nipc: Joi.string().pattern(/^\d{9}$/).messages({ 'string.pattern.base': 'NIPC must be a 9-digit number' }),
-  type: Joi.string(),
-  foundationDate: Joi.string().isoDate().messages({ 'date.format': 'Foundation date must be in this format 2025-02-11T19:58:54.595Z' }),
-  registeredCountry: Joi.string(),
-  mainLanguage: Joi.string(),
-  oficialCurrency: Joi.string(),
-  email: Joi.string().email().messages({ 'string.email': 'Email must be a valid email address' }),
-  phone: Joi.string(),
-  logo: Joi.string()
-}))
+  legalName: Joi.string().required().messages({
+    'string.empty': 'Legal name is required',
+    'any.required': 'Legal name is required'
+  }),
+  comercialName: Joi.string().optional(),
+  registerNumber: Joi.string().optional(),
+  registerCountry: Joi.string().optional().length(2).messages({
+    'string.length': 'Register country must be 2‑letter ISO code'
+  }),
+  registerType: Joi.string().optional(),
+  type: Joi.string().optional(),
+  foundationDate: Joi.date().iso().optional().messages({
+    'date.format': 'Foundation date must be ISO format (YYYY‑MM‑DD)'
+  }),
+  registeredCountry: Joi.string().optional().length(2).messages({
+    'string.length': 'Registered country must be 2‑letter ISO code'
+  }),
+  mainLanguage: Joi.string().optional().length(2).messages({
+    'string.length': 'Main language must be 2‑letter ISO code'
+  }),
+  oficialCurrency: Joi.string().optional().length(3).messages({
+    'string.length': 'Official currency must be 3‑letter code'
+  }),
+  email: Joi.string().email().optional().messages({
+    'string.email': 'Email must be a valid email address'
+  }),
+  phone: Joi.string().optional(),
+  logo: Joi.string().optional(),
 
+  // Validação para arrays de IDs das relações
+  branches: Joi.array().items(Joi.number().integer().positive()).optional(),
+  wareHouses: Joi.array().items(Joi.number().integer().positive()).optional(),
+  equipments: Joi.array().items(Joi.number().integer().positive()).optional(),
+  transactions: Joi.array().items(Joi.number().integer().positive()).optional(),
+  taxes: Joi.array().items(Joi.number().integer().positive()).optional(),
+  clients: Joi.array().items(Joi.number().integer().positive()).optional(),
+  suppliers: Joi.array().items(Joi.number().integer().positive()).optional(),
+  transporters: Joi.array().items(Joi.number().integer().positive()).optional(),
+  documents: Joi.array().items(Joi.number().integer().positive()).optional(),
+  domains: Joi.array().items(Joi.number().integer().positive()).optional(),
+  internSystems: Joi.array().items(Joi.number().integer().positive()).optional(),
+  users: Joi.array().items(Joi.number().integer().positive()).optional(),
+  campaigns: Joi.array().items(Joi.number().integer().positive()).optional(),
+  socialMedia: Joi.array().items(Joi.number().integer().positive()).optional(),
+  reports: Joi.array().items(Joi.number().integer().positive()).optional(),
+}))
 export class CreateEnterpriseDto {
   legalName: string;
-  ComercialName?: string;
-  nif?: string;
-  niss?: string;
-  nipc?: string;
+  comercialName?: string;
+  registerNumber?: string;
+  registerCountry?: string;
+  registerType?: string;
   type?: string;
   foundationDate?: string;
   registeredCountry?: string;
@@ -48,34 +96,77 @@ export class CreateEnterpriseDto {
   email?: string;
   phone?: string;
   logo?: string;
-  
+
+  branches?: number[];
+  wareHouses?: number[];
+  equipments?: number[];
+  transactions?: number[];
+  taxes?: number[];
+  clients?: number[];
+  suppliers?: number[];
+  transporters?: number[];
+  documents?: number[];
+  domains?: number[];
+  internSystems?: number[];
+  users?: number[];
+  campaigns?: number[];
+  socialMedia?: number[];
+  reports?: number[];
+
   constructor(legalName: string) {
-    this.legalName = legalName
+    this.legalName = legalName;
   }
 }
 
 @JoiDtoSchema(Joi.object({
   legalName: Joi.string().optional(),
-  ComercialName: Joi.string().optional(),
-  nif: Joi.string().pattern(/^\d{9}$/).optional().messages({ 'string.pattern.base': 'NIF must be a 9-digit number' }),
-  niss: Joi.string().pattern(/^\d{11}$/).optional().messages({ 'string.pattern.base': 'NISS must be an 11-digit number' }),
-  nipc: Joi.string().pattern(/^\d{9}$/).optional().messages({ 'string.pattern.base': 'NIPC must be a 9-digit number' }),
+  comercialName: Joi.string().optional(),
+  registerNumber: Joi.string().optional(),
+  registerCountry: Joi.string().optional().length(2).messages({
+    'string.length': 'Register country must be 2‑letter ISO code'
+  }),
+  registerType: Joi.string().optional(),
   type: Joi.string().optional(),
-  foundationDate: Joi.date().iso().optional().messages({ 'date.format': 'Foundation date must be in ISO format (YYYY-MM-DD)' }),
-  registeredCountry: Joi.string().optional(),
-  mainLanguage: Joi.string().optional(),
-  oficialCurrency: Joi.string().optional(),
-  email: Joi.string().email().optional().messages({ 'string.email': 'Email must be a valid email address' }),
+  foundationDate: Joi.date().iso().optional().messages({
+    'date.format': 'Foundation date must be ISO format (YYYY‑MM‑DD)'
+  }),
+  registeredCountry: Joi.string().optional().length(2).messages({
+    'string.length': 'Registered country must be 2‑letter ISO code'
+  }),
+  mainLanguage: Joi.string().optional().length(2).messages({
+    'string.length': 'Main language must be 2‑letter ISO code'
+  }),
+  oficialCurrency: Joi.string().optional().length(3).messages({
+    'string.length': 'Official currency must be 3‑letter code'
+  }),
+  email: Joi.string().email().optional().messages({
+    'string.email': 'Email must be a valid email address'
+  }),
   phone: Joi.string().optional(),
-  logo: Joi.string().optional()
-}))
+  logo: Joi.string().optional(),
 
+  branches: Joi.array().items(Joi.number().integer().positive()).optional(),
+  wareHouses: Joi.array().items(Joi.number().integer().positive()).optional(),
+  equipments: Joi.array().items(Joi.number().integer().positive()).optional(),
+  transactions: Joi.array().items(Joi.number().integer().positive()).optional(),
+  taxes: Joi.array().items(Joi.number().integer().positive()).optional(),
+  clients: Joi.array().items(Joi.number().integer().positive()).optional(),
+  suppliers: Joi.array().items(Joi.number().integer().positive()).optional(),
+  transporters: Joi.array().items(Joi.number().integer().positive()).optional(),
+  documents: Joi.array().items(Joi.number().integer().positive()).optional(),
+  domains: Joi.array().items(Joi.number().integer().positive()).optional(),
+  internSystems: Joi.array().items(Joi.number().integer().positive()).optional(),
+  users: Joi.array().items(Joi.number().integer().positive()).optional(),
+  campaigns: Joi.array().items(Joi.number().integer().positive()).optional(),
+  socialMedia: Joi.array().items(Joi.number().integer().positive()).optional(),
+  reports: Joi.array().items(Joi.number().integer().positive()).optional(),
+}))
 export class UpdateEnterpriseDto {
   legalName?: string;
-  ComercialName?: string;
-  nif?: string;
-  niss?: string;
-  nipc?: string;
+  comercialName?: string;
+  registerNumber?: string;
+  registerCountry?: string;
+  registerType?: string;
   type?: string;
   foundationDate?: Date | null;
   registeredCountry?: string;
@@ -84,16 +175,20 @@ export class UpdateEnterpriseDto {
   email?: string;
   phone?: string;
   logo?: string;
-}
 
-@JoiDtoSchema(Joi.object({
-  id: Joi.number().integer().positive().required().messages({ 'number.base': 'ID must be a number', 'number.integer': 'ID must be an integer', 'number.positive': 'ID must be positive', 'any.required': 'ID is required' })
-}))
-
-export class DeleteEnterpriseDto {
-  id: number;
-  
-  constructor(id: number) {
-    this.id = id;
-  }
+  branches?: number[];
+  wareHouses?: number[];
+  equipments?: number[];
+  transactions?: number[];
+  taxes?: number[];
+  clients?: number[];
+  suppliers?: number[];
+  transporters?: number[];
+  documents?: number[];
+  domains?: number[];
+  internSystems?: number[];
+  users?: number[];
+  campaigns?: number[];
+  socialMedia?: number[];
+  reports?: number[];
 }

@@ -12,6 +12,10 @@ import { Enterprise } from '@prisma/client'
 import { Input } from '../components/forms/Input'
 import { Fieldset } from '../components/forms/Fieldset'
 import { ModalForms } from '../components/forms/ModalForms'
+import { Pagination } from '../components/Pagination'
+
+
+const APIMODULE = "enterprises"
 
 export default function DashboardPage() {
 
@@ -19,13 +23,17 @@ export default function DashboardPage() {
 
 	const [loaded, setLoaded] = useState<boolean>(false);
 	const [enterprises, setEnterprises] = useState<ListResponse<Enterprise>>();
+	const [paginationNum, setPaginationNum] = useState<number>(1);
 
 	const [inputData, setInputData] = useState<Partial<CreateEnterpriseDTO>>({})
 
 
 	useEffect(() => {
 
-		getAll<ListResponse<Enterprise>>('enterprises')
+		getAll<ListResponse<Enterprise>>(APIMODULE, {
+			"page": paginationNum,
+			"quantity": 10,
+		})
 			.then((data) => {
 				setLoaded(true)
 				setEnterprises(data)
@@ -34,25 +42,26 @@ export default function DashboardPage() {
 
 			})
 
-	}, [])
+	}, [paginationNum])
 
 
-	function createEnterprise() {
+	function createEnterprise(): Promise<boolean> {
 		if (!inputData.legalName) {
 			alert('Legal name é obrigatório');
-			return;
+			return Promise.resolve(false);
 		}
 
 		const payload = inputData as CreateEnterpriseDTO;
 
-		console.log("--------------------PAYLOAD--------------------");
-		console.log(payload);
-
-		create<CreateEnterpriseDTO, Enterprise>('enterprise', payload)
+		return create<CreateEnterpriseDTO, Enterprise>(APIMODULE, payload)
 			.then((data) => {
 				console.log(data)
+				return true
 			})
-			.catch(err => console.error(err))
+			.catch(err => {
+				console.error(err)
+				return false
+			})
 	}
 
 
@@ -82,6 +91,9 @@ export default function DashboardPage() {
 				}
 				<AddBtnCard onclick={() => { setCEM(true) }} />
 			</div>
+			{loaded &&
+				<Pagination updatePage={setPaginationNum} actualPage={paginationNum} last={enterprises?.data.metadata.last ?? 1} />
+			}
 			<div className='h-20'></div>
 			{CreateEnterpriseModal &&
 				<ModalForms createEnterprise={createEnterprise} setInputData={setInputData} onclick={() => { setCEM(false) }}>

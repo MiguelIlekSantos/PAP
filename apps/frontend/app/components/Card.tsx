@@ -26,7 +26,7 @@ export const Card = (props: Props) => {
 
                         {props.imgUrl ?
                             <Image
-                                src="/logo/logoAIMS.png"
+                                src={props.imgUrl}
                                 alt="Logo"
                                 width={0}
                                 height={0}
