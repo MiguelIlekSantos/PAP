@@ -4,13 +4,14 @@ import * as Joi from 'joi';
 export interface ReportsDTO {
   id: number;
   name: string;
+  path: string;
   type: string;
   frequency: string;
   status: string;
   lastUpdate: Date;
   nextUpdate: Date;
   downloads: number;
-  path: string;
+  enterpriseId: number;
 }
 
 @JoiDtoSchema(Joi.object({
@@ -18,50 +19,39 @@ export interface ReportsDTO {
     'string.empty': 'Name is required',
     'any.required': 'Name is required'
   }),
-  type: Joi.string().required().messages({
-    'string.empty': 'Type is required',
-    'any.required': 'Type is required'
+  path: Joi.string().required(),
+  type: Joi.string().optional(),
+  frequency: Joi.string().optional(),
+  status: Joi.string().optional(),
+  lastUpdate: Joi.date().optional().messages({
+    'date.base': 'Last update must be a valid date'
   }),
-  frequency: Joi.string().required().messages({
-    'string.empty': 'Frequency is required',
-    'any.required': 'Frequency is required'
+  nextUpdate: Joi.date().optional().messages({
+    'date.base': 'Next update must be a valid date'
   }),
-  status: Joi.string().required().messages({
-    'string.empty': 'Status is required',
-    'any.required': 'Status is required'
-  }),
-  lastUpdate: Joi.date().required().messages({
-    'date.base': 'Last update must be a valid date',
-    'any.required': 'Last update is required'
-  }),
-  nextUpdate: Joi.date().required().messages({
-    'date.base': 'Next update must be a valid date',
-    'any.required': 'Next update is required'
-  }),
-  downloads: Joi.number().integer().min(0).required().messages({
+  downloads: Joi.number().integer().min(0).optional().messages({
     'number.base': 'Downloads must be a number',
     'number.integer': 'Downloads must be an integer',
-    'number.min': 'Downloads must be at least 0',
-    'any.required': 'Downloads is required'
+    'number.min': 'Downloads must be at least 0'
   }),
-  path: Joi.string().required().messages({
-    'string.empty': 'Path is required',
-    'any.required': 'Path is required'
-  })
+  enterpriseId: Joi.number().integer().positive().required().messages({'number.base': 'Enterprise ID must be a number','number.integer': 'Enterprise ID must be an integer','number.positive': 'Enterprise ID must be positive'}),
 }))
 
 export class CreateReportsDto {
   name: string;
+  path: string;
   type?: string;
   frequency?: string;
   status?: string;
   lastUpdate?: Date;
   nextUpdate?: Date;
   downloads?: number;
-  path?: string;
+  enterpriseId: number;
   
-  constructor(name: string) {
+  constructor(name: string, path: string, enterpriseId: number) {
     this.name = name;
+    this.path = path;
+    this.enterpriseId = enterpriseId;
   }
 }
 
@@ -81,7 +71,8 @@ export class CreateReportsDto {
     'number.integer': 'Downloads must be an integer',
     'number.min': 'Downloads must be at least 0'
   }),
-  path: Joi.string().optional()
+  path: Joi.string().optional(),
+  enterpriseId: Joi.number().integer().positive().required().messages({'number.base': 'Enterprise ID must be a number','number.integer': 'Enterprise ID must be an integer','number.positive': 'Enterprise ID must be positive'}),
 }))
 
 export class UpdateReportsDto {
@@ -93,21 +84,7 @@ export class UpdateReportsDto {
   nextUpdate?: Date;
   downloads?: number;
   path?: string;
+  enterpriseId?: number;
 }
 
-@JoiDtoSchema(Joi.object({
-  id: Joi.number().integer().positive().required().messages({
-    'number.base': 'ID must be a number',
-    'number.integer': 'ID must be an integer',
-    'number.positive': 'ID must be positive',
-    'any.required': 'ID is required'
-  })
-}))
 
-export class DeleteReportsDto {
-  id: number;
-  
-  constructor(id: number) {
-    this.id = id;
-  }
-}

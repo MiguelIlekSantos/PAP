@@ -7,6 +7,7 @@ export interface RequestsDTO {
   clientId: number;
   deliveryDate: Date;
   status: string;
+  products: number[];
 }
 
 @JoiDtoSchema(Joi.object({
@@ -14,20 +15,16 @@ export interface RequestsDTO {
     'string.empty': 'Number is required',
     'any.required': 'Number is required'
   }),
-  clientId: Joi.number().integer().positive().required().messages({
+  clientId: Joi.number().integer().positive().optional().messages({
     'number.base': 'Client ID must be a number',
     'number.integer': 'Client ID must be an integer',
-    'number.positive': 'Client ID must be positive',
-    'any.required': 'Client ID is required'
+    'number.positive': 'Client ID must be positive'
   }),
-  deliveryDate: Joi.date().required().messages({
-    'date.base': 'Delivery date must be a valid date',
-    'any.required': 'Delivery date is required'
+  deliveryDate: Joi.date().optional().messages({
+    'date.base': 'Delivery date must be a valid date'
   }),
-  status: Joi.string().required().messages({
-    'string.empty': 'Status is required',
-    'any.required': 'Status is required'
-  })
+  status: Joi.string().optional(),
+  products: Joi.array().items(Joi.number()).optional()
 }))
 
 export class CreateRequestsDto {
@@ -35,6 +32,7 @@ export class CreateRequestsDto {
   clientId?: number;
   deliveryDate?: Date;
   status?: string;
+  products?: number[];
   
   constructor(number: string) {
     this.number = number;
@@ -51,7 +49,8 @@ export class CreateRequestsDto {
   deliveryDate: Joi.date().optional().messages({
     'date.base': 'Delivery date must be a valid date'
   }),
-  status: Joi.string().optional()
+  status: Joi.string().optional(),
+  products: Joi.array().items(Joi.number()).optional()
 }))
 
 export class UpdateRequestsDto {
@@ -59,21 +58,7 @@ export class UpdateRequestsDto {
   clientId?: number;
   deliveryDate?: Date;
   status?: string;
+  products?: number[];
 }
 
-@JoiDtoSchema(Joi.object({
-  id: Joi.number().integer().positive().required().messages({
-    'number.base': 'ID must be a number',
-    'number.integer': 'ID must be an integer',
-    'number.positive': 'ID must be positive',
-    'any.required': 'ID is required'
-  })
-}))
 
-export class DeleteRequestsDto {
-  id: number;
-  
-  constructor(id: number) {
-    this.id = id;
-  }
-}

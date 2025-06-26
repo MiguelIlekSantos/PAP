@@ -15,7 +15,6 @@ export interface BudgetDTO {
   subDepartmentId?: number;
   projectId?: number;
   campaignId?: number;
-  saleId?: number;
 
   createdAt: Date;
   updatedAt: Date;
@@ -33,7 +32,6 @@ export interface BudgetDTO {
   subDepartmentId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Sub department ID must be a number', 'number.integer': 'Sub department ID must be an integer', 'number.positive': 'Sub department ID must be positive' }),
   projectId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Project ID must be a number', 'number.integer': 'Project ID must be an integer', 'number.positive': 'Project ID must be positive' }),
   campaignId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Campaign ID must be a number', 'number.integer': 'Campaign ID must be an integer', 'number.positive': 'Campaign ID must be positive' }),
-  saleId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Sale ID must be a number', 'number.integer': 'Sale ID must be an integer', 'number.positive': 'Sale ID must be positive' }),
 
 }))
 
@@ -49,7 +47,6 @@ export class CreateBudgetDto {
   subDepartmentId?: number;
   projectId?: number;
   campaignId?: number;
-  saleId?: number;
 
   constructor(name: string) {
     this.name = name;
@@ -68,7 +65,6 @@ export class CreateBudgetDto {
   subDepartmentId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Sub department ID must be a number', 'number.integer': 'Sub department ID must be an integer', 'number.positive': 'Sub department ID must be positive' }),
   projectId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Project ID must be a number', 'number.integer': 'Project ID must be an integer', 'number.positive': 'Project ID must be positive' }),
   campaignId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Campaign ID must be a number', 'number.integer': 'Campaign ID must be an integer', 'number.positive': 'Campaign ID must be positive' }),
-  saleId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Sale ID must be a number', 'number.integer': 'Sale ID must be an integer', 'number.positive': 'Sale ID must be positive' }),
   createdAt: Joi.date().optional(),
   updatedAt: Joi.date().optional()
 }))
@@ -85,7 +81,6 @@ export class UpdateBudgetDto {
   subDepartmentId?: number;
   projectId?: number;
   campaignId?: number;
-  saleId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

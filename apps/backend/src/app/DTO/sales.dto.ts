@@ -3,11 +3,12 @@ import * as Joi from 'joi';
 
 export interface SalesDTO {
   id: number;
+  total: number;
   Status: string;
-  Total: number;
   PaymentMethod: string;
   lastPurchase: Date;
   ClientId: number;
+  products: number[];
 }
 
 @JoiDtoSchema(Joi.object({
@@ -15,36 +16,35 @@ export interface SalesDTO {
     'string.empty': 'Status is required',
     'any.required': 'Status is required'
   }),
-  Total: Joi.number().positive().required().messages({
+  total: Joi.number().positive().required().messages({
     'number.base': 'Total must be a number',
-    'number.positive': 'Total must be positive',
-    'any.required': 'Total is required'
+    'number.positive': 'Total must be positive'
   }),
-  PaymentMethod: Joi.string().required().messages({
-    'string.empty': 'Payment method is required',
-    'any.required': 'Payment method is required'
-  }),
-  lastPurchase: Joi.date().required().messages({
-    'date.base': 'Last purchase must be a valid date',
-    'any.required': 'Last purchase is required'
+  PaymentMethod: Joi.string().optional(),
+  lastPurchase: Joi.date().optional().messages({
+    'date.base': 'Last purchase must be a valid date'
   }),
   ClientId: Joi.number().integer().positive().required().messages({
     'number.base': 'Client ID must be a number',
     'number.integer': 'Client ID must be an integer',
-    'number.positive': 'Client ID must be positive',
-    'any.required': 'Client ID is required'
-  })
+    'number.positive': 'Client ID must be positive'
+  }),
+  products: Joi.array().items(Joi.number()).optional()
 }))
 
 export class CreateSalesDto {
   Status: string;
-  Total?: number;
+  total: number;
   PaymentMethod?: string;
   lastPurchase?: Date;
-  ClientId?: number;
+  ClientId: number;
+  products: number[];
   
-  constructor(Status: string) {
+  constructor(Status: string, total: number, ClientId: number, products: number[]) {
     this.Status = Status;
+    this.total = total;
+    this.ClientId = ClientId;
+    this.products = products
   }
 }
 
@@ -62,7 +62,8 @@ export class CreateSalesDto {
     'number.base': 'Client ID must be a number',
     'number.integer': 'Client ID must be an integer',
     'number.positive': 'Client ID must be positive'
-  })
+  }),
+  products: Joi.array().items(Joi.number()).optional()
 }))
 
 export class UpdateSalesDto {
@@ -71,21 +72,7 @@ export class UpdateSalesDto {
   PaymentMethod?: string;
   lastPurchase?: Date;
   ClientId?: number;
+  products?: number[];
 }
 
-@JoiDtoSchema(Joi.object({
-  id: Joi.number().integer().positive().required().messages({
-    'number.base': 'ID must be a number',
-    'number.integer': 'ID must be an integer',
-    'number.positive': 'ID must be positive',
-    'any.required': 'ID is required'
-  })
-}))
 
-export class DeleteSalesDto {
-  id: number;
-  
-  constructor(id: number) {
-    this.id = id;
-  }
-}

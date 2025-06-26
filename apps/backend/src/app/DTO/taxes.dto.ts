@@ -1,41 +1,47 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-
-export interface TaxesDto {
-  type: string
-  period: string
-  description: string
-  endDate: string
-  amount: number
+export interface TaxesDTO {
+  id: number;
+  amount: number;
+  type: string;
+  period: string;
+  description: string;
+  endDate: Date;
+  enterpriseId: number;
 }
-
 
 @JoiDtoSchema(Joi.object({
   type: Joi.string().required().messages({
     'string.empty': 'Type is required',
     'any.required': 'Type is required'
   }),
-  period: Joi.string().required().messages({
-    'string.empty': 'Period is required',
-    'any.required': 'Period is required'
-  }),
-  description: Joi.string().required().messages({
-    'string.empty': 'Description is required',
-    'any.required': 'Description is required'
-  }),
-  endDate: Joi.date().required().messages({
-    'date.base': 'End date must be a valid date',
-    'any.required': 'End date is required'
+  period: Joi.string().optional(),
+  description: Joi.string().optional(),
+  endDate: Joi.date().optional().messages({
+    'date.base': 'End date must be a valid date'
   }),
   amount: Joi.number().positive().required().messages({
     'number.base': 'Amount must be a number',
-    'number.positive': 'Amount must be positive',
-    'any.required': 'Amount is required'
-  })
+    'number.positive': 'Amount must be positive'
+  }),
+  enterpriseId: Joi.number().integer().positive().required().messages({'number.base': 'Enterprise ID must be a number','number.integer': 'Enterprise ID must be an integer','number.positive': 'Enterprise ID must be positive'}),
 }))
 
-export class CreateTaxesDto {}
+export class CreateTaxesDto {
+  type: string;
+  period?: string;
+  description?: string;
+  endDate?: Date;
+  amount: number;
+  enterpriseId: number;
+
+  constructor(type: string, amount: number, enterpriseId: number) {
+    this.type = type;
+    this.amount = amount;
+    this.enterpriseId = enterpriseId;
+  }
+}
 
 @JoiDtoSchema(Joi.object({
   type: Joi.string().optional(),
@@ -50,15 +56,10 @@ export class CreateTaxesDto {}
   })
 }))
 
-export class UpdateTaxesDto {}
-
-@JoiDtoSchema(Joi.object({
-  id: Joi.number().integer().positive().required().messages({
-    'number.base': 'ID must be a number',
-    'number.integer': 'ID must be an integer',
-    'number.positive': 'ID must be positive',
-    'any.required': 'ID is required'
-  })
-}))
-
-export class DeleteTaxesDto {}
+export class UpdateTaxesDto {
+  type?: string;
+  period?: string;
+  description?: string;
+  endDate?: Date;
+  amount?: number;
+}

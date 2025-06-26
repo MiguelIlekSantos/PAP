@@ -1,56 +1,89 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-
-export interface TransportersDto {
-  vehicleType: string
-  status: string
-  extEnterprise: string
-  phone: string
-  representative: string
-  operationArea: string
-  pricePerKm: number
-  rating: number
+export interface TransportersDTO {
+  id: number;
+  licensePlate: string;
+  vehicleType: string;
+  status: string;
+  extEnterprise: string;
+  phone: string;
+  representative: string;
+  operationArea: string;
+  pricePerKm: number;
+  rating: number;
+  delivery: number[];
 }
 
-
-
-@JoiDtoSchema(
-  Joi.object({
-  vehicleType: Joi.string().required(),
-  status: Joi.string().required(),
-  extEnterprise: Joi.string().required(),
-  phone: Joi.string().required(),
-  representative: Joi.string().required(),
-  operationArea: Joi.string().required(),
-  pricePerKm: Joi.number().positive().required(),
-  rating: Joi.number().min(0).max(5).required().messages({'number.base': 'Rating must be a number', 'number.min': 'Rating must be at least 0', 'number.max': 'Rating cannot exceed 5'})
-}))
-
-export class CreateTransportersDto {}
-
-
 @JoiDtoSchema(Joi.object({
+  licensePlate: Joi.string().required().messages({
+    'string.empty': 'License Plate is required',
+    'any.required': 'License Plate is required'
+  }),
   vehicleType: Joi.string().optional(),
   status: Joi.string().optional(),
   extEnterprise: Joi.string().optional(),
   phone: Joi.string().optional(),
   representative: Joi.string().optional(),
   operationArea: Joi.string().optional(),
-  pricePerKm: Joi.number().positive().optional().messages({'number.base': 'Price per km must be a number', 'number.positive': 'Price per km must be positive'}),
-  rating: Joi.number().min(0).max(5).optional().messages({'number.base': 'Rating must be a number', 'number.min': 'Rating must be at least 0', 'number.max': 'Rating cannot exceed 5'})
+  pricePerKm: Joi.number().positive().optional().messages({
+    'number.base': 'Price per km must be a number',
+    'number.positive': 'Price per km must be positive'
+  }),
+  rating: Joi.number().min(0).max(5).optional().messages({
+    'number.base': 'Rating must be a number',
+    'number.min': 'Rating must be at least 0',
+    'number.max': 'Rating cannot exceed 5'
+  }),
+  delivery: Joi.array().items(Joi.number()).optional()
 }))
 
-export class UpdateTransportersDto {}
+export class CreateTransportersDto {
+  licensePlate: string;
+  vehicleType?: string;
+  status?: string;
+  extEnterprise?: string;
+  phone?: string;
+  representative?: string;
+  operationArea?: string;
+  pricePerKm?: number;
+  rating?: number;
+  delivery?: number[];
 
+  constructor(licensePlate: string) {
+    this.licensePlate = licensePlate;
+  }
+}
 
 @JoiDtoSchema(Joi.object({
-  id: Joi.number().integer().positive().required().messages({
-    'number.base': 'ID must be a number',
-    'number.integer': 'ID must be an integer',
-    'number.positive': 'ID must be positive',
-    'any.required': 'ID is required'
-  })
+  licensePlate: Joi.string().optional(),
+  vehicleType: Joi.string().optional(),
+  status: Joi.string().optional(),
+  extEnterprise: Joi.string().optional(),
+  phone: Joi.string().optional(),
+  representative: Joi.string().optional(),
+  operationArea: Joi.string().optional(),
+  pricePerKm: Joi.number().positive().optional().messages({
+    'number.base': 'Price per km must be a number',
+    'number.positive': 'Price per km must be positive'
+  }),
+  rating: Joi.number().min(0).max(5).optional().messages({
+    'number.base': 'Rating must be a number',
+    'number.min': 'Rating must be at least 0',
+    'number.max': 'Rating cannot exceed 5'
+  }),
+  delivery: Joi.array().items(Joi.number()).optional()
 }))
 
-export class DeleteTransportersDto {}
+export class UpdateTransportersDto {
+  licensePlate?: string;
+  vehicleType?: string;
+  status?: string;
+  extEnterprise?: string;
+  phone?: string;
+  representative?: string;
+  operationArea?: string;
+  pricePerKm?: number;
+  rating?: number;
+  delivery?: number[];
+}
