@@ -20,3 +20,9 @@ const plugins = [
 ];
 
 module.exports = composePlugins(...plugins)(nextConfig);
+
+// module.exports = {
+//   images: {
+//     remotePatterns: [new URL('https://assets.example.com/account123/**')],
+//   },
+// }

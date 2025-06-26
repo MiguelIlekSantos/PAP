@@ -1,5 +1,6 @@
 'use client';
-import { create, CreateEnterpriseDTO } from '@/lib/api';
+import { create } from '@/lib/api';
+import { CreateEnterpriseDTO } from '@pap/utils';
 import { Enterprise } from '@prisma/client';
 import { useRouter } from 'next/router';
 import React, { ReactNode, useEffect, useState } from 'react';

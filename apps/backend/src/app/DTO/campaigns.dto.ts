@@ -1,18 +1,6 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface CampaignsDTO {
-  id: number;
-  name: string;
-  type: string;
-  status: string;
-  leads: number;
-  conversions: number;
-  roi: number;
-  budget: number;
-  enterpriseId: number;
-}
-
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({ 'string.empty': 'Name is required', 'any.required': 'Name is required' }),
   type: Joi.string().required().messages({ 'string.empty': 'Type is required', 'any.required': 'Type is required' }),

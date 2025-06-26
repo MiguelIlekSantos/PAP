@@ -5,7 +5,7 @@ import { SlideFrame } from '../components/SlideFrame'
 import { Card } from '../components/Card'
 import { Nav } from '../components/Nav'
 import { AddBtnCard } from '../components/AddBtnCard'
-import { create, CreateEnterpriseDTO, getAll } from '@/lib/api'
+import { create, getAll } from '@/lib/api'
 import { ListResponse } from '@/lib/api/response.interface'
 
 import { Enterprise } from '@prisma/client'
@@ -13,6 +13,7 @@ import { Input } from '../components/forms/Input'
 import { Fieldset } from '../components/forms/Fieldset'
 import { ModalForms } from '../components/forms/ModalForms'
 import { Pagination } from '../components/Pagination'
+import { CreateEnterpriseDTO } from '@utils'
 
 
 const APIMODULE = "enterprises"

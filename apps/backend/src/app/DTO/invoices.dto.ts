@@ -1,16 +1,6 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface InvoicesDTO {
-  id: number;
-  number: string;
-  ClientId: number;
-  registerdate: Date;
-  dueDate: Date;
-  paymentDate: Date;
-  total: number;
-  status: string;
-}
 
 @JoiDtoSchema(Joi.object({
   number: Joi.string().required().messages({

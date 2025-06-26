@@ -1,15 +1,7 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface TaxesDTO {
-  id: number;
-  amount: number;
-  type: string;
-  period: string;
-  description: string;
-  endDate: Date;
-  enterpriseId: number;
-}
+
 
 @JoiDtoSchema(Joi.object({
   type: Joi.string().required().messages({

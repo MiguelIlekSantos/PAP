@@ -1,14 +1,6 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface SocialMediaDTO {
-  id: number;
-  platform: string;
-  username: string;
-  followers: number;
-  engagementRate: number;
-  enterpriseId: number;
-}
 
 @JoiDtoSchema(Joi.object({
   platform: Joi.string().required().messages({

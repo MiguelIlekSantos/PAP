@@ -1,18 +1,6 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface ReportsDTO {
-  id: number;
-  name: string;
-  path: string;
-  type: string;
-  frequency: string;
-  status: string;
-  lastUpdate: Date;
-  nextUpdate: Date;
-  downloads: number;
-  enterpriseId: number;
-}
 
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({

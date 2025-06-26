@@ -1,25 +1,6 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface BudgetDTO {
-  id: number;
-  name: string;
-  amount: number;
-  usedAmount: number;
-  remainingAmount: number;
-  status: string;
-  period: string;
-  category: string;
-
-  departmentId?: number;
-  subDepartmentId?: number;
-  projectId?: number;
-  campaignId?: number;
-
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({ 'string.empty': 'Name is required', 'any.required': 'Name is required' }),
   amount: Joi.number().positive().required().messages({ 'number.base': 'Amount must be a number', 'number.positive': 'Amount must be positive', 'any.required': 'Amount is required' }),

@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
 import { Pencil, Check, X } from 'lucide-react'
+import Image from 'next/image'
+import { update } from '@/lib/api'
+import { UpdateEnterpriseDTO } from '@pap/utils'
+import { useEnterpriseStore } from '@/lib/store/items/enterprise.store'
 
 type OptionProps = {
     value: string
@@ -17,18 +21,24 @@ export const Option = ({ value, selected, children }: OptionProps) => {
 
 type Props = {
     label: string
-    value: string
+    module: string
+    value?: string
     isLink?: boolean
     isEmail?: boolean
     isSelectable?: boolean
+    isFile?: boolean
     children?: React.ReactNode
-    onChange?: (value: string) => void
+    name: string
 }
 
 export const InfoCard = (props: Props) => {
+
     let content: React.ReactNode = props.value
+
+    const { getEnterprise } = useEnterpriseStore()
+
     const [isEditing, setIsEditing] = useState<boolean>(false)
-    const [currentValue, setCurrentValue] = useState<string>(props.value)
+    const [currentValue, setCurrentValue] = useState<string>(props.value ?? "Not set")
 
     if (props.isLink) {
         content = (
@@ -48,15 +58,23 @@ export const InfoCard = (props: Props) => {
         setCurrentValue(e.target.value)
     }
 
-    const handleSave = () => {
-        if (props.onChange) {
-            props.onChange(currentValue)
-        }
+    async function handleSave() {
+        const updatedData = await update<UpdateEnterpriseDTO, UpdateEnterpriseDTO>(
+            props.module,
+            getEnterprise(),
+            {
+                [props.name]: currentValue
+            }
+        )
+
         setIsEditing(false)
+        if (updatedData) {
+            window.location.reload()
+        }
     }
 
     const handleCancel = () => {
-        setCurrentValue(props.value)
+        setCurrentValue(props.value ?? "Not set")
         setIsEditing(false)
     }
 
@@ -75,7 +93,7 @@ export const InfoCard = (props: Props) => {
                     <div className="flex flex-col gap-3">
                         {
                             props.isSelectable ? (
-                                <select 
+                                <select
                                     value={currentValue}
                                     onChange={handleChange}
                                     className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
@@ -83,24 +101,24 @@ export const InfoCard = (props: Props) => {
                                     {props.children}
                                 </select>
                             ) : (
-                                <input 
-                                    type="text" 
-                                    value={currentValue}
+                                <input
+                                    type={props.isFile ? "file" : "text"}
+                                    value={props.isFile ? "" : currentValue}
                                     onChange={handleChange}
-                                    placeholder={content.toString()} 
-                                    className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500" 
+                                    placeholder={content?.toString()}
+                                    className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
                                 />
                             )
                         }
                         <div className="flex gap-2 justify-end">
-                            <button 
+                            <button
                                 onClick={handleSave}
                                 className="flex items-center gap-1 bg-violet-700 hover:bg-violet-600 text-white px-3 py-1 rounded-md transition-all duration-200 text-sm"
                             >
                                 <Check size={14} />
                                 Salvar
                             </button>
-                            <button 
+                            <button
                                 onClick={handleCancel}
                                 className="flex items-center gap-1 bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md transition-all duration-200 text-sm"
                             >
@@ -110,7 +128,19 @@ export const InfoCard = (props: Props) => {
                         </div>
                     </div>
                 ) : (
-                    <span className="text-sm font-medium break-words">{content}</span>
+                    <span className="text-sm font-medium break-words">
+                        {props.isFile ?
+                            <>
+                                <Image
+                                    src={content?.toString() ?? "Not found"}
+                                    alt='Logo da empresa'
+                                    width={140}
+                                    height={140}
+                                />
+                            </>
+                            : content
+                        }
+                    </span>
                 )
             }
         </div>

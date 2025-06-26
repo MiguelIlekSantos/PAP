@@ -1,17 +1,7 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface UserDTO {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  permissions: string;
-  role: string;
-  active: boolean;
-  logs: number[];
-  enterpriseId: number;
-}
+
 
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({

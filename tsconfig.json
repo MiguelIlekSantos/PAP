@@ -17,6 +17,9 @@
     },
     {
       "path": "./libs/components"
+    },
+    {
+      "path": "./libs/utils"
     }
   ],
   "compilerOptions": {

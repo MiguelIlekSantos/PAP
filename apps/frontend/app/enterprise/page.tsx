@@ -1,14 +1,33 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { InfoCard } from '../components/InfoCard'
-import { Pencil } from 'lucide-react'
 import { Modal } from '../components/Modal'
+import { getById } from '@/lib/api'
+import { useEnterpriseStore } from '@/lib/store/items/enterprise.store'
+import { Enterprise } from '@prisma/client'
 
+const APIMODULE = "enterprises"
 
 export default function EnterprisePage() {
 
 	const [EditModal, setEditModal] = useState<boolean>(false)
+
+	const [loaded, setLoaded] = useState<boolean>(false);
+	const [enterprise, setEnterprise] = useState<Enterprise>();
+
+	const { getEnterprise } = useEnterpriseStore()
+
+	useEffect(() => {
+
+		getById<Enterprise>(APIMODULE, getEnterprise())
+			.then((data) => {
+				setLoaded(true)
+				setEnterprise(data)
+			})
+
+	}, [])
+
 
 	return (
 		<div className="min-h-screen ml-20 bg-base-300 text-white p-10 relative">
@@ -19,33 +38,24 @@ export default function EnterprisePage() {
 			</div>
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-				<InfoCard label="Nome legal da empresa" value="Techwave Lda."/>
-				<InfoCard label="Nome comercial" value="Techwave Software Solutions"/>
-				<InfoCard label="NIF" value="PT507839241"/>
-				<InfoCard label="NISS" value="12345678901"/>
-				<InfoCard label="Registro comercial (NIPC)" value="507839241"/>
-				<InfoCard label="Tipo de empresa" value="Lda. (Limitada)"/>
-				<InfoCard label="Data de fundação" value="12/03/2015"/>
-				<InfoCard label="País de registro" value="Portugal"/>
-				<InfoCard label="Idioma principal" value="Português"/>
-				<InfoCard label="Moeda oficial" value="EUR (€)"/>
-				<InfoCard label="Regime fiscal / IVA" value="Regime Normal de IVA"/>
-				<InfoCard label="Website" value="https://techwave.pt" isLink/>
-				<InfoCard label="Email de contato" value="contato@techwave.pt" isEmail/>
-				<InfoCard label="Telefone" value="+351 912 345 678"/>
+				{loaded &&
+					<>
+						<InfoCard module={APIMODULE} name='legalName' label="Nome legal da empresa" value={enterprise?.legalName ?? undefined} />
+						<InfoCard module={APIMODULE} name='comercialName' label="Nome comercial" value={enterprise?.comercialName ?? undefined} />
+						<InfoCard module={APIMODULE} name='registerNumber' label="Número de registo" value={enterprise?.registerNumber ?? undefined} />
+						<InfoCard module={APIMODULE} name='registerCountry' label="País de registro" value={enterprise?.registerCountry ?? undefined} />
+						<InfoCard module={APIMODULE} name='registerType' label="Tipo de registro" value={enterprise?.registerType ?? undefined} />
+						<InfoCard module={APIMODULE} name='type' label="Tipo de empresa" value={enterprise?.type ?? undefined} />
+						<InfoCard module={APIMODULE} name='foundationDate' label="Data de fundação" value={enterprise?.foundationDate ? new Date(enterprise.foundationDate).toLocaleDateString('pt-PT') : undefined} />
+						<InfoCard module={APIMODULE} name='mainLanguage' label="Idioma principal" value={enterprise?.mainLanguage ?? undefined} />
+						<InfoCard module={APIMODULE} name='oficialCurrency' label="Moeda oficial" value={enterprise?.oficialCurrency ?? undefined} />
+						<InfoCard module={APIMODULE} name='email' label="Email de contato" value={enterprise?.email ?? undefined} isEmail />
+						<InfoCard module={APIMODULE} name='phone' label="Telefone" value={enterprise?.phone ?? undefined} />
+						<InfoCard module={APIMODULE} isFile name='logo' label="Logotipo da empresa" value={enterprise?.logo ?? undefined} />
+					</>
+				}
 
-				{/* Logotipo */}
-				<div className="relative bg-[#11161d] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-xl p-5 flex flex-col gap-3 shadow-lg hover:shadow-violet-900/20">
-					<span className="text-sm text-violet-400 font-medium">Logotipo da empresa</span>
-					<div className="w-full h-32 bg-gray-900 rounded-lg flex items-center justify-center border border-gray-800 hover:border-violet-900/50 transition-all duration-300">
-						<span className="text-gray-500 text-sm">[Logotipo exibido aqui]</span>
-					</div>
-					<button
-						onClick={() => alert("Editar logotipo")}
-						className="absolute top-3 right-3 text-gray-500 hover:text-violet-300 transition-colors duration-200"
-					>
-					</button>
-				</div>
+
 			</div>
 
 			{EditModal &&

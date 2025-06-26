@@ -1,16 +1,6 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface DocumentsDTO {
-  id: number;
-  name: string;
-  description?: string;
-  type?: string;
-  size?: number;
-  path: string;
-  enterpriseId: number;
-}
-
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({
     'string.empty': 'Name is required',

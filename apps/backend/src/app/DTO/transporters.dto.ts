@@ -1,19 +1,6 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface TransportersDTO {
-  id: number;
-  licensePlate: string;
-  vehicleType: string;
-  status: string;
-  extEnterprise: string;
-  phone: string;
-  representative: string;
-  operationArea: string;
-  pricePerKm: number;
-  rating: number;
-  delivery: number[];
-}
 
 @JoiDtoSchema(Joi.object({
   licensePlate: Joi.string().required().messages({

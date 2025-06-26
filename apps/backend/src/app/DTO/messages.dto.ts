@@ -1,13 +1,7 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface MessagesDTO {
-  id: number;
-  content: string;
-  sender: string;
-  createdAt: Date;
-  chatId: number;
-}
+
 
 @JoiDtoSchema(Joi.object({
   content: Joi.string().required().messages({ 'string.empty': 'Content is required', 'any.required': 'Content is required' }),

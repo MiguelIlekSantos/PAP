@@ -16,7 +16,6 @@ model Enterprise {
   registerType    String? // "NIF", "CNPJ", "EIN", "VAT", etc.
   type              String?
   foundationDate    DateTime?
-  registeredCountry String?
   mainLanguage      String?
   oficialCurrency   String?
   email             String?
@@ -334,7 +333,8 @@ model Tasks {
   status      String?
   priority    String?
   responsible Int
-  Employee    Employees @relation(fields: [responsible], references: [id])
+  // Employee    Employees @relation(fields: [responsible], references: [id])
+  Employee    Employees[]
   projectId   Int
   Project     Projects  @relation(fields: [projectId], references: [id])
 }

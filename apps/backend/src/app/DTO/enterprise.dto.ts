@@ -1,39 +1,7 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface EnterpriseDTO {
-  id: number;
-  legalName: string;
-  comercialName?: string;
-  registerNumber?: string;
-  registerCountry?: string;
-  registerType?: string;
-  type?: string;
-  foundationDate?: Date | null;
-  registeredCountry?: string;
-  mainLanguage?: string;
-  oficialCurrency?: string;
-  email?: string;
-  phone?: string;
-  logo?: string;
 
-  // Relações
-  branches: number[];
-  wareHouses: number[];
-  equipments: number[];
-  transactions: number[];
-  taxes: number[];
-  clients: number[];
-  suppliers: number[];
-  transporters: number[];
-  documents: number[];
-  domains: number[];
-  internSystems: number[];
-  users: number[];
-  campaigns: number[];
-  socialMedia: number[];
-  reports: number[];
-}
 
 @JoiDtoSchema(Joi.object({
   legalName: Joi.string().required().messages({
@@ -49,9 +17,6 @@ export interface EnterpriseDTO {
   type: Joi.string().optional(),
   foundationDate: Joi.date().iso().optional().messages({
     'date.format': 'Foundation date must be ISO format (YYYY‑MM‑DD)'
-  }),
-  registeredCountry: Joi.string().optional().length(2).messages({
-    'string.length': 'Registered country must be 2‑letter ISO code'
   }),
   mainLanguage: Joi.string().optional().length(2).messages({
     'string.length': 'Main language must be 2‑letter ISO code'
@@ -90,7 +55,6 @@ export class CreateEnterpriseDto {
   registerType?: string;
   type?: string;
   foundationDate?: string;
-  registeredCountry?: string;
   mainLanguage?: string;
   oficialCurrency?: string;
   email?: string;
@@ -130,9 +94,6 @@ export class CreateEnterpriseDto {
   foundationDate: Joi.date().iso().optional().messages({
     'date.format': 'Foundation date must be ISO format (YYYY‑MM‑DD)'
   }),
-  registeredCountry: Joi.string().optional().length(2).messages({
-    'string.length': 'Registered country must be 2‑letter ISO code'
-  }),
   mainLanguage: Joi.string().optional().length(2).messages({
     'string.length': 'Main language must be 2‑letter ISO code'
   }),
@@ -169,7 +130,6 @@ export class UpdateEnterpriseDto {
   registerType?: string;
   type?: string;
   foundationDate?: Date | null;
-  registeredCountry?: string;
   mainLanguage?: string;
   oficialCurrency?: string;
   email?: string;

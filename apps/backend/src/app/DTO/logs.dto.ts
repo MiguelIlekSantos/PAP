@@ -1,15 +1,7 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface LogsDTO {
-  id: number;
-  action: string;
-  level: string;
-  timestamp: Date;
-  category: string;
-  InternSystemId: number;
-  userId: number;
-}
+
 
 @JoiDtoSchema(Joi.object({
   action: Joi.string().required().messages({

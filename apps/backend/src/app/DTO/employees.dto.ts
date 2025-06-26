@@ -1,22 +1,6 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface EmployeesDTO {
-  id: number;
-  name: string;
-  email: string | null;
-  phone: string | null;
-  position: string | null;
-  salary: number | null;
-  dateOfHire: Date | null;
-  shiftType: string | null;
-  workingHours: number | null;
-  workingDays: number | null;
-  status: string | null;
-  departmentId: number;
-  projects: number[];
-  tasks: number[];
-}
 
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({ 'string.empty': 'Name is required', 'any.required': 'Name is required' }),

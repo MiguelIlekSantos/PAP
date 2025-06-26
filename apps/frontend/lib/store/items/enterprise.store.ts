@@ -12,6 +12,7 @@ export const useEnterpriseStore = create<EnterpriseStore>()(
         (set, get) => ({
             enterprise: 0,
             setEnterprise: (id: number) => {
+                // console.log("Enterprise" + id)
                 set({ enterprise: id });
             },
 

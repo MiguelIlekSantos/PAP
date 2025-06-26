@@ -37,13 +37,22 @@ export async function create<TRequest, TResponse>(url: string, body: TRequest): 
     return data
 }
 
-export async function update<TRequest, TResponse>(url: string, id: string | number, body: TRequest): Promise<TResponse> {
-    const { data } = await axios.patch<TResponse>(`${BASE_URL}/${url}/${id}`, body, {
-        headers: {
-            Authorization: `Bearer ${TOKEN}`,
-        }
-    })
-    return data
+export async function update<TRequest, TResponse>(url: string, id: string | number, body: TRequest): Promise<TResponse | undefined> {
+    console.log(`${BASE_URL}/${url}/${id}`)
+    console.log(body)
+    try {
+        const { data } = await axios.put<TResponse>(`${BASE_URL}/${url}/${id}`, body, {
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+            }
+        })
+
+        return data
+    }
+    catch {
+        alert("iow this shit didnt work")
+        return 
+    }
 }
 
 export async function remove<TResponse>(url: string, id: string | number): Promise<TResponse> {

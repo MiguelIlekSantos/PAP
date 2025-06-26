@@ -1,20 +1,7 @@
 import { JoiDtoSchema } from '../../lib';
 import * as Joi from 'joi';
 
-export interface TasksDTO {
-  id: number;
-  name: string;
-  description: string;
-  assignedTo: string;
-  dueDate: Date;
-  completed: boolean;
-  completedAt: Date;
-  projectId: number;
-  status: string;
-  priority: string;
-  responsible: number;
-  employees: number[];
-}
+
 
 @JoiDtoSchema(Joi.object({
   name: Joi.string().required().messages({

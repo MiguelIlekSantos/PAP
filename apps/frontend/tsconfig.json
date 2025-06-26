@@ -27,15 +27,21 @@
       "@/*": [
         "./*",
       ],
-       "@api/*": ["lib"]
+      "@api/*": ["lib"],
+      "@utils": ["../../libs/utils/src/index.ts"],
+      "@components": ["../../libs/components/src/index.ts"]
     },
     "types": [
       "jest",
       "node"
     ],
-    "outDir": "dist",
-    "rootDir": "."
+    "outDir": "dist"
   },
+  "references": [
+    {
+      "path": "../../libs/utils"
+    }
+  ],
   "include": [
     "../../apps/frontend/.next/types/**/*.ts",
     "../../dist/apps/frontend/.next/types/**/*.ts",
@@ -45,7 +51,7 @@
     "app/**/*.tsx",
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "lib/**/*", 
+    "lib/**/*"
   ],
   "exclude": [
     "out-tsc",
