@@ -45,7 +45,15 @@ export class EnterprisesController {
 
   @Roles([Permissions.ENTERPRISE_DELETE])
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<boolean> {
-    return this.enterpriseManagementService.deleteEnterprise(+id);
+  async remove(@Param('id') id: string): Promise<boolean> {
+    try {
+      console.log(`Controller: Tentando deletar enterprise ${id}`);
+      const result = await this.enterpriseManagementService.deleteEnterprise(+id);
+      console.log(`Controller: Enterprise ${id} deletada com sucesso`);
+      return result;
+    } catch (error) {
+      console.error(`Controller: Erro ao deletar enterprise ${id}:`, error);
+      throw error;
+    }
   }
 }

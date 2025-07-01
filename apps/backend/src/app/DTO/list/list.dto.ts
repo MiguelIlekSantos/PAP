@@ -9,6 +9,10 @@ import { JoiDtoSchema } from '../../../lib';
     term: Joi.string().optional().allow(''),
     orderDir: Joi.string().optional().default('asc'), // TODO: enum 'asc' | 'desc'
     orderBy: Joi.string().optional().trim().default('id'), // TODO: enum 'createdAt' | 'updateAt' | 'id'
+    relationFilter: Joi.array().items(
+      Joi.string().required(),
+      Joi.alternatives().try(Joi.number(), Joi.string()).required()
+    ).length(2).optional(),
   }),
 )
 export class ListParametersDto {
@@ -17,4 +21,5 @@ export class ListParametersDto {
   term?: string;
   orderDir?: "asc" | "desc";
   orderBy?: string;
+  relationFilter?: [string, number | string];
 }

@@ -5,7 +5,7 @@ import { SlideFrame } from '../components/SlideFrame'
 import { Card } from '../components/Card'
 import { Nav } from '../components/Nav'
 import { AddBtnCard } from '../components/AddBtnCard'
-import { create, getAll } from '@/lib/api'
+import { create, getAll, remove } from '@/lib/api'
 import { ListResponse } from '@/lib/api/response.interface'
 
 import { Enterprise } from '@prisma/client'
@@ -14,6 +14,7 @@ import { Fieldset } from '../components/forms/Fieldset'
 import { ModalForms } from '../components/forms/ModalForms'
 import { Pagination } from '../components/Pagination'
 import { CreateEnterpriseDTO } from '@utils'
+import { showSuccess, showError } from '@/lib/utils/toastHelpers'
 
 
 const APIMODULE = "enterprises"
@@ -47,10 +48,6 @@ export default function DashboardPage() {
 
 
 	function createEnterprise(): Promise<boolean> {
-		if (!inputData.legalName) {
-			alert('Legal name é obrigatório');
-			return Promise.resolve(false);
-		}
 
 		const payload = inputData as CreateEnterpriseDTO;
 
@@ -64,6 +61,26 @@ export default function DashboardPage() {
 				return false
 			})
 	}
+
+	// Função para deletar empresa
+	const handleDeleteEnterprise = async (enterpriseId: number) => {
+		if (window.confirm('Tem certeza que deseja deletar esta empresa? Esta ação não pode ser desfeita e removerá todos os dados relacionados.')) {
+			try {
+				await remove(APIMODULE, enterpriseId);
+				showSuccess('Empresa deletada com sucesso!');
+				
+				// Recarregar a lista de empresas
+				const data = await getAll<ListResponse<Enterprise>>(APIMODULE, {
+					"page": paginationNum,
+					"quantity": 10,
+				});
+				setEnterprises(data);
+			} catch (error) {
+				console.error('Erro ao deletar empresa:', error);
+				showError('Erro ao deletar empresa. Tente novamente.');
+			}
+		}
+	};
 
 
 	return (
@@ -85,6 +102,7 @@ export default function DashboardPage() {
 								email={enterprise.email}
 								imgUrl={enterprise.logo}
 								foundationDate={enterprise.foundationDate}
+								onDelete={handleDeleteEnterprise}
 							/>
 						)
 					})
@@ -97,18 +115,17 @@ export default function DashboardPage() {
 			}
 			<div className='h-20'></div>
 			{CreateEnterpriseModal &&
-				<ModalForms createEnterprise={createEnterprise} setInputData={setInputData} onclick={() => { setCEM(false) }}>
+				<ModalForms create={createEnterprise} setInputData={setInputData} onclick={() => { setCEM(false) }}>
 					<p className='text-2xl p-5 lg:p-10'>Just insert the basic settings here and then configure your enterprise in its own details page</p>
 
 					<Fieldset title='Create Enterprise'>
 						<Input nameOnDB='legalName' name='Legal name' />
 						<Input nameOnDB='comercialName' name='Comercial name' />
-						<Input nameOnDB='nif' name='NIF' />
-						<Input nameOnDB='niss' name='NISS' />
-						<Input nameOnDB='nipc' name='NIPC' />
+						<Input nameOnDB='registerNumber' name='Register Number' />
+						<Input nameOnDB='registerCountry' name='Registered Country' />
+						<Input nameOnDB='registerType' name='Register Type' />
 						<Input nameOnDB='type' name='Type' />
 						<Input nameOnDB='foundationDate' name='Foundation date' />
-						<Input nameOnDB='registeredCountry' name='Registered country' />
 						<Input nameOnDB='mainLanguage' name='Main language' />
 						<Input nameOnDB='oficialCurrency' name='Currency' />
 						<Input nameOnDB='email' name='Email' />

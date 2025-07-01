@@ -17,50 +17,64 @@ type PagesStruct = {
 
 export const Pagination = (props: Props) => {
 	function getPages(): PagesStruct | undefined {
-		if (props.last === undefined) return
+		if (props.last === undefined || props.last < 1) return
 
 		const pages: number[] = []
 		let longBeg = false
 		let longEnd = false
 
-		if (props.actualPage > 2) {
-			pages.push(1)
-
-			if (props.actualPage > 3) {
-				longBeg = true
+		// Para 1-2 páginas, mostrar todas
+		if (props.last <= 2) {
+			for (let i = 1; i <= props.last; i++) {
+				pages.push(i)
 			}
-
-			if (props.actualPage <= props.last - 3) {
-				longEnd = true
+			return {
+				pages,
+				longBeg,
+				longEnd,
+				total: pages.length,
 			}
+		}
 
-			pages.push(props.actualPage - 1)
-			pages.push(props.actualPage)
-
-			if (props.actualPage <= props.last - 3) {
-				pages.push(props.actualPage + 1)
-				pages.push(props.last)
-			} else {
-				if (props.actualPage === props.last - 2) {
-					pages.push(props.last - 1, props.last)
-				} else if (props.actualPage === props.last - 1) {
-					pages.push(props.last)
-				}
-			}
-		} else if (props.actualPage === 2) {
+		// Para 3 páginas, sempre mostrar todas
+		if (props.last === 3) {
 			pages.push(1, 2, 3)
+			return {
+				pages,
+				longBeg,
+				longEnd,
+				total: pages.length,
+			}
+		}
 
+		// Para 4+ páginas, usar lógica mais complexa
+		if (props.actualPage <= 2) {
+			// Início: mostrar 1, 2, 3 ... último
+			pages.push(1, 2, 3)
 			if (props.last > 4) {
 				longEnd = true
 				pages.push(props.last)
+			} else if (props.last === 4) {
+				pages.push(4)
+			}
+		} else if (props.actualPage >= props.last - 1) {
+			// Final: mostrar 1 ... antepenúltimo, penúltimo, último
+			pages.push(1)
+			if (props.last > 4) {
+				longBeg = true
+			}
+			if (props.actualPage === props.last - 1) {
+				pages.push(props.last - 2, props.last - 1, props.last)
+			} else {
+				pages.push(props.last - 1, props.last)
 			}
 		} else {
+			// Meio: mostrar 1 ... atual-1, atual, atual+1 ... último
 			pages.push(1)
-			if (props.last > 3) {
-				pages.push(2)
-				longEnd = true
-				pages.push(props.last)
-			}
+			longBeg = true
+			pages.push(props.actualPage - 1, props.actualPage, props.actualPage + 1)
+			longEnd = true
+			pages.push(props.last)
 		}
 
 		return {

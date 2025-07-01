@@ -1,84 +1,72 @@
 import { Button } from "../interfaces/painelBtn";
-import { 
-    Building2, 
-    Users, 
-    Package, 
-    DollarSign, 
-    ShoppingCart, 
-    Truck, 
-    MapPin, 
-    CheckSquare, 
-    Monitor, 
-    Megaphone, 
-    FileText, 
-    BarChart3, 
-    Settings 
+import {
+    Building2, Users, Package, DollarSign, ShoppingCart, Truck, MapPin, CheckSquare, Monitor, Megaphone, FileText, Settings, Brain
 } from 'lucide-react';
 
-export const Buttons : Button[] = [
+export const Buttons: Button[] = [
     {
-        "title": "Empresa",
-        "icon": Building2,
-        "url": "/enterprise"
+        title: "Company",
+        icon: Building2,
+        url: "/enterprise"
     },
     {
-        "title": "Recursos humanos",
-        "icon": Users,
-        "url": "/resources"
+        title: "Human Resources",
+        icon: Users,
+        url: "/resources"
     },
     {
-        "title": "Inventário",
-        "icon": Package,
-        "url": "/inventory"
+        title: "Inventory",
+        icon: Package,
+        url: "/inventory"
     },
     {
-        "title": "Financeiro",
-        "icon": DollarSign,
-        "url": "/financial"
+        title: "Financial",
+        icon: DollarSign,
+        url: "/financial"
     },
     {
-        "title": "Vendas e Clientes",
-        "icon": ShoppingCart,
-        "url": "/sales"
+        title: "Sales & Clients",
+        icon: ShoppingCart,
+        url: "/sales"
     },
     {
-        "title": "Compras e Fornecedores",
-        "icon": Truck,
-        "url": "/suppliers"
+        title: "Purchases & Suppliers",
+        icon: Truck,
+        url: "/suppliers"
     },
     {
-        "title": "Logística e Expedição",
-        "icon": MapPin,
-        "url": "/logistic"
+        title: "Logistics & Shipping",
+        icon: MapPin,
+        url: "/logistic"
     },
     {
-        "title": "Projetos e Tarefas",
-        "icon": CheckSquare,
-        "url": "/projects"
+        title: "Projects & Tasks",
+        icon: CheckSquare,
+        url: "/projects"
     },
     {
-        "title": "Tecnologia e TI",
-        "icon": Monitor,
-        "url": "/tecnology"
+        title: "Technology & IT",
+        icon: Monitor,
+        url: "/tecnology"
     },
     {
-        "title": "Marketing",
-        "icon": Megaphone,
-        "url": "/marketing"
+        title: "Marketing",
+        icon: Megaphone,
+        url: "/marketing"
     },
     {
-        "title": "Documentação e Jurídico",
-        "icon": FileText,
-        "url": "/documentation"
+        title: "Documentation & Legal",
+        icon: FileText,
+        url: "/documentation"
     },
     {
-        "title": "Relatórios",
-        "icon": BarChart3,
-        "url": "/reports"
+        title: "System Administration",
+        icon: Settings,
+        url: "/system-admin"
     },
     {
-        "title": "Administração do Sistema",
-        "icon": Settings,
-        "url": "/system-admin"
+        title: "AI Analysis",
+        icon: Brain,
+        url: "/AI-Analysis"
     },
 ]

@@ -21,7 +21,63 @@ export class HumanResourcesService extends BaseService {
 
   // ----------------- Employees -----------------
   async getEmployees(parameters: ListParametersDto) {
-    return this.findAll<Employees>(this.employeeModel, parameters, 'name');
+    const {
+      page = 1,
+      quantity = 10,
+      term = '',
+      orderDir = 'asc',
+      orderBy = 'id',
+      relationFilter,
+    } = parameters ?? {};
+
+    const where: any = {};
+    
+    if (term) {
+      where.name = {
+        contains: term,
+      };
+    }
+
+    if (relationFilter) {
+      const [field, value] = relationFilter;
+      
+      // Special handling for enterprise filtering through department
+      if (field === 'enterpriseId') {
+        where.department = {
+          enterpriseId: value
+        };
+      } else {
+        where[field] = value;
+      }
+    }
+
+    const total = await this.prisma.employees.count({ where });
+
+    const results = await this.prisma.employees.findMany({
+      skip: (page - 1) * quantity,
+      take: quantity,
+      orderBy: {
+        [orderBy]: orderDir,
+      },
+      where,
+      include: {
+        department: true
+      }
+    });
+
+    return {
+      statusCode: 200,
+      message: '',
+      data: {
+        items: results,
+        metadata: {
+          last: Math.ceil(total / quantity),
+          page,
+          quantity,
+          total,
+        },
+      },
+    };
   }
 
   async getEmployeeById(id: number) {

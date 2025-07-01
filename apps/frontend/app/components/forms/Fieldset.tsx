@@ -4,6 +4,7 @@ type Props = {
 	children: ReactNode
 	title: string
 	changeData?: () => void
+	initialData?: any
 }
 
 export const Fieldset = (props: Props) => {
@@ -11,7 +12,8 @@ export const Fieldset = (props: Props) => {
 	const childrenWithMethods = React.Children.map(props.children, (child) => {
 		if (React.isValidElement(child)) {
 			return React.cloneElement(child as React.ReactElement<any>, {
-				changeData: props.changeData
+				changeData: props.changeData,
+				initialData: props.initialData
 			})
 		}
 		return child;

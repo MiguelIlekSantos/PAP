@@ -1,13 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { SlideFrame } from '../components/SlideFrame'
-import { Nav } from '../components/Nav'
-import { DrawerMenu } from '../components/DrawerMenu'
 import { Table } from '../components/Table'
 import { Modal } from '../components/Modal'
 import { Plus, Search, Users, Shield, Settings, Activity, Database, AlertTriangle } from 'lucide-react'
-import { SystemAdminTabs } from '../data/tabs'
 
 // Mock data for system users
 const mockUsers = [
@@ -88,12 +84,12 @@ export default function SystemAdminPage() {
   // Filter users based on search term
   const filteredUsers = searchTerm
     ? users.filter(
-        (user) =>
-          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.department.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      (user) =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.department.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     : users;
 
   // Table columns
@@ -146,8 +142,7 @@ export default function SystemAdminPage() {
 
   return (
     <>
-      <DrawerMenu tabs={SystemAdminTabs} page="/system-admin" />
-      <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
+      <div className="min-h-screen bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-white">Dashboard de Administração</h1>
           <button
@@ -169,7 +164,7 @@ export default function SystemAdminPage() {
             <p className="text-green-500 text-2xl font-bold">{systemStats.activeUsers}</p>
             <p className="text-gray-500 text-sm">de {systemStats.totalUsers} total</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <Activity size={20} className="text-green-400" />
@@ -178,7 +173,7 @@ export default function SystemAdminPage() {
             <p className="text-green-500 text-2xl font-bold">{systemStats.systemUptime}</p>
             <p className="text-gray-500 text-sm">Últimos 30 dias</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <Database size={20} className="text-blue-400" />
@@ -187,7 +182,7 @@ export default function SystemAdminPage() {
             <p className="text-blue-500 text-2xl font-bold">{systemStats.storageUsed}</p>
             <p className="text-gray-500 text-sm">Utilizado</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <AlertTriangle size={20} className="text-red-400" />
@@ -207,7 +202,7 @@ export default function SystemAdminPage() {
             </div>
             <p className="text-white text-lg font-medium">{systemStats.lastBackup}</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <Activity size={20} className="text-violet-400" />
@@ -215,7 +210,7 @@ export default function SystemAdminPage() {
             </div>
             <p className="text-white text-lg font-medium">{systemStats.systemLoad}</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <Shield size={20} className="text-violet-400" />

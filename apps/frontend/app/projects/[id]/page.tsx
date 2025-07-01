@@ -5,17 +5,17 @@ import { SlideFrame } from '../../components/SlideFrame'
 import { Nav } from '../../components/Nav'
 import { Modal } from '../../components/Modal'
 import { Table } from '../../components/Table'
-import { 
-  ArrowLeft, 
-  Plus, 
-  Calendar, 
-  Clock, 
-  Users, 
-  CheckCircle, 
-  AlertCircle, 
-  BarChart, 
-  FileText, 
-  MessageSquare, 
+import {
+  ArrowLeft,
+  Plus,
+  Calendar,
+  Clock,
+  Users,
+  CheckCircle,
+  AlertCircle,
+  BarChart,
+  FileText,
+  MessageSquare,
   Send,
   CheckSquare,
   Edit,
@@ -462,11 +462,8 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
 
   return (
     <>
-      <div className="min-h-screen bg-base-300 text-white p-6 relative">
+      <div className="ml-20 min-h-screen bg-base-300 text-white p-6 relative">
         <div className="flex items-center mb-6">
-          <Link href="/projects" className="mr-4 text-gray-400 hover:text-violet-400 transition-colors duration-200">
-            <ArrowLeft size={24} />
-          </Link>
           <h1 className="text-3xl font-bold text-white">{project.name}</h1>
         </div>
 
@@ -482,44 +479,40 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
         {/* Tabs */}
         <div className="flex border-b border-gray-800 mb-6">
           <button
-            className={`px-4 py-2 font-medium ${
-              activeTab === 'overview'
+            className={`px-4 py-2 font-medium ${activeTab === 'overview'
                 ? 'text-violet-400 border-b-2 border-violet-400'
                 : 'text-gray-400 hover:text-violet-300'
-            }`}
+              }`}
             onClick={() => setActiveTab('overview')}
           >
             Visão Geral
           </button>
-          
+
           <button
-            className={`px-4 py-2 font-medium ${
-              activeTab === 'tasks'
+            className={`px-4 py-2 font-medium ${activeTab === 'tasks'
                 ? 'text-violet-400 border-b-2 border-violet-400'
                 : 'text-gray-400 hover:text-violet-300'
-            }`}
+              }`}
             onClick={() => setActiveTab('tasks')}
           >
             Tarefas
           </button>
-          
+
           <button
-            className={`px-4 py-2 font-medium ${
-              activeTab === 'chat'
+            className={`px-4 py-2 font-medium ${activeTab === 'chat'
                 ? 'text-violet-400 border-b-2 border-violet-400'
                 : 'text-gray-400 hover:text-violet-300'
-            }`}
+              }`}
             onClick={() => setActiveTab('chat')}
           >
             Chat da Equipe
           </button>
-          
+
           <button
-            className={`px-4 py-2 font-medium ${
-              activeTab === 'documents'
+            className={`px-4 py-2 font-medium ${activeTab === 'documents'
                 ? 'text-violet-400 border-b-2 border-violet-400'
                 : 'text-gray-400 hover:text-violet-300'
-            }`}
+              }`}
             onClick={() => setActiveTab('documents')}
           >
             Documentos
@@ -533,7 +526,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
               <h3 className="text-violet-400 font-medium mb-3">Detalhes do Projeto</h3>
               <div className="space-y-3">
                 <p className="text-gray-300">{project.description}</p>
-                
+
                 <div className="pt-3 border-t border-gray-800">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -556,7 +549,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
               <h3 className="text-violet-400 font-medium mb-3">Progresso e Orçamento</h3>
               <div className="space-y-4">
@@ -566,34 +559,32 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                     <span className="text-white">{project.progress}%</span>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full ${
-                        project.status === 'completed' ? 'bg-green-500' : 
-                        project.status === 'at_risk' ? 'bg-red-500' : 
-                        'bg-blue-500'
-                      }`}
+                    <div
+                      className={`h-2 rounded-full ${project.status === 'completed' ? 'bg-green-500' :
+                          project.status === 'at_risk' ? 'bg-red-500' :
+                            'bg-blue-500'
+                        }`}
                       style={{ width: `${project.progress}%` }}
                     ></div>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-gray-400 text-sm">Orçamento Gasto:</span>
                     <span className="text-white">€{project.spent.toFixed(2)} / €{project.budget.toFixed(2)}</span>
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full ${
-                        (project.spent / project.budget) > 0.9 ? 'bg-red-500' : 
-                        (project.spent / project.budget) > 0.7 ? 'bg-yellow-500' : 
-                        'bg-green-500'
-                      }`}
+                    <div
+                      className={`h-2 rounded-full ${(project.spent / project.budget) > 0.9 ? 'bg-red-500' :
+                          (project.spent / project.budget) > 0.7 ? 'bg-yellow-500' :
+                            'bg-green-500'
+                        }`}
                       style={{ width: `${(project.spent / project.budget) * 100}%` }}
                     ></div>
                   </div>
                 </div>
-                
+
                 <div className="pt-3 border-t border-gray-800">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -616,7 +607,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
               <h3 className="text-violet-400 font-medium mb-3">Equipe do Projeto</h3>
               <div className="space-y-3">
@@ -633,7 +624,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 ))}
               </div>
             </div>
-            
+
             <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
               <h3 className="text-violet-400 font-medium mb-3">Resumo de Tarefas</h3>
               <div className="space-y-3">
@@ -661,7 +652,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                     <p className="text-gray-400 text-sm">Não Iniciadas</p>
                   </div>
                 </div>
-                
+
                 <div className="pt-3 border-t border-gray-800">
                   <p className="text-gray-400 text-sm mb-2">Próximas Tarefas:</p>
                   <div className="space-y-2">
@@ -698,7 +689,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 Nova Tarefa
               </button>
             </div>
-            
+
             <div className="bg-[#0d1218] border border-gray-800 rounded-lg overflow-hidden shadow-md">
               <Table
                 columns={taskColumns}
@@ -730,7 +721,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 </div>
               ))}
             </div>
-            
+
             <div className="border-t border-gray-800 pt-4">
               <div className="flex gap-2">
                 <input
@@ -769,7 +760,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 Novo Documento
               </button>
             </div>
-            
+
             <div className="bg-[#0d1218] border border-gray-800 rounded-lg overflow-hidden shadow-md">
               <Table
                 columns={documentColumns}
@@ -794,7 +785,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
               />
             </div>
-            
+
             <div className="col-span-full md:col-span-1">
               <label className="text-sm text-gray-400 mb-1 block">Responsável</label>
               <select
@@ -806,7 +797,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 ))}
               </select>
             </div>
-            
+
             <div className="col-span-full md:col-span-1">
               <label className="text-sm text-gray-400 mb-1 block">Status</label>
               <select
@@ -818,7 +809,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 <option value="blocked">Bloqueada</option>
               </select>
             </div>
-            
+
             <div className="col-span-full md:col-span-1">
               <label className="text-sm text-gray-400 mb-1 block">Prioridade</label>
               <select
@@ -829,7 +820,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 <option value="low">Baixa</option>
               </select>
             </div>
-            
+
             <div className="col-span-full md:col-span-1">
               <label className="text-sm text-gray-400 mb-1 block">Prazo</label>
               <input
@@ -837,7 +828,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
               />
             </div>
-            
+
             <div className="col-span-full md:col-span-1">
               <label className="text-sm text-gray-400 mb-1 block">Horas Estimadas</label>
               <input
@@ -847,7 +838,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
               />
             </div>
-            
+
             <div className="col-span-full">
               <label className="text-sm text-gray-400 mb-1 block">Descrição</label>
               <textarea
@@ -855,7 +846,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500 h-24"
               ></textarea>
             </div>
-            
+
             <div className="col-span-full flex justify-end mt-2">
               <button
                 className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
@@ -881,7 +872,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
               />
             </div>
-            
+
             <div>
               <label className="text-sm text-gray-400 mb-1 block">Tipo</label>
               <select
@@ -894,7 +885,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 <option value="presentation">Apresentação</option>
               </select>
             </div>
-            
+
             <div>
               <label className="text-sm text-gray-400 mb-1 block">Arquivo</label>
               <div className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-6 px-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500 border-dashed text-center">
@@ -904,7 +895,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                 </button>
               </div>
             </div>
-            
+
             <div className="flex justify-end mt-2">
               <button
                 className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"

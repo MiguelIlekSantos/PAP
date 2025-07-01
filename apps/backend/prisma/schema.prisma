@@ -40,6 +40,9 @@ model Enterprise {
   campaigns     Campaigns[]
   socialMedia   SocialMedia[]
   reports       Reports[]
+  departments   Departments[]
+  subDepartments  SubDepartments[]
+  projects      Projects[]
 }
 
 model Branches {
@@ -61,11 +64,12 @@ model Departments {
   description    String?
   responsible    String?
   totalEmployees Int?
-  budget         Budget?
 
-  subDepartments SubDepartments?
+  subDepartments SubDepartments[]
   branches       Branches[]
   employees      Employees[]
+  enterpriseId Int 
+  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id])
 }
 
 model SubDepartments {
@@ -74,9 +78,10 @@ model SubDepartments {
   description    String?
   responsible    String?
   totalEmployees Int?
-  budget         Budget?
-  departmentId   Int         @unique
+  departmentId   Int
   department     Departments @relation(fields: [departmentId], references: [id])
+  enterpriseId   Int 
+  enterprise     Enterprise @relation(fields: [enterpriseId], references: [id])
 }
 
 model Employees {
@@ -201,8 +206,6 @@ model Budget {
   campaignId      Int? @unique
   saleId          Int? @unique
 
-  department    Departments?    @relation(fields: [departmentId], references: [id])
-  subDepartment SubDepartments? @relation(fields: [subDepartmentId], references: [id])
   project       Projects?       @relation(fields: [projectId], references: [id])
   campaign      Campaigns?      @relation(fields: [campaignId], references: [id])
 
@@ -355,6 +358,8 @@ model Projects {
   Employees   Employees[]
   Tasks       Tasks[]
   chat        Chats?
+  enterpriseId Int 
+  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id])
 }
 
 model Messages {

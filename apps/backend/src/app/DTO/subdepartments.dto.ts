@@ -14,12 +14,12 @@ import * as Joi from 'joi';
     'number.integer': 'Total employees must be an integer',
     'number.min': 'Total employees must be at least 0'
   }),
-  departmentId: Joi.number().integer().positive().optional().messages({
+  departmentId: Joi.number().integer().positive().required().messages({
     'number.base': 'Department ID must be a number',
     'number.integer': 'Department ID must be an integer',
     'number.positive': 'Department ID must be positive'
   }),
-  budget: Joi.number().integer().positive().optional().messages({'number.base': 'Budget must be a number','number.integer': 'Budget must be an integer','number.positive': 'Budget must be positive'}),
+  enterpriseId: Joi.number().integer().positive().required().messages({'number.base': 'Enterprise ID must be a number','number.integer': 'Enterprise ID must be an integer','number.positive': 'Enterprise ID must be positive'}),
 }))
 
 export class CreateSubDepartmentsDto {
@@ -27,11 +27,14 @@ export class CreateSubDepartmentsDto {
   description?: string;
   responsible?: string;
   totalEmployees?: number;
-  departmentId?: number;
+  departmentId: number;
   budget?: number;
+  enterpriseId:number;
   
-  constructor(name: string) {
+  constructor(name: string, enterpriseId: number, departmentId: number) {
     this.name = name;
+    this.enterpriseId = enterpriseId;
+    this.departmentId = departmentId;
   }
 }
 
@@ -49,7 +52,6 @@ export class CreateSubDepartmentsDto {
     'number.integer': 'Department ID must be an integer',
     'number.positive': 'Department ID must be positive'
   }),
-  budget: Joi.number().integer().positive().optional().messages({'number.base': 'Budget must be a number','number.integer': 'Budget must be an integer','number.positive': 'Budget must be positive'}),
 }))
 
 export class UpdateSubDepartmentsDto {
@@ -58,7 +60,6 @@ export class UpdateSubDepartmentsDto {
   responsible?: string;
   totalEmployees?: number;
   departmentId?: number;
-  budget?: number;
 }
 
 

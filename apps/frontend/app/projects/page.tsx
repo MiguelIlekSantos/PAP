@@ -8,7 +8,6 @@ import { FilterPanel } from '../components/FilterPanel'
 import { Modal } from '../components/Modal'
 import { Plus, Search, Calendar, Clock, Users, CheckCircle, AlertCircle, BarChart } from 'lucide-react'
 import Link from 'next/link'
-import { ProjectsTabs } from '../data/tabs'
 
 // Mock data for projects
 const mockProjects = [
@@ -173,7 +172,6 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <DrawerMenu tabs={ProjectsTabs} page='/projects'/>
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-white">Projetos</h1>

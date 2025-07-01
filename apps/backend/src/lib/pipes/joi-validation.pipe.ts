@@ -15,6 +15,10 @@ export class JoiValidationPipe implements PipeTransform {
 
     transform(value: unknown, metadata: ArgumentMetadata) {
 
+        console.log("------------------------------------")
+        console.log(value)
+        console.log("------------------------------------")
+
         const { metatype } = metadata; // confirm if there is a schema
         if (!metatype) return value;
 

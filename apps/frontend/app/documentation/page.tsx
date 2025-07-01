@@ -1,13 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { SlideFrame } from '../components/SlideFrame'
-import { Nav } from '../components/Nav'
-import { DrawerMenu } from '../components/DrawerMenu'
 import { Table } from '../components/Table'
 import { Modal } from '../components/Modal'
 import { Plus, Search, FileText, Download, Eye, Edit } from 'lucide-react'
-import { DocumentationTabs } from '../data/tabs'
 
 // Mock data for documents
 const mockDocuments = [
@@ -81,12 +77,12 @@ export default function DocumentationPage() {
   // Filter documents based on search term
   const filteredDocuments = searchTerm
     ? documents.filter(
-        (document) =>
-          document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          document.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          document.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          document.author.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      (document) =>
+        document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        document.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        document.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        document.author.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     : documents;
 
   // Calculate stats
@@ -157,7 +153,6 @@ export default function DocumentationPage() {
 
   return (
     <>
-      <DrawerMenu tabs={DocumentationTabs} page="/documentation" />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-white">Dashboard de Documentação</h1>
@@ -179,7 +174,7 @@ export default function DocumentationPage() {
             </div>
             <p className="text-white text-2xl font-bold">{totalDocuments}</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <FileText size={20} className="text-green-400" />
@@ -187,7 +182,7 @@ export default function DocumentationPage() {
             </div>
             <p className="text-green-500 text-2xl font-bold">{publishedDocuments}</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <FileText size={20} className="text-yellow-400" />
@@ -195,7 +190,7 @@ export default function DocumentationPage() {
             </div>
             <p className="text-yellow-500 text-2xl font-bold">{draftDocuments}</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <Download size={20} className="text-blue-400" />

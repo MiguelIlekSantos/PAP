@@ -31,6 +31,7 @@ import * as Joi from 'joi';
   employees: Joi.array().items(Joi.number().integer().positive()).optional(),
   tasks: Joi.array().items(Joi.number().integer().positive()).optional(),
   chat: Joi.number().integer().positive().required().messages({'number.base': 'Chat must be a number','number.integer': 'Chat must be an integer','number.positive': 'Chat must be positive'}),
+    enterpriseId: Joi.number().integer().positive().required().messages({'number.base': 'Enterprise ID must be a number','number.integer': 'Enterprise ID must be an integer','number.positive': 'Enterprise ID must be positive'}),
 }))
 
 export class CreateProjectsDto {
@@ -43,9 +44,11 @@ export class CreateProjectsDto {
   priority?: string;
   manager?: string;
   clientId?: number;
+  enterpriseId:number;
   
-  constructor(name: string) {
+  constructor(name: string, enterpriseId:number) {
     this.name = name;
+    this.enterpriseId=enterpriseId;
   }
 }
 

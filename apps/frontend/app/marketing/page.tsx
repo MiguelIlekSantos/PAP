@@ -8,8 +8,6 @@ import { FilterPanel } from '../components/FilterPanel'
 import { Table } from '../components/Table'
 import { Modal } from '../components/Modal'
 import { Plus, Search, TrendingUp, Users, Mail, BarChart3 } from 'lucide-react'
-import { MarketingTabs } from '../data/tabs'
-
 // Mock data for marketing campaigns
 const mockCampaigns = [
   {
@@ -148,8 +146,8 @@ export default function MarketingPage() {
   const totalSpent = filteredCampaigns.reduce((sum, c) => sum + c.spent, 0);
   const totalLeads = filteredCampaigns.reduce((sum, c) => sum + c.leads, 0);
   const totalConversions = filteredCampaigns.reduce((sum, c) => sum + c.conversions, 0);
-  const avgROI = filteredCampaigns.length > 0 
-    ? filteredCampaigns.reduce((sum, c) => sum + c.roi, 0) / filteredCampaigns.length 
+  const avgROI = filteredCampaigns.length > 0
+    ? filteredCampaigns.reduce((sum, c) => sum + c.roi, 0) / filteredCampaigns.length
     : 0;
 
   // Table columns
@@ -204,7 +202,6 @@ export default function MarketingPage() {
 
   return (
     <>
-      <DrawerMenu tabs={MarketingTabs} page="/marketing" />
       <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-white">Dashboard de Marketing</h1>
@@ -226,7 +223,7 @@ export default function MarketingPage() {
             </div>
             <p className="text-white text-xl font-bold">€{totalBudget.toFixed(2)}</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <BarChart3 size={20} className="text-violet-400" />
@@ -234,7 +231,7 @@ export default function MarketingPage() {
             </div>
             <p className="text-red-500 text-xl font-bold">€{totalSpent.toFixed(2)}</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <Users size={20} className="text-violet-400" />
@@ -242,7 +239,7 @@ export default function MarketingPage() {
             </div>
             <p className="text-blue-500 text-xl font-bold">{totalLeads}</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <Mail size={20} className="text-violet-400" />
@@ -250,7 +247,7 @@ export default function MarketingPage() {
             </div>
             <p className="text-green-500 text-xl font-bold">{totalConversions}</p>
           </div>
-          
+
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center gap-3 mb-2">
               <TrendingUp size={20} className="text-violet-400" />

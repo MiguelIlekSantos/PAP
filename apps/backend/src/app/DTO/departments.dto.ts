@@ -13,19 +13,24 @@ import * as Joi from 'joi';
     'number.integer': 'Total employees must be an integer',
     'number.min': 'Total employees must be at least 0'
   }),
-  branchIds: Joi.array().items(Joi.number().integer().positive()).optional(),
-  employeeIds: Joi.array().items(Joi.number().integer().positive()).optional()
+  branches: Joi.array().items(Joi.number().integer().positive()).optional(),
+  subDepartments: Joi.array().items(Joi.number().integer().positive()).optional(),
+  employeeIds: Joi.array().items(Joi.number().integer().positive()).optional(),
+  enterpriseId: Joi.number().integer().positive().required().messages({'number.base': 'Enterprise ID must be a number','number.integer': 'Enterprise ID must be an integer','number.positive': 'Enterprise ID must be positive'}),
 }))
 export class CreateDepartmentsDto {
   name: string;
   description?: string;
   responsible?: string;
   totalEmployees?: number;
-  branchIds?: number[];
+  branches?: number[];
   employeeIds?: number[];
+  enterpriseId: number;
+  subDepartments?: number[]
 
-  constructor(name: string){
+  constructor(name: string, enterpriseId: number){
     this.name = name
+    this.enterpriseId = enterpriseId;
   }
 }
 
@@ -38,14 +43,17 @@ export class CreateDepartmentsDto {
     'number.integer': 'Total employees must be an integer',
     'number.min': 'Total employees must be at least 0'
   }),
-  branchIds: Joi.array().items(Joi.number().integer().positive()).optional(),
+  branches: Joi.array().items(Joi.number().integer().positive()).optional(),
+  subDepartments: Joi.array().items(Joi.number().integer().positive()).optional(),
   employeeIds: Joi.array().items(Joi.number().integer().positive()).optional()
+
 }))
 export class UpdateDepartmentsDto {
   name?: string;
   description?: string;
   responsible?: string;
   totalEmployees?: number;
-  branchIds?: number[];
+  branches?: number[];
   employeeIds?: number[];
+  subDepartments?: number[]
 }

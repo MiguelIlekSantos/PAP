@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 type InputData = {
     input: string
@@ -10,9 +10,29 @@ type Props = {
     nameOnDB: string
     type?: string,
     changeData?: (name: string, value: string) => void;
+    initialData?: any;
 }
 
 export const Input = (props: Props) => {
+    const [value, setValue] = useState<string>('');
+
+    // Atualizar valor quando initialData mudar
+    useEffect(() => {
+        if (props.initialData && props.initialData[props.nameOnDB] !== undefined) {
+            const initialValue = props.initialData[props.nameOnDB];
+            // Converter Date para string se necessário
+            if (initialValue instanceof Date) {
+                setValue(initialValue.toISOString().split('T')[0]);
+            } else {
+                setValue(String(initialValue || ''));
+            }
+        }
+    }, [props.initialData, props.nameOnDB]);
+
+    const handleChange = (newValue: string) => {
+        setValue(newValue);
+        props.changeData?.(props.nameOnDB, newValue);
+    };
 
     return (
         <>
@@ -21,14 +41,14 @@ export const Input = (props: Props) => {
                     {props.name}
                     <span className="text-red-500 ml-1">*</span>
                 </label>
-                {typeSorting(props)}
+                {typeSorting(props, value, handleChange)}
             </div>
         </>
     )
 }
 
 
-function typeSorting(props: Props): JSX.Element | undefined {
+function typeSorting(props: Props, value: string, handleChange: (value: string) => void): JSX.Element | undefined {
 
     const commonProps = {
         className: `w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 
@@ -37,7 +57,9 @@ function typeSorting(props: Props): JSX.Element | undefined {
         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
         transition-colors duration-200 shadow-sm hover:shadow-md
         disabled:opacity-50 disabled:cursor-not-allowed`,
-        name:"input"
+        name: "input",
+        value: value,
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) => handleChange(e.target.value)
     }
 
     switch (props.type) {
@@ -48,7 +70,45 @@ function typeSorting(props: Props): JSX.Element | undefined {
                     type="text"
                     {...commonProps}
                     placeholder={`Enter ${props.name.toLowerCase()}`}
-                    onChange={(e) => props.changeData?.(props.nameOnDB, e.target.value)}
+                />
+            )
+            break;
+
+        case "date":
+            return (
+                <input
+                    type="date"
+                    {...commonProps}
+                />
+            )
+            break;
+
+        case "number":
+            return (
+                <input
+                    type="number"
+                    {...commonProps}
+                    placeholder={`Enter ${props.name.toLowerCase()}`}
+                />
+            )
+            break;
+
+        case "email":
+            return (
+                <input
+                    type="email"
+                    {...commonProps}
+                    placeholder={`Enter ${props.name.toLowerCase()}`}
+                />
+            )
+            break;
+
+        case "tel":
+            return (
+                <input
+                    type="tel"
+                    {...commonProps}
+                    placeholder={`Enter ${props.name.toLowerCase()}`}
                 />
             )
             break;

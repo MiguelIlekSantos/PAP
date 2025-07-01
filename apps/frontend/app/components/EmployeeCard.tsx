@@ -12,7 +12,6 @@ type EmployeeCardProps = {
     joinDate: string;
     schedule: string;
     status: 'active' | 'vacation' | 'leave' | 'terminated';
-    location: string;
     photo?: string;
   };
   onClick?: () => void;
@@ -78,10 +77,6 @@ export const EmployeeCard = ({ employee, onClick }: EmployeeCardProps) => {
             <span>{employee.schedule}</span>
           </div>
           
-          <div className="flex items-center gap-2 text-gray-300">
-            <MapPin size={14} className="text-violet-400" />
-            <span>{employee.location}</span>
-          </div>
         </div>
       </div>
     </div>

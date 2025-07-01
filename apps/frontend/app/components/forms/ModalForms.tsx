@@ -1,26 +1,24 @@
 'use client';
 import { create } from '@/lib/api';
-import { CreateEnterpriseDTO } from '@pap/utils';
-import { Enterprise } from '@prisma/client';
-import { useRouter } from 'next/router';
 import React, { ReactNode, useEffect, useState } from 'react';
 
 type Dicitionary<T> = {
     [key: string]: T;
 };
 
-type Props = {
+type Props<T = any> = {
     onclick: () => void;
-    setInputData: React.Dispatch<React.SetStateAction<Partial<CreateEnterpriseDTO>>>;
-    createEnterprise: () => Promise<boolean>;
+    setInputData: React.Dispatch<React.SetStateAction<Partial<T>>>;
+    create: () => Promise<boolean>;
     children: ReactNode;
+    initialData?: Partial<T>;
 };
 
-export const ModalForms = (props: Props) => {
+export const ModalForms = <T = any>(props: Props<T>) => {
 
     const [isClosing, setIsClosing] = useState<boolean>(false);
 
-    function changeData<Key extends keyof CreateEnterpriseDTO>(
+    function changeData<Key extends keyof T>(
         key: Key,
         value: string
     ) {
@@ -32,8 +30,8 @@ export const ModalForms = (props: Props) => {
         }))
     }
 
-    async function createEnterpriseAndClose() {
-        const success = await props.createEnterprise();
+    async function createAndClose() {
+        const success = await props.create();
         if (success) {
             handleClick();
             window.location.reload()
@@ -57,7 +55,8 @@ export const ModalForms = (props: Props) => {
     const childrenWithMethods = React.Children.map(props.children, (child) => {
         if (React.isValidElement(child)) {
             return React.cloneElement(child as React.ReactElement<any>, {
-                changeData: changeData
+                changeData: changeData,
+                initialData: props.initialData
             })
         }
         return child;
@@ -78,10 +77,10 @@ export const ModalForms = (props: Props) => {
                     transform transition-all duration-300 ease-out"
                 >
                     {/* Header */}
-                    <div className="px-8 py-6 border-b border-gray-200 dark:border-gray-700">
+                    <div className="px-8 py-6">
                         <div className="flex items-center justify-between">
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                Create New Enterprise
+                                {/* Create New Item */}
                             </h2>
                             <button 
                                 onClick={handleClick}
@@ -118,9 +117,9 @@ export const ModalForms = (props: Props) => {
                                 transition-colors duration-200 shadow-lg hover:shadow-xl
                                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                                 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                onClick={createEnterpriseAndClose}
+                                onClick={createAndClose}
                             >
-                                Create Enterprise
+                                Create
                             </button>
                         </div>
                     </div>

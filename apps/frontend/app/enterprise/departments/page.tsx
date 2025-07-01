@@ -1,123 +1,210 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Plus, Search, Filter, ChevronDown } from 'lucide-react'
 import { DepartmentCard } from '@/app/components/DepartmentCard'
+import { SubDepartmentCard } from '@/app/components/SubDepartmentCard'
 import { Modal } from '@/app/components/Modal'
+import { useEnterpriseStore } from '@/lib/store/items/enterprise.store'
+import { CreateDepartmentsDTO, UpdateDepartmentsDTO, CreateSubDepartmentsDTO, UpdateSubDepartmentsDTO } from '@pap/utils'
+import { create, getAll, ListResponse, update, remove } from '@/lib/api'
+import { Departments, SubDepartments } from '@prisma/client'
+import { Pagination } from '@/app/components/Pagination'
+import { ModalForms } from '@/app/components/forms/ModalForms'
+import { Fieldset } from '@/app/components/forms/Fieldset'
+import { Input } from '@/app/components/forms/Input'
+import { Select } from '@/app/components/forms/Select'
+import { showSuccess, showError } from '@/lib/utils/toastHelpers'
 
-// Definindo o tipo para um departamento
-type Department = {
-	id: string;
-	name: string;
-	manager: string;
-	employeeCount: number;
-	budget: {
-		total: number;
-		used: number;
-		currency: string;
-	};
-	location: string;
-	parentId: string | null;
-};
+
+const APIMODULE = "departments"
+const APIMODULE_SUB = "subdepartments"
 
 export default function DepartmentsPage() {
 	const [createDepartmentModal, setCreateDepartmentModal] = useState<boolean>(false);
 	const [createSubDepartmentModal, setCreateSubDepartmentModal] = useState<boolean>(false);
 	const [editModal, setEditModal] = useState<boolean>(false);
-	const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
 
-	// Dados de exemplo para os departamentos
-	const departments: Department[] = [
-		{
-			id: "dev-dept",
-			name: "Desenvolvimento de Software",
-			manager: "Ana Moura",
-			employeeCount: 32,
-			budget: {
-				total: 1250000,
-				used: 875000,
-				currency: "€"
-			},
-			location: "Techwave Lisboa",
-			parentId: null
-		},
-		{
-			id: "marketing-dept",
-			name: "Marketing e Vendas",
-			manager: "Carlos Mendes",
-			employeeCount: 18,
-			budget: {
-				total: 750000,
-				used: 420000,
-				currency: "€"
-			},
-			location: "Techwave Porto",
-			parentId: null
-		},
-		{
-			id: "hr-dept",
-			name: "Recursos Humanos",
-			manager: "Sofia Almeida",
-			employeeCount: 8,
-			budget: {
-				total: 350000,
-				used: 210000,
-				currency: "€"
-			},
-			location: "Techwave Lisboa",
-			parentId: null
-		},
-		{
-			id: "finance-dept",
-			name: "Finanças",
-			manager: "Pedro Santos",
-			employeeCount: 12,
-			budget: {
-				total: 500000,
-				used: 380000,
-				currency: "€"
-			},
-			location: "Techwave Lisboa",
-			parentId: null
-		},
-		{
-			id: "frontend-dept",
-			name: "Frontend",
-			manager: "João Silva",
-			employeeCount: 14,
-			budget: {
-				total: 600000,
-				used: 450000,
-				currency: "€"
-			},
-			location: "Techwave Lisboa",
-			parentId: "dev-dept"
-		},
-		{
-			id: "backend-dept",
-			name: "Backend",
-			manager: "Maria Costa",
-			employeeCount: 18,
-			budget: {
-				total: 650000,
-				used: 425000,
-				currency: "€"
-			},
-			location: "Techwave Braga",
-			parentId: "dev-dept"
+	const [selectedDepartmentId, setSelectedDepartmentId] = useState<number>();
+
+
+	const [loaded, setLoaded] = useState<boolean>(false);
+	const [dpts, setDpts] = useState<ListResponse<Departments>>();
+	const [subDpts, setSubDpts] = useState<ListResponse<SubDepartments>>();
+
+	const [paginationNumDtps, setPaginationNumDtps] = useState<number>(1);
+	const [paginationNumSubDtps, setPaginationNumSubDtps] = useState<number>(1);
+	const [inputDataDpt, setInputDataDpt] = useState<Partial<CreateDepartmentsDTO>>({})
+	const [inputDataSubDpt, setInputDataSubDpt] = useState<Partial<CreateSubDepartmentsDTO>>({})
+	const [departmentOptions, setDepartmentOptions] = useState<{value: number, label: string}[]>([])
+	
+
+	const { getEnterprise } = useEnterpriseStore()
+
+	useEffect(() => {
+		const enterpriseId = getEnterprise();
+		if (!enterpriseId) {
+			console.error('Enterprise ID not found in store');
+			return;
 		}
-	];
+
+		getAll<ListResponse<Departments>>(APIMODULE, {
+			"page": paginationNumDtps,
+			"quantity": 3,
+			"relationFilter": ["enterpriseId", enterpriseId]
+		})
+			.then((data) => {
+				setLoaded(true)
+				setDpts(data)
+				
+				// Criar opções para o select de departamentos
+				const options = data.data.items.map(dept => ({
+					value: dept.id,
+					label: dept.name
+				}));
+				setDepartmentOptions(options);
+				
+				console.log(data)
+			})
+
+	}, [paginationNumDtps, getEnterprise])
+
+	useEffect(() => {
+		const enterpriseId = getEnterprise();
+		if (!enterpriseId) {
+			console.error('Enterprise ID not found in store');
+			return;
+		}
+
+		getAll<ListResponse<SubDepartments>>(APIMODULE_SUB, {
+			"page": paginationNumSubDtps,
+			"quantity": 3,
+			"relationFilter": ["enterpriseId", enterpriseId]
+		})
+			.then((data) => {
+				setSubDpts(data)
+				console.log(data)
+			})
+
+	}, [paginationNumSubDtps, getEnterprise])
 
 	// Função para lidar com o clique no ícone de edição
-	const handleEditClick = (departmentId: string) => {
+	const handleEditClick = (departmentId: number) => {
 		setSelectedDepartmentId(departmentId);
 		setEditModal(true);
 	};
 
-	// Encontrar o departamento selecionado
-	const selectedDepartment = selectedDepartmentId 
-		? departments.find(dept => dept.id === selectedDepartmentId) 
-		: null;
+
+
+	// Função para obter o nome do department pelo ID
+	const getDepartmentName = (departmentId: number): string => {
+		const department = departmentOptions.find(dept => dept.value === departmentId);
+		return department?.label || "";
+	};
+
+
+	function createDpts(): Promise<boolean> {
+		inputDataDpt.enterpriseId = getEnterprise();
+		const payload = inputDataDpt as CreateDepartmentsDTO;
+
+		return create<CreateDepartmentsDTO, Departments>(APIMODULE, payload)
+			.then((data) => {
+				console.log(data)
+				return true
+			})
+			.catch(err => {
+				console.error(err)
+				return false
+			})
+	}
+
+	function updateDpts(id: number): Promise<boolean> {
+		inputDataDpt.enterpriseId = getEnterprise();
+		const payload = inputDataDpt as UpdateDepartmentsDTO;
+
+		return update<UpdateDepartmentsDTO, Departments>(APIMODULE, id, payload)
+			.then((data) => {
+				console.log(data)
+				return true
+			})
+			.catch(err => {
+				console.error(err)
+				return false
+			})
+	}
+
+	function createSubDpts(): Promise<boolean> {
+		inputDataSubDpt.enterpriseId = getEnterprise();
+		const payload = inputDataSubDpt as CreateSubDepartmentsDTO;
+
+		return create<CreateSubDepartmentsDTO, SubDepartments>(APIMODULE_SUB, payload)
+			.then((data) => {
+				console.log(data)
+				return true
+			})
+			.catch(err => {
+				console.error(err)
+				return false
+			})
+	}
+
+	// Função para deletar departamento
+	const handleDeleteDepartment = async (departmentId: number) => {
+		if (window.confirm('Tem certeza que deseja deletar este departamento? Esta ação não pode ser desfeita.')) {
+			try {
+				await remove(APIMODULE, departmentId);
+				showSuccess('Departamento deletado com sucesso!');
+				
+				// Recarregar a lista de departamentos
+				const enterpriseId = getEnterprise();
+				if (enterpriseId) {
+					const data = await getAll<ListResponse<Departments>>(APIMODULE, {
+						"page": paginationNumDtps,
+						"quantity": 3,
+						"relationFilter": ["enterpriseId", enterpriseId]
+					});
+					setDpts(data);
+					
+					// Atualizar opções do select
+					const options = data.data.items.map(dept => ({
+						value: dept.id,
+						label: dept.name
+					}));
+					setDepartmentOptions(options);
+				}
+			} catch (error) {
+				console.error('Erro ao deletar departamento:', error);
+				showError('Erro ao deletar departamento. Tente novamente.');
+			}
+		}
+	};
+
+	// Função para deletar subdepartamento
+	const handleDeleteSubDepartment = async (subDepartmentId: number) => {
+		if (window.confirm('Tem certeza que deseja deletar este subdepartamento? Esta ação não pode ser desfeita.')) {
+			try {
+				await remove(APIMODULE_SUB, subDepartmentId);
+				showSuccess('Subdepartamento deletado com sucesso!');
+				
+				// Recarregar a lista de subdepartamentos
+				const enterpriseId = getEnterprise();
+				if (enterpriseId) {
+					const data = await getAll<ListResponse<SubDepartments>>(APIMODULE_SUB, {
+						"page": paginationNumSubDtps,
+						"quantity": 3,
+						"relationFilter": ["enterpriseId", enterpriseId]
+					});
+					setSubDpts(data);
+				}
+			} catch (error) {
+				console.error('Erro ao deletar subdepartamento:', error);
+				showError('Erro ao deletar subdepartamento. Tente novamente.');
+			}
+		}
+	};
+
+
+
 
 	return (
 		<div className="min-h-screen ml-20 bg-base-300 text-white p-10">
@@ -136,22 +223,23 @@ export default function DepartmentsPage() {
 					</button>
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{departments
-						.filter(dept => dept.parentId === null)
-						.map(dept => (
+					{loaded &&
+						dpts?.data.items.map((department) => (
 							<DepartmentCard
-								key={dept.id}
-								id={dept.id}
-								name={dept.name}
-								manager={dept.manager}
-								employeeCount={dept.employeeCount}
-								budget={dept.budget}
-								location={dept.location}
-								onClick={handleEditClick}
-							/>
-						))}
+								key={department.id}
+								id={department.id}
+								name={department.name}
+								manager={department.responsible ?? ""}
+								employeeCount={department.totalEmployees ?? 0}
+								description={department.description ?? ""}
+								onClick={handleEditClick} // Passa a função como prop
+								onDelete={handleDeleteDepartment} // Passa a função de deletar
+							/>))
+					}
 				</div>
 			</div>
+
+			<Pagination actualPage={paginationNumDtps} last={dpts?.data.metadata.last ?? 1} updatePage={setPaginationNumDtps} />
 
 			{/* Subdepartamentos */}
 			<div className="mb-10">
@@ -162,43 +250,69 @@ export default function DepartmentsPage() {
 					</button>
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{departments
-						.filter(dept => dept.parentId !== null)
-						.map(dept => (
-							<DepartmentCard
-								key={dept.id}
-								id={dept.id}
-								name={dept.name}
-								manager={dept.manager}
-								employeeCount={dept.employeeCount}
-								budget={dept.budget}
-								location={dept.location}
-								onClick={handleEditClick}
-							/>
-						))}
+					{loaded &&
+						subDpts?.data.items.map((subDepartment) => (
+							<SubDepartmentCard
+								key={subDepartment.id}
+								id={subDepartment.id}
+								name={subDepartment.name}
+								manager={subDepartment.responsible ?? ""}
+								employeeCount={subDepartment.totalEmployees ?? 0}
+								description={subDepartment.description ?? ""}
+								departmentName={getDepartmentName(subDepartment.departmentId)}
+								departmentId={subDepartment.departmentId}
+								departmentOptions={departmentOptions}
+								onDelete={handleDeleteSubDepartment} // Passa a função de deletar
+							/>))
+					}
 				</div>
+
+				<Pagination actualPage={paginationNumSubDtps} last={subDpts?.data.metadata.last ?? 1} updatePage={setPaginationNumSubDtps} />
 			</div>
 
-			{/* Modal para criar novo departamento principal */}
-			{createDepartmentModal && (
-				<Modal onclick={() => setCreateDepartmentModal(false)} isCreate={true} isLarge={true}>
-					<p>a</p>
-				</Modal>
-			)}
-
 			{/* Modal para criar subdepartamento */}
-			{createSubDepartmentModal && (
-				<Modal onclick={() => setCreateSubDepartmentModal(false)} isCreate={true} isLarge={true}>
-					<p>a</p>
-				</Modal>
-			)}
+			{createSubDepartmentModal &&
+				<ModalForms create={createSubDpts} setInputData={setInputDataSubDpt} onclick={() => { setCreateSubDepartmentModal(false) }}>
+					<Fieldset title='Create Sub-Department'>
+						<Input nameOnDB='name' name='Name' />
+						<Input nameOnDB='description' name='Description' />
+						<Input nameOnDB='responsible' name='Responsible' />
+						<Select 
+							nameOnDB='departmentId' 
+							name='Department' 
+							options={departmentOptions}
+							required={true}
+						/>
+					</Fieldset>
+				</ModalForms>
+			}
+
+			{createDepartmentModal &&
+				<ModalForms create={createDpts} setInputData={setInputDataDpt} onclick={() => { setCreateDepartmentModal(false) }}>
+					{/* <p className='text-2xl p-5 lg:p-10'>Just insert the basic settings here and then      </> */}
+
+					<Fieldset title='Create Deparment'>
+						<Input nameOnDB='name' name='Name' />
+						<Input nameOnDB='description' name='Description' />
+						<Input nameOnDB='responsible' name='Responsible' />
+					</Fieldset>
+
+				</ModalForms>
+			}
 
 			{/* Modal para editar departamento */}
-			{editModal && selectedDepartment && (
-				<Modal onclick={() => setEditModal(false)} isCreate={false} isLarge={true}>
-					<p>a</p>
-				</Modal>
+			{editModal && (
+				<ModalForms create={() => updateDpts(selectedDepartmentId ?? 0)} setInputData={setInputDataDpt} onclick={() => { setEditModal(false) }}>
+					<Fieldset title='Edit Department'>
+						<Input nameOnDB='name' name='Name' />
+						<Input nameOnDB='description' name='Description' />
+						<Input nameOnDB='responsible' name='Responsible' />
+					</Fieldset>
+				</ModalForms>
 			)}
+
+
+
 		</div>
 	);
 }

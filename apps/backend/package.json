@@ -1,6 +1,8 @@
 {
   "dependencies": {
-    "@nestjs/mapped-types": "*"
+    "@google/generative-ai": "^0.24.1",
+    "@nestjs/mapped-types": "*",
+    "openai": "^5.8.2"
   },
   "name": "@pap/backend",
   "version": "0.0.1",

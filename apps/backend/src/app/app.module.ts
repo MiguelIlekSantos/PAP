@@ -13,6 +13,7 @@ import { InventoryManagementModule } from './inventory-management/inventory-mana
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtGuard, JwtStrategy, VerifyService } from '../lib';
+import { AiModuleModule } from './ai-module/ai-module.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { JwtGuard, JwtStrategy, VerifyService } from '../lib';
 
     PassportModule,
     JwtModule.register({}),
+    AiModuleModule,
   ],
   controllers: [],
   providers: [

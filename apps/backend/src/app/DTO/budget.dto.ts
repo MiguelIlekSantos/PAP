@@ -9,8 +9,6 @@ import * as Joi from 'joi';
   status: Joi.string().required().messages({ 'string.empty': 'Status is required', 'any.required': 'Status is required' }),
   period: Joi.string().required().messages({ 'string.empty': 'Period is required', 'any.required': 'Period is required' }),
   category: Joi.string().required().messages({ 'string.empty': 'Category is required', 'any.required': 'Category is required' }),
-  departmentId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Department ID must be a number', 'number.integer': 'Department ID must be an integer', 'number.positive': 'Department ID must be positive' }),
-  subDepartmentId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Sub department ID must be a number', 'number.integer': 'Sub department ID must be an integer', 'number.positive': 'Sub department ID must be positive' }),
   projectId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Project ID must be a number', 'number.integer': 'Project ID must be an integer', 'number.positive': 'Project ID must be positive' }),
   campaignId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Campaign ID must be a number', 'number.integer': 'Campaign ID must be an integer', 'number.positive': 'Campaign ID must be positive' }),
 
@@ -24,8 +22,6 @@ export class CreateBudgetDto {
   status?: string;
   period?: string;
   category?: string;
-  departmentId?: number;
-  subDepartmentId?: number;
   projectId?: number;
   campaignId?: number;
 
@@ -42,8 +38,6 @@ export class CreateBudgetDto {
   status: Joi.string().optional(),
   period: Joi.string().optional(),
   category: Joi.string().optional(),
-  departmentId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Department ID must be a number', 'number.integer': 'Department ID must be an integer', 'number.positive': 'Department ID must be positive' }),
-  subDepartmentId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Sub department ID must be a number', 'number.integer': 'Sub department ID must be an integer', 'number.positive': 'Sub department ID must be positive' }),
   projectId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Project ID must be a number', 'number.integer': 'Project ID must be an integer', 'number.positive': 'Project ID must be positive' }),
   campaignId: Joi.number().integer().positive().optional().messages({ 'number.base': 'Campaign ID must be a number', 'number.integer': 'Campaign ID must be an integer', 'number.positive': 'Campaign ID must be positive' }),
   createdAt: Joi.date().optional(),
@@ -58,8 +52,6 @@ export class UpdateBudgetDto {
   status?: string;
   period?: string;
   category?: string;
-  departmentId?: number;
-  subDepartmentId?: number;
   projectId?: number;
   campaignId?: number;
   createdAt?: Date;

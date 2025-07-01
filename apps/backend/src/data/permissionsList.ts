@@ -155,4 +155,8 @@ export enum Permissions {
   REPORTS_CREATE = 'reports:create',
   REPORTS_UPDATE = 'reports:update',
   REPORTS_DELETE = 'reports:delete',
+
+  AI_ANALYSIS_READ = 'ai_analysis:read',
+  AI_ANALYSIS_CREATE = 'ai_analysis:create',
+  AI_ANALYSIS_DELETE = 'ai_analysis:delete',
 }

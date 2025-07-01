@@ -1,4 +1,5 @@
 import './global.css';
+import { Toaster } from 'react-hot-toast';
 
 export const metadata = {
   title: 'Welcome to frontend',
@@ -12,7 +13,30 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className='overflow-x-hidden'>{children}</body>
+      <body className='overflow-x-hidden'>
+        {children}
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 6000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+              maxWidth: '500px',
+            },
+            success: {
+              style: {
+                background: '#10B981',
+              },
+            },
+            error: {
+              style: {
+                background: '#EF4444',
+              },
+            },
+          }}
+        />
+      </body>
     </html>
   );
 }

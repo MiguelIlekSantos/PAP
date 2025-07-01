@@ -23,10 +23,13 @@ type Props = {
     label: string
     module: string
     value?: string
+    displayValue?: string
     isLink?: boolean
     isEmail?: boolean
     isSelectable?: boolean
     isFile?: boolean
+    isEnterprise?: boolean
+    elementId?: number
     children?: React.ReactNode
     name: string
 }
@@ -59,9 +62,9 @@ export const InfoCard = (props: Props) => {
     }
 
     async function handleSave() {
-        const updatedData = await update<UpdateEnterpriseDTO, UpdateEnterpriseDTO>(
+        const updatedData = await update(
             props.module,
-            getEnterprise(),
+            props.isEnterprise ? getEnterprise() : props.elementId ?? "",
             {
                 [props.name]: currentValue
             }
@@ -79,7 +82,7 @@ export const InfoCard = (props: Props) => {
     }
 
     return (
-        <div className="relative bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-3 flex flex-col gap-2 shadow-md text-white hover:shadow-violet-900/20">
+        <div className="mt-2 relative bg-[#0d1218] border border-gray-800 hover:border-violet-700 transition-all duration-300 rounded-lg p-3 flex flex-col gap-2 shadow-md text-white hover:shadow-violet-900/20">
             <button
                 onClick={() => setIsEditing(!isEditing)}
                 className="absolute top-2 right-2 text-gray-500 hover:text-violet-300 transition-colors duration-200"
@@ -132,13 +135,13 @@ export const InfoCard = (props: Props) => {
                         {props.isFile ?
                             <>
                                 <Image
-                                    src={content?.toString() ?? "Not found"}
-                                    alt='Logo da empresa'
+                                    src={content?.toString() ?? "/"}
+                                    alt='img'
                                     width={140}
                                     height={140}
                                 />
                             </>
-                            : content
+                            : (props.isSelectable && props.displayValue ? props.displayValue : content)
                         }
                     </span>
                 )

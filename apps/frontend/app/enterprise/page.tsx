@@ -40,18 +40,18 @@ export default function EnterprisePage() {
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 				{loaded &&
 					<>
-						<InfoCard module={APIMODULE} name='legalName' label="Nome legal da empresa" value={enterprise?.legalName ?? undefined} />
-						<InfoCard module={APIMODULE} name='comercialName' label="Nome comercial" value={enterprise?.comercialName ?? undefined} />
-						<InfoCard module={APIMODULE} name='registerNumber' label="Número de registo" value={enterprise?.registerNumber ?? undefined} />
-						<InfoCard module={APIMODULE} name='registerCountry' label="País de registro" value={enterprise?.registerCountry ?? undefined} />
-						<InfoCard module={APIMODULE} name='registerType' label="Tipo de registro" value={enterprise?.registerType ?? undefined} />
-						<InfoCard module={APIMODULE} name='type' label="Tipo de empresa" value={enterprise?.type ?? undefined} />
-						<InfoCard module={APIMODULE} name='foundationDate' label="Data de fundação" value={enterprise?.foundationDate ? new Date(enterprise.foundationDate).toLocaleDateString('pt-PT') : undefined} />
-						<InfoCard module={APIMODULE} name='mainLanguage' label="Idioma principal" value={enterprise?.mainLanguage ?? undefined} />
-						<InfoCard module={APIMODULE} name='oficialCurrency' label="Moeda oficial" value={enterprise?.oficialCurrency ?? undefined} />
-						<InfoCard module={APIMODULE} name='email' label="Email de contato" value={enterprise?.email ?? undefined} isEmail />
-						<InfoCard module={APIMODULE} name='phone' label="Telefone" value={enterprise?.phone ?? undefined} />
-						<InfoCard module={APIMODULE} isFile name='logo' label="Logotipo da empresa" value={enterprise?.logo ?? undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='legalName' label="Nome legal da empresa" value={enterprise?.legalName ?? undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='comercialName' label="Nome comercial" value={enterprise?.comercialName ?? undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='registerNumber' label="Número de registo" value={enterprise?.registerNumber ?? undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='registerCountry' label="País de registro" value={enterprise?.registerCountry ?? undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='registerType' label="Tipo de registro" value={enterprise?.registerType ?? undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='type' label="Tipo de empresa" value={enterprise?.type ?? undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='foundationDate' label="Data de fundação" value={enterprise?.foundationDate ? new Date(enterprise.foundationDate).toLocaleDateString('pt-PT') : undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='mainLanguage' label="Idioma principal" value={enterprise?.mainLanguage ?? undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='oficialCurrency' label="Moeda oficial" value={enterprise?.oficialCurrency ?? undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='email' label="Email de contato" value={enterprise?.email ?? undefined} isEmail />
+						<InfoCard isEnterprise={true} module={APIMODULE} name='phone' label="Telefone" value={enterprise?.phone ?? undefined} />
+						<InfoCard isEnterprise={true} module={APIMODULE} isFile name='logo' label="Logotipo da empresa" value={enterprise?.logo ?? undefined} />
 					</>
 				}
 

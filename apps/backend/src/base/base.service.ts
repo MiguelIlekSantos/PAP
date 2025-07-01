@@ -3,16 +3,10 @@
 import { PrismaService } from 'src/prisma.service';
 import { ListResponse } from '../lib/interfaces/responses.interface';
 import { Logger } from '@nestjs/common';
+import { includesMap } from './includes';
+import { ListParametersDto } from 'src/app/DTO/list/list.dto';
 
 type OrderDirection = 'asc' | 'desc';
-
-type parameters = {
-	page ?: number;
-	quantity ?: number;
-	term ?: string;
-	orderDir ?: OrderDirection;
-	orderBy ?: string;
-}
 
 export class BaseService {
 	private readonly logger = new Logger(BaseService.name);
@@ -24,31 +18,32 @@ export class BaseService {
 
 	async findAll<T>(
 		modelAccessor: keyof PrismaService,
-		parameters?: parameters,
+		parameters?: ListParametersDto,
 		searchableField = 'name'
 	): Promise<ListResponse<T>> {
-		console.log(parameters)
-		console.log(searchableField)
-		console.log(typeof(modelAccessor))
-		
-
 		const {
 			page = 1,
 			quantity = 10,
 			term = '',
 			orderDir = 'asc',
 			orderBy = 'id',
+			relationFilter,
 		} = parameters ?? {};
 
 		const model = this.prisma[modelAccessor] as any;
 
-		const where = term
-			? {
-				[searchableField]: {
-					contains: term,
-				},
-			}
-			: {};
+		const where: any = {};
+		
+		if (term) {
+			where[searchableField] = {
+				contains: term,
+			};
+		}
+
+		if (relationFilter) {
+			const [field, value] = relationFilter;
+			where[field] = value;
+		}
 
 		const total = await model.count({ where });
 
@@ -78,25 +73,70 @@ export class BaseService {
 
 	async findOne<T>(modelAccessor: keyof PrismaService, id: number): Promise<T | null> {
 		const model = this.prisma[modelAccessor] as any;
-		return model.findFirst({ where: { id } });
+		const include = includesMap[modelAccessor as string];
+
+		return model.findFirst({ 
+			where: { id },
+			include
+		});
 	}
 
 	async create<T, INFO = Partial<T>>(modelAccessor: keyof PrismaService, data: INFO): Promise<T> {
 		const model = this.prisma[modelAccessor] as any;
-		const created = await model.create({ data });
+		
+		const processedData = this.processRelationArrays(data, 'create');
+		
+		const created = await model.create({ data: processedData });
 		return created;
 	}
 
 	async update<T, INFO = Partial<T>>(modelAccessor: keyof PrismaService, id: number, data: INFO): Promise<T> {
 		const model = this.prisma[modelAccessor] as any;
+		
+		const processedData = this.processRelationArrays(data, 'update');
+		
 		const items = await model.update({
 			where: {
 				id: id
 			},
-			data: data
+			data: processedData
 		});
 
 		return items;
+	}
+
+	private processRelationArrays(data: any, operation: 'create' | 'update'): any {
+		if (!data || typeof data !== 'object') {
+			return data;
+		}
+
+		const processedData = { ...data };
+		for (const [key, value] of Object.entries(processedData)) {
+			if (Array.isArray(value)) {
+				if (value.length === 0) {
+					if (operation === 'create') {
+						delete processedData[key];
+					} else {
+						processedData[key] = {
+							set: []
+						};
+					}
+				}
+				else if (typeof value[0] === 'number') {
+					if (operation === 'create') {
+						processedData[key] = {
+							connect: value.map(id => ({ id }))
+						};
+					} else {
+						processedData[key] = {
+							set: value.map(id => ({ id }))
+						};
+					}
+				}
+			}
+		}
+
+		return processedData;
 	}
 
 	async delete<T>(modelAccessor: keyof PrismaService, id: number): Promise<boolean> {
@@ -116,4 +156,3 @@ export class BaseService {
 
 
 }
-
