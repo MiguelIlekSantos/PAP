@@ -2,14 +2,10 @@
 
 import { PrismaService } from 'src/prisma.service';
 import { ListResponse } from '../lib/interfaces/responses.interface';
-import { Logger } from '@nestjs/common';
 import { includesMap } from './includes';
 import { ListParametersDto } from 'src/app/DTO/list/list.dto';
 
-type OrderDirection = 'asc' | 'desc';
-
 export class BaseService {
-	private readonly logger = new Logger(BaseService.name);
 
 	constructor(
 		protected readonly prisma: PrismaService,
@@ -42,7 +38,20 @@ export class BaseService {
 
 		if (relationFilter) {
 			const [field, value] = relationFilter;
-			where[field] = value;
+			
+			const manyToManyFields = ['products', 'requests', 'sales'];
+			
+			if (manyToManyFields.includes(field) && (typeof value === 'number' || !isNaN(Number(value)))) {
+				// Para relações many-to-many, usamos a sintaxe 'some'
+				where[field] = {
+					some: {
+						id: Number(value)
+					}
+				};
+			} else {
+				// Para relações one-to-many ou outros tipos, usamos a atribuição direta
+				where[field] = value;
+			}
 		}
 
 		const total = await model.count({ where });

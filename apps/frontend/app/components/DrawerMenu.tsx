@@ -130,8 +130,7 @@ export const DrawerMenu = ({ page }: Props) => {
 export const EnterpriseTabs: Tabs[] = [
 	{ title: 'Home', icon: Home, url: '/' },
 	{ title: 'Branches', icon: Building2, url: '/branches' },
-	{ title: 'Departments', icon: Users, url: '/departments' },
-	{ title: 'General Settings', icon: Settings, url: '/seetings' },
+	{ title: 'Departments', icon: Users, url: '/departments' }
 ]
 
 export const ResourcesTabs: Tabs[] = [
@@ -151,7 +150,7 @@ export const FinanceTabs: Tabs[] = [
 ]
 
 export const SalesTabs: Tabs[] = [
-	{ title: 'Sales', icon: ShoppingCart, url: '/' },
+	{ title: 'Dashboard', icon: ShoppingCart, url: '/' },
 	{ title: 'Clients', icon: UserCheck, url: '/clients' },
 	{ title: 'Orders', icon: Receipt, url: '/orders' },
 	{ title: 'Invoices', icon: Newspaper, url: '/invoices' },
@@ -175,7 +174,6 @@ export const TechnologyTabs: Tabs[] = [
 	{ title: 'Dashboard', icon: Monitor, url: '/' },
 	{ title: 'Domains & Sites', icon: Globe, url: '/domains' },
 	{ title: 'Internal Systems', icon: Server, url: '/systems' },
-	{ title: 'Activity Logs', icon: History, url: '/logs' },
 ]
 
 export const MarketingTabs: Tabs[] = [

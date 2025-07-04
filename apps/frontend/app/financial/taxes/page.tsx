@@ -1,429 +1,611 @@
 'use client'
 
-import React, { useState } from 'react'
-import { SlideFrame } from '../../components/SlideFrame'
-import { FilterPanel } from '../../components/FilterPanel'
-import { Table } from '../../components/Table'
+import React, { useEffect, useState } from 'react'
+import { Plus, Search, Receipt, Calendar, AlertTriangle, CheckCircle, Edit, Trash2 } from 'lucide-react'
+import { DataTable } from '../../components/DataTable'
+import { Filter } from '../../components/Filter'
+import { ModalForms } from '../../components/forms/ModalForms'
+import { Input } from '../../components/forms/Input'
+import { SelectString } from '../../components/forms/SelectString'
+import { Fieldset } from '../../components/forms/Fieldset'
+import { Pagination } from '../../components/Pagination'
 import { Modal } from '../../components/Modal'
-import { Plus, Search, Receipt, Calendar, AlertTriangle, CheckCircle } from 'lucide-react'
+import { create, getAll, getById, update, remove, ListResponse } from '@/lib/api'
+import { useEnterpriseStore } from '@/lib/store/items/enterprise.store'
+import { showSuccess, showError } from '@/lib/utils/toastHelpers'
+import { Taxes } from '@prisma/client'
+import { CreateTaxesDTO, UpdateTaxesDTO } from '@pap/utils'
 
-// Mock data for tax obligations
-const mockTaxObligations = [
-  {
-    id: '1',
-    taxType: 'IVA',
-    period: 'Março 2023',
-    dueDate: '20/04/2023',
-    amount: 3250.00,
-    status: 'paid',
-    paymentDate: '18/04/2023',
-    reference: 'IVA-2023-03',
-    description: 'Declaração Periódica de IVA - Março 2023',
-    penalty: 0.00,
-  },
-  {
-    id: '2',
-    taxType: 'IRS',
-    period: 'Março 2023',
-    dueDate: '20/04/2023',
-    amount: 2100.00,
-    status: 'paid',
-    paymentDate: '19/04/2023',
-    reference: 'IRS-2023-03',
-    description: 'Retenções na Fonte - Março 2023',
-    penalty: 0.00,
-  },
-  {
-    id: '3',
-    taxType: 'Segurança Social',
-    period: 'Março 2023',
-    dueDate: '15/04/2023',
-    amount: 1850.00,
-    status: 'paid',
-    paymentDate: '14/04/2023',
-    reference: 'SS-2023-03',
-    description: 'Contribuições para a Segurança Social - Março 2023',
-    penalty: 0.00,
-  },
-  {
-    id: '4',
-    taxType: 'IVA',
-    period: 'Abril 2023',
-    dueDate: '20/05/2023',
-    amount: 2890.00,
-    status: 'pending',
-    paymentDate: null,
-    reference: 'IVA-2023-04',
-    description: 'Declaração Periódica de IVA - Abril 2023',
-    penalty: 0.00,
-  },
-  {
-    id: '5',
-    taxType: 'IRS',
-    period: 'Abril 2023',
-    dueDate: '20/05/2023',
-    amount: 2250.00,
-    status: 'pending',
-    paymentDate: null,
-    reference: 'IRS-2023-04',
-    description: 'Retenções na Fonte - Abril 2023',
-    penalty: 0.00,
-  },
-  {
-    id: '6',
-    taxType: 'IRC',
-    period: 'Anual 2022',
-    dueDate: '31/05/2023',
-    amount: 15000.00,
-    status: 'overdue',
-    paymentDate: null,
-    reference: 'IRC-2022',
-    description: 'Imposto sobre o Rendimento das Pessoas Coletivas - 2022',
-    penalty: 750.00,
-  },
-  {
-    id: '7',
-    taxType: 'Segurança Social',
-    period: 'Abril 2023',
-    dueDate: '15/05/2023',
-    amount: 1920.00,
-    status: 'pending',
-    paymentDate: null,
-    reference: 'SS-2023-04',
-    description: 'Contribuições para a Segurança Social - Abril 2023',
-    penalty: 0.00,
-  },
-];
-
-// Filter fields
-const filterFields = [
-  {
-    name: 'taxType',
-    label: 'Tipo de Imposto',
-    type: 'select' as const,
-    options: [
-      { label: 'IVA', value: 'IVA' },
-      { label: 'IRS', value: 'IRS' },
-      { label: 'IRC', value: 'IRC' },
-      { label: 'Segurança Social', value: 'Segurança Social' },
-    ],
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    type: 'select' as const,
-    options: [
-      { label: 'Pago', value: 'paid' },
-      { label: 'Pendente', value: 'pending' },
-      { label: 'Em Atraso', value: 'overdue' },
-    ],
-  },
-];
+const APIMODULE = "taxes"
 
 export default function TaxesPage() {
-  const [taxes, setTaxes] = useState(mockTaxObligations);
-  const [filteredTaxes, setFilteredTaxes] = useState(mockTaxObligations);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [loaded, setLoaded] = useState<boolean>(false);
+  const [taxes, setTaxes] = useState<ListResponse<Taxes>>();
+  const [paginationNum, setPaginationNum] = useState<number>(1);
 
-  // Handle filter change
-  const handleFilterChange = (name: string, value: any) => {
-    setFilterValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedTax, setSelectedTax] = useState<Taxes | null>(null);
+
+  const [inputDataCreate, setInputDataCreate] = useState<Partial<CreateTaxesDTO>>({});
+  const [inputDataUpdate, setInputDataUpdate] = useState<Partial<UpdateTaxesDTO>>({});
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
+  const [statusFilter, setStatusFilter] = useState('');
+
+  const { getEnterprise } = useEnterpriseStore();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat('pt-PT', {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(amount);
   };
 
-  // Apply filters
-  const applyFilters = () => {
-    let filtered = [...taxes];
+  const formatDate = (date: Date | string): string => {
+    if (!date) return 'Não informado';
+    return new Date(date).toLocaleDateString('pt-PT');
+  };
 
-    // Apply search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (tax) =>
-          tax.description.toLowerCase().includes(term) ||
-          tax.taxType.toLowerCase().includes(term) ||
-          tax.reference.toLowerCase().includes(term) ||
-          tax.period.toLowerCase().includes(term)
-      );
+  const getStatusDisplay = (tax: Taxes) => {
+    // If already paid, show paid status
+    if (tax.status === 'paid') {
+      return { status: 'paid', label: 'Paid', color: 'text-green-500', icon: CheckCircle };
     }
 
-    // Apply other filters
-    Object.entries(filterValues).forEach(([key, value]) => {
-      if (value) {
-        filtered = filtered.filter((tax) => {
-          if (typeof tax[key as keyof typeof tax] === 'string') {
-            return (tax[key as keyof typeof tax] as string).toLowerCase() === value.toLowerCase();
-          }
-          return tax[key as keyof typeof tax] === value;
-        });
-      }
-    });
-
-    setFilteredTaxes(filtered);
+    const today = new Date();
+    const dueDate = new Date(tax.endDate);
+    
+    if (dueDate < today) {
+      return { status: 'overdue', label: 'Overdue', color: 'text-red-500', icon: AlertTriangle };
+    } else if (dueDate.getTime() - today.getTime() <= 7 * 24 * 60 * 60 * 1000) {
+      return { status: 'due_soon', label: 'Due Soon', color: 'text-yellow-500', icon: Calendar };
+    } else {
+      return { status: 'pending', label: 'Pending', color: 'text-blue-500', icon: CheckCircle };
+    }
   };
 
-  // Reset filters
-  const resetFilters = () => {
-    setFilterValues({});
-    setSearchTerm('');
-    setFilteredTaxes(taxes);
-  };
-
-  // Calculate totals
-  const totalTaxes = filteredTaxes.reduce((sum, tax) => sum + tax.amount, 0);
-  const paidTaxes = filteredTaxes.filter(t => t.status === 'paid').reduce((sum, t) => sum + t.amount, 0);
-  const pendingTaxes = filteredTaxes.filter(t => t.status === 'pending').reduce((sum, t) => sum + t.amount, 0);
-  const overdueTaxes = filteredTaxes.filter(t => t.status === 'overdue').reduce((sum, t) => sum + t.amount + t.penalty, 0);
-  const totalPenalties = filteredTaxes.reduce((sum, tax) => sum + tax.penalty, 0);
-
-  // Table columns
-  const columns = [
+  const getTaxColumns = () => [
     {
-      header: 'Tipo',
-      accessor: 'taxType',
+      header: 'Type',
+      accessor: 'type',
+      cell: (value: any) => value || 'Not specified',
     },
     {
-      header: 'Período',
+      header: 'Period',
       accessor: 'period',
+      cell: (value: any) => value || 'Not specified',
     },
     {
-      header: 'Descrição',
+      header: 'Description',
       accessor: 'description',
+      cell: (value: any) => value || 'Not specified',
     },
     {
-      header: 'Vencimento',
-      accessor: 'dueDate',
+      header: 'Due Date',
+      accessor: 'endDate',
+      cell: (value: any) => formatDate(value),
     },
     {
-      header: 'Valor',
+      header: 'Amount',
       accessor: 'amount',
-      cell: (value: number) => <span className="text-red-400">€{value.toFixed(2)}</span>,
-    },
-    {
-      header: 'Multa',
-      accessor: 'penalty',
-      cell: (value: number) => value > 0 ? <span className="text-red-500">€{value.toFixed(2)}</span> : <span className="text-gray-500">-</span>,
+      cell: (value: any) => <span className="text-red-400 font-medium">{formatCurrency(value)}</span>,
     },
     {
       header: 'Status',
       accessor: 'status',
-      cell: (value: string) => {
-        if (value === 'paid') return <span className="text-green-500 flex items-center gap-1"><CheckCircle size={16} />Pago</span>;
-        if (value === 'pending') return <span className="text-yellow-500 flex items-center gap-1"><Calendar size={16} />Pendente</span>;
-        if (value === 'overdue') return <span className="text-red-500 flex items-center gap-1"><AlertTriangle size={16} />Em Atraso</span>;
-        return value;
+      cell: (value: any, row: any) => {
+        const statusInfo = getStatusDisplay(row);
+        const IconComponent = statusInfo.icon;
+        return (
+          <div className="flex items-center gap-2">
+            <span className={`${statusInfo.color} flex items-center gap-1`}>
+              <IconComponent size={16} />
+              {statusInfo.label}
+            </span>
+            {row.status !== 'paid' && (
+              <button
+                onClick={() => markAsPaid(row)}
+                className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs transition-colors"
+                title="Mark as Paid"
+              >
+                Pay
+              </button>
+            )}
+          </div>
+        );
       },
-    },
-    {
-      header: 'Referência',
-      accessor: 'reference',
     },
   ];
 
+  const reloadTaxesList = async () => {
+    const enterpriseId = getEnterprise();
+    if (!enterpriseId) return;
+
+    try {
+      const params: any = {
+        "page": paginationNum,
+        "quantity": 8,
+        "relationFilter": ["enterpriseId", enterpriseId]
+      };
+
+      if (debouncedSearchTerm) {
+        params.term = debouncedSearchTerm;
+      }
+
+      const data = await getAll<ListResponse<Taxes>>(APIMODULE, params);
+      
+      // Apply frontend filters
+      let filteredData = data;
+      if (statusFilter) {
+        const filteredItems = data.data.items.filter(tax => {
+          let matchesStatus = true;
+
+          if (statusFilter) {
+            const statusInfo = getStatusDisplay(tax);
+            matchesStatus = statusInfo.status === statusFilter;
+          }
+
+          return matchesStatus;
+        });
+
+        filteredData = {
+          ...data,
+          data: {
+            ...data.data,
+            items: filteredItems,
+            metadata: {
+              ...data.data.metadata,
+              total: filteredItems.length
+            }
+          }
+        };
+      }
+
+      setTaxes(filteredData);
+    } catch (err) {
+      console.error('Error loading taxes:', err);
+      showError('Erro ao carregar impostos');
+    }
+  };
+
+  useEffect(() => {
+    setLoaded(false);
+    reloadTaxesList().then(() => {
+      setLoaded(true);
+    });
+  }, [paginationNum, debouncedSearchTerm, statusFilter]);
+
+  const convertValue = (key: string, value: any) => {
+    if (value === undefined || value === null || value === '') {
+      return value;
+    }
+
+    if (key === 'amount') {
+      const numValue = Number(value);
+      return isNaN(numValue) ? null : numValue;
+    }
+
+    if (key === 'endDate' || key === 'paidDate') {
+      // Handle date input (YYYY-MM-DD format from input type="date")
+      if (typeof value === 'string' && value.includes('-')) {
+        return new Date(value + 'T00:00:00.000Z');
+      }
+      return new Date(value);
+    }
+
+    return value;
+  };
+
+  function createTax(): Promise<boolean> {
+    const enterpriseId = getEnterprise();
+    if (!enterpriseId) {
+      showError('Enterprise not selected');
+      return Promise.resolve(false);
+    }
+
+    if (!inputDataCreate.type || !inputDataCreate.amount || !inputDataCreate.endDate) {
+      showError('Type, amount and due date are required');
+      return Promise.resolve(false);
+    }
+
+    const payload: Partial<CreateTaxesDTO> = {
+      ...inputDataCreate,
+      enterpriseId: enterpriseId
+    };
+
+    const filteredPayload: Partial<CreateTaxesDTO> = {};
+
+    Object.entries(payload).forEach(([key, value]) => {
+      const convertedValue = convertValue(key, value);
+      if (convertedValue !== undefined && convertedValue !== null && convertedValue !== '') {
+        (filteredPayload as any)[key] = convertedValue;
+      }
+    });
+
+    console.log('Payload for create:', filteredPayload);
+
+    return create<CreateTaxesDTO, Taxes>(APIMODULE, filteredPayload as CreateTaxesDTO)
+      .then((data) => {
+        console.log('Tax created:', data);
+        showSuccess('Tax created successfully!');
+        setShowAddModal(false);
+        setInputDataCreate({});
+        reloadTaxesList();
+        return true;
+      })
+      .catch(err => {
+        console.error('Error creating tax:', err);
+        showError('Error creating tax');
+        return false;
+      });
+  }
+
+  function updateTax(): Promise<boolean> {
+    if (!selectedTax) {
+      showError('No tax selected');
+      return Promise.resolve(false);
+    }
+
+    const payload: Partial<UpdateTaxesDTO> = {};
+    
+    Object.entries(inputDataUpdate).forEach(([key, value]) => {
+      const convertedValue = convertValue(key, value);
+      if (convertedValue !== undefined && convertedValue !== null && convertedValue !== '') {
+        (payload as any)[key] = convertedValue;
+      }
+    });
+
+    console.log('Payload for update:', payload);
+
+    return update<UpdateTaxesDTO, Taxes>(APIMODULE, selectedTax.id, payload as UpdateTaxesDTO)
+      .then((data) => {
+        console.log('Tax updated:', data);
+        showSuccess('Tax updated successfully!');
+        setShowEditModal(false);
+        setSelectedTax(null);
+        setInputDataUpdate({});
+        reloadTaxesList();
+        return true;
+      })
+      .catch(err => {
+        console.error('Error updating tax:', err);
+        showError('Error updating tax');
+        return false;
+      });
+  }
+
+  const deleteTax = async (tax: Taxes) => {
+    if (window.confirm('Are you sure you want to delete this tax?')) {
+      try {
+        await remove(APIMODULE, tax.id);
+        showSuccess('Tax deleted successfully!');
+        reloadTaxesList();
+      } catch (err) {
+        console.error('Error deleting tax:', err);
+        showError('Error deleting tax');
+      }
+    }
+  };
+
+  const deleteBulkTaxes = async (selectedIds: number[]) => {
+    try {
+      const deletePromises = selectedIds.map(id => remove(APIMODULE, id));
+      await Promise.all(deletePromises);
+      showSuccess(`${selectedIds.length} tax(es) deleted successfully!`);
+      reloadTaxesList();
+    } catch (err) {
+      console.error('Error deleting taxes:', err);
+      showError('Error deleting taxes');
+    }
+  };
+
+  const markAsPaid = async (tax: Taxes) => {
+    if (window.confirm('Mark this tax as paid?')) {
+      try {
+        const updateData: Partial<UpdateTaxesDTO> = {
+          status: 'paid',
+          paidDate: new Date()
+        };
+
+        await update<UpdateTaxesDTO, Taxes>(APIMODULE, tax.id, updateData as UpdateTaxesDTO);
+        showSuccess('Tax marked as paid successfully!');
+        reloadTaxesList();
+      } catch (err) {
+        console.error('Error marking tax as paid:', err);
+        showError('Error marking tax as paid');
+      }
+    }
+  };
+
+  const handleEditTax = (tax: Taxes) => {
+    setSelectedTax(tax);
+    const updateData: Partial<UpdateTaxesDTO> = {
+      type: tax.type,
+      amount: tax.amount,
+      endDate: tax.endDate ? new Date(tax.endDate).toISOString().split('T')[0] : undefined,
+      status: tax.status || 'pending',
+      paidDate: tax.paidDate ? new Date(tax.paidDate).toISOString().split('T')[0] : undefined,
+    };
+
+    if (tax.period) updateData.period = tax.period;
+    if (tax.description) updateData.description = tax.description;
+
+    setInputDataUpdate(updateData);
+    setShowEditModal(true);
+  };
+
+  const handleViewTax = (tax: Taxes) => {
+    setSelectedTax(tax);
+    setShowDetailsModal(true);
+  };
+
+  const resetFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('');
+    setPaginationNum(1);
+  };
+
+  // Calculate summary data
+  const totalAmount = taxes?.data.items.reduce((sum, tax) => sum + tax.amount, 0) || 0;
+  const overdueAmount = taxes?.data.items
+    .filter(tax => getStatusDisplay(tax).status === 'overdue')
+    .reduce((sum, tax) => sum + tax.amount, 0) || 0;
+  const dueSoonAmount = taxes?.data.items
+    .filter(tax => getStatusDisplay(tax).status === 'due_soon')
+    .reduce((sum, tax) => sum + tax.amount, 0) || 0;
+  const pendingAmount = taxes?.data.items
+    .filter(tax => getStatusDisplay(tax).status === 'pending')
+    .reduce((sum, tax) => sum + tax.amount, 0) || 0;
+  const paidAmount = taxes?.data.items
+    .filter(tax => getStatusDisplay(tax).status === 'paid')
+    .reduce((sum, tax) => sum + tax.amount, 0) || 0;
+
+
+
+  const statusOptions = [
+    { value: 'pending', label: 'Pending' },
+    { value: 'paid', label: 'Paid' },
+    { value: 'due_soon', label: 'Due Soon' },
+    { value: 'overdue', label: 'Overdue' },
+  ];
+
+  const filterFields = [
+    {
+      name: 'statusFilter',
+      label: 'Todos os status',
+      type: 'select' as const,
+      options: statusOptions,
+    },
+  ];
+
+  const filterValues = {
+    statusFilter,
+  };
+
+  const handleFilterChange = (name: string, value: any) => {
+    switch (name) {
+      case 'statusFilter':
+        setStatusFilter(value);
+        break;
+    }
+  };
+
+  const columns = getTaxColumns();
+
   return (
     <>
-      <SlideFrame />
-      <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Receipt size={32} className="text-yellow-500" />
-            <h1 className="text-3xl font-bold text-white">Impostos</h1>
-          </div>
+      <div className="min-h-screen ml-20 bg-base-300 text-white p-10">
+        <div className="flex items-center justify-between mb-10 border-b border-violet-900/30 pb-4">
+          <h1 className="text-4xl font-bold text-white flex items-center gap-3">
+            <Receipt size={40} className="text-yellow-500" />
+            💰 Tax Management
+          </h1>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
+            className="bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2"
           >
             <Plus size={18} />
-            Nova Obrigação
+            <span>Add Tax</span>
           </button>
         </div>
 
         {/* Summary cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-10">
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-            <h3 className="text-gray-400 text-sm mb-2">Total de Impostos</h3>
-            <p className="text-red-400 text-2xl font-bold">€{totalTaxes.toFixed(2)}</p>
+            <h3 className="text-gray-400 text-sm mb-2">Total Amount</h3>
+            <p className="text-white text-xl font-bold">{formatCurrency(totalAmount)}</p>
           </div>
           
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-            <h3 className="text-gray-400 text-sm mb-2">Pagos</h3>
-            <p className="text-green-500 text-2xl font-bold">€{paidTaxes.toFixed(2)}</p>
+            <h3 className="text-gray-400 text-sm mb-2">Paid</h3>
+            <p className="text-green-500 text-xl font-bold">{formatCurrency(paidAmount)}</p>
           </div>
           
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-            <h3 className="text-gray-400 text-sm mb-2">Pendentes</h3>
-            <p className="text-yellow-500 text-2xl font-bold">€{pendingTaxes.toFixed(2)}</p>
+            <h3 className="text-gray-400 text-sm mb-2">Overdue</h3>
+            <p className="text-red-500 text-xl font-bold">{formatCurrency(overdueAmount)}</p>
+          </div>
+          
+          <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
+            <h3 className="text-gray-400 text-sm mb-2">Due Soon</h3>
+            <p className="text-yellow-500 text-xl font-bold">{formatCurrency(dueSoonAmount)}</p>
           </div>
 
           <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-            <h3 className="text-gray-400 text-sm mb-2">Em Atraso</h3>
-            <p className="text-red-500 text-2xl font-bold">€{overdueTaxes.toFixed(2)}</p>
+            <h3 className="text-gray-400 text-sm mb-2">Pending</h3>
+            <p className="text-blue-500 text-xl font-bold">{formatCurrency(pendingAmount)}</p>
           </div>
-
-          <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-            <h3 className="text-gray-400 text-sm mb-2">Multas</h3>
-            <p className="text-red-500 text-2xl font-bold">€{totalPenalties.toFixed(2)}</p>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <button className="bg-[#0d1218] border border-gray-800 rounded-lg p-4 hover:border-violet-500 transition-all duration-200 text-left">
-            <Receipt size={24} className="text-blue-400 mb-2" />
-            <h3 className="text-white font-medium">Declaração IVA</h3>
-            <p className="text-gray-400 text-sm">Gerar declaração periódica</p>
-          </button>
-          
-          <button className="bg-[#0d1218] border border-gray-800 rounded-lg p-4 hover:border-violet-500 transition-all duration-200 text-left">
-            <Calendar size={24} className="text-green-400 mb-2" />
-            <h3 className="text-white font-medium">Calendário Fiscal</h3>
-            <p className="text-gray-400 text-sm">Ver próximos vencimentos</p>
-          </button>
-          
-          <button className="bg-[#0d1218] border border-gray-800 rounded-lg p-4 hover:border-violet-500 transition-all duration-200 text-left">
-            <AlertTriangle size={24} className="text-yellow-400 mb-2" />
-            <h3 className="text-white font-medium">Alertas</h3>
-            <p className="text-gray-400 text-sm">Configurar lembretes</p>
-          </button>
-          
-          <button className="bg-[#0d1218] border border-gray-800 rounded-lg p-4 hover:border-violet-500 transition-all duration-200 text-left">
-            <CheckCircle size={24} className="text-purple-400 mb-2" />
-            <h3 className="text-white font-medium">Compliance</h3>
-            <p className="text-gray-400 text-sm">Verificar conformidade</p>
-          </button>
-        </div>
-
-        {/* Search bar */}
-        <div className="relative mb-6">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={18} className="text-gray-400" />
-          </div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Pesquisar obrigações fiscais..."
-            className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 pl-10 pr-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-          />
         </div>
 
         {/* Filters */}
-        <FilterPanel
+        <Filter
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          searchPlaceholder="Search taxes by type, period or description..."
           fields={filterFields}
           values={filterValues}
           onChange={handleFilterChange}
-          onApply={applyFilters}
           onReset={resetFilters}
         />
 
-        {/* Tax obligations table */}
+        {/* Tax table */}
         <div className="bg-[#0d1218] border border-gray-800 rounded-lg overflow-hidden shadow-md">
-          <Table
+          <DataTable
             columns={columns}
-            data={filteredTaxes}
-            onRowClick={(row) => console.log('Row clicked:', row)}
+            data={loaded && taxes ? taxes.data.items : []}
+            onEdit={handleEditTax}
+            onDelete={deleteTax}
+            onBulkDelete={deleteBulkTaxes}
+            onRowClick={handleViewTax}
+            selectable={true}
+            idField="id"
           />
         </div>
+
+        {/* Pagination */}
+        {loaded && taxes && (
+          <div className="mt-10">
+            <Pagination
+              updatePage={setPaginationNum}
+              actualPage={paginationNum}
+              last={taxes.data.metadata.last ?? 1}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Add Tax Obligation Modal */}
+      {/* Modal to add tax */}
       {showAddModal && (
-        <Modal onclick={() => setShowAddModal(false)} isCreate={true} isLarge={true}>
+        <ModalForms create={createTax} setInputData={setInputDataCreate} onclick={() => setShowAddModal(false)}>
+          <Fieldset title='New Tax'>
+            <Input 
+              nameOnDB='type' 
+              name='Tax Type *' 
+            />
+            <Input nameOnDB='period' name='Period' />
+            <Input nameOnDB='amount' name='Amount *' type='number' step='0.01' />
+            <Input nameOnDB='endDate' name='Due Date *' type='date' />
+            <SelectString
+              nameOnDB='status'
+              name='Status'
+              options={[
+                { value: 'pending', label: 'Pending' },
+                { value: 'paid', label: 'Paid' }
+              ]}
+            />
+            <Input nameOnDB='paidDate' name='Paid Date' type='date' />
+            <Input nameOnDB='description' name='Description' />
+          </Fieldset>
+        </ModalForms>
+      )}
+
+      {/* Modal to edit tax */}
+      {showEditModal && selectedTax && (
+        <ModalForms
+          create={updateTax}
+          setInputData={setInputDataUpdate}
+          onclick={() => setShowEditModal(false)}
+          initialData={inputDataUpdate}
+        >
+          <Fieldset title={`Edit Tax: ${selectedTax.type}`}>
+            <Input 
+              nameOnDB='type' 
+              name='Tax Type' 
+            />
+            <Input nameOnDB='period' name='Period'/>
+            <Input nameOnDB='amount' name='Amount' type='number' step='0.01' />
+            <Input nameOnDB='endDate' name='Due Date' type='date' />
+            <SelectString
+              nameOnDB='status'
+              name='Status'
+              options={[
+                { value: 'pending', label: 'Pending' },
+                { value: 'paid', label: 'Paid' }
+              ]}
+            />
+            <Input nameOnDB='paidDate' name='Paid Date' type='date' />
+            <Input nameOnDB='description' name='Description' />
+          </Fieldset>
+        </ModalForms>
+      )}
+
+      {/* Modal to view tax details */}
+      {showDetailsModal && selectedTax && (
+        <Modal onclick={() => setShowDetailsModal(false)} isCreate={false} isLarge={true}>
           <div className="p-6">
-            <h2 className="text-2xl font-bold text-white mb-6">Nova Obrigação Fiscal</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Tipo de Imposto
-                </label>
-                <select className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200">
-                  <option value="">Selecionar tipo</option>
-                  <option value="IVA">IVA</option>
-                  <option value="IRS">IRS</option>
-                  <option value="IRC">IRC</option>
-                  <option value="Segurança Social">Segurança Social</option>
-                </select>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Detalhes do Imposto
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Receipt className="text-violet-500" size={20} />
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Tipo</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{selectedTax.type}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <Calendar className="text-violet-500" size={20} />
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Período</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{selectedTax.period || 'Não informado'}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <AlertTriangle className="text-violet-500" size={20} />
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Data de Vencimento</p>
+                    <p className="font-medium text-gray-900 dark:text-white">{formatDate(selectedTax.endDate)}</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Período
-                </label>
-                <input
-                  type="text"
-                  className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200"
-                  placeholder="Ex: Março 2023, Anual 2022"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Data de Vencimento
-                </label>
-                <input
-                  type="date"
-                  className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Valor
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200"
-                  placeholder="0.00"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Referência
-                </label>
-                <input
-                  type="text"
-                  className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200"
-                  placeholder="Ex: IVA-2023-03"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Status
-                </label>
-                <select className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200">
-                  <option value="">Selecionar status</option>
-                  <option value="pending">Pendente</option>
-                  <option value="paid">Pago</option>
-                  <option value="overdue">Em Atraso</option>
-                </select>
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Descrição
-                </label>
-                <textarea
-                  rows={3}
-                  className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 px-3 w-full outline-none transition-all duration-200 resize-none"
-                  placeholder="Descrição da obrigação fiscal"
-                />
+              
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Valor</p>
+                  <p className="font-medium text-gray-900 dark:text-white text-2xl">{formatCurrency(selectedTax.amount)}</p>
+                </div>
+                
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const statusInfo = getStatusDisplay(selectedTax.endDate);
+                      const IconComponent = statusInfo.icon;
+                      return (
+                        <span className={`${statusInfo.color} flex items-center gap-1 font-medium`}>
+                          <IconComponent size={16} />
+                          {statusInfo.label}
+                        </span>
+                      );
+                    })()}
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="bg-violet-700 hover:bg-violet-600 text-white px-6 py-2 rounded-md transition-all duration-200"
-              >
-                Criar Obrigação
-              </button>
-            </div>
+            
+            {selectedTax.description && (
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Descrição</h3>
+                <p className="text-gray-700 dark:text-gray-300">{selectedTax.description}</p>
+              </div>
+            )}
           </div>
         </Modal>
       )}

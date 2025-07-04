@@ -1,381 +1,720 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Plus, Search, ArrowLeft, Table } from 'lucide-react'
-import Link from 'next/link'
-import { SlideFrame } from '../components/SlideFrame';
-import { FilterPanel } from '../components/FilterPanel';
-import { Modal } from '../components/Modal';
+import React, { useEffect, useState } from 'react'
+import { Plus } from 'lucide-react'
+import { DataTable } from '../components/DataTable'
+import { Filter } from '../components/Filter'
+import { ModalForms } from '../components/forms/ModalForms'
+import { Input } from '../components/forms/Input'
+import { Select } from '../components/forms/Select'
+import { SelectString } from '../components/forms/SelectString'
+import { Fieldset } from '../components/forms/Fieldset'
+import { Pagination } from '../components/Pagination'
+import { create, getAll, getById, update, remove, ListResponse } from '@/lib/api'
+import { useEnterpriseStore } from '@/lib/store/items/enterprise.store'
+import { showSuccess, showError } from '@/lib/utils/toastHelpers'
+import { Products, WareHouses, Branches } from '@prisma/client'
+import { CreateProductsDTO, UpdateProductsDTO, ProductsWithAllRelations } from '@pap/utils'
 
-// Mock data for products
-const mockProducts = [
-  {
-    id: '1',
-    name: 'Laptop Dell XPS 13',
-    category: 'Equipamentos',
-    sku: 'DELL-XPS13-001',
-    price: 1299.99,
-    cost: 1050.00,
-    stock: 15,
-    minStock: 5,
-    supplier: 'Dell Portugal',
-    status: 'active',
-  },
-  {
-    id: '2',
-    name: 'Monitor LG 27"',
-    category: 'Equipamentos',
-    sku: 'LG-MON27-002',
-    price: 299.99,
-    cost: 220.00,
-    stock: 23,
-    minStock: 8,
-    supplier: 'LG Electronics',
-    status: 'active',
-  },
-  {
-    id: '3',
-    name: 'Teclado Mecânico Logitech',
-    category: 'Periféricos',
-    sku: 'LOG-KEYB-003',
-    price: 89.99,
-    cost: 65.00,
-    stock: 42,
-    minStock: 10,
-    supplier: 'Logitech Portugal',
-    status: 'active',
-  },
-  {
-    id: '4',
-    name: 'Mouse Wireless Microsoft',
-    category: 'Periféricos',
-    sku: 'MS-MOUSE-004',
-    price: 49.99,
-    cost: 32.50,
-    stock: 38,
-    minStock: 15,
-    supplier: 'Microsoft Portugal',
-    status: 'low',
-  },
-  {
-    id: '5',
-    name: 'Headset Bluetooth Sony',
-    category: 'Áudio',
-    sku: 'SONY-HS-005',
-    price: 129.99,
-    cost: 95.00,
-    stock: 7,
-    minStock: 10,
-    supplier: 'Sony Portugal',
-    status: 'low',
-  },
-  {
-    id: '6',
-    name: 'Webcam Logitech HD',
-    category: 'Periféricos',
-    sku: 'LOG-WC-006',
-    price: 79.99,
-    cost: 55.00,
-    stock: 0,
-    minStock: 5,
-    supplier: 'Logitech Portugal',
-    status: 'out',
-  },
-  {
-    id: '7',
-    name: 'Serviço de Instalação',
-    category: 'Serviços',
-    sku: 'SRV-INST-001',
-    price: 50.00,
-    cost: 35.00,
-    stock: null,
-    minStock: null,
-    supplier: 'Interno',
-    status: 'service',
-  },
-  {
-    id: '8',
-    name: 'Serviço de Manutenção',
-    category: 'Serviços',
-    sku: 'SRV-MAINT-002',
-    price: 75.00,
-    cost: 50.00,
-    stock: null,
-    minStock: null,
-    supplier: 'Interno',
-    status: 'service',
-  },
-];
+const APIMODULE = "products"
 
-// Filter fields
-const filterFields = [
-  {
-    name: 'category',
-    label: 'Categoria',
-    type: 'select' as const,
-    options: [
-      { label: 'Equipamentos', value: 'Equipamentos' },
-      { label: 'Periféricos', value: 'Periféricos' },
-      { label: 'Áudio', value: 'Áudio' },
-      { label: 'Serviços', value: 'Serviços' },
-    ],
-  },
-  {
-    name: 'supplier',
-    label: 'Fornecedor',
-    type: 'select' as const,
-    options: [
-      { label: 'Dell Portugal', value: 'Dell Portugal' },
-      { label: 'LG Electronics', value: 'LG Electronics' },
-      { label: 'Logitech Portugal', value: 'Logitech Portugal' },
-      { label: 'Microsoft Portugal', value: 'Microsoft Portugal' },
-      { label: 'Sony Portugal', value: 'Sony Portugal' },
-      { label: 'Interno', value: 'Interno' },
-    ],
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    type: 'select' as const,
-    options: [
-      { label: 'Em estoque', value: 'active' },
-      { label: 'Estoque baixo', value: 'low' },
-      { label: 'Sem estoque', value: 'out' },
-      { label: 'Serviço', value: 'service' },
-    ],
-  },
-];
+export default function InventoryPage() {
+  const [loaded, setLoaded] = useState<boolean>(false);
+  const [products, setProducts] = useState<ListResponse<Products>>();
+  const [warehouses, setWarehouses] = useState<ListResponse<WareHouses>>();
+  const [branches, setBranches] = useState<ListResponse<Branches>>();
+  const [paginationNum, setPaginationNum] = useState<number>(1);
 
-export default function ProductsPage() {
-  const [products, setProducts] = useState(mockProducts);
-  const [filteredProducts, setFilteredProducts] = useState(mockProducts);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-  const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showProductModal, setShowProductModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Products | null>(null);
 
-  // Handle filter change
-  const handleFilterChange = (name: string, value: any) => {
-    setFilterValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const [inputDataCreate, setInputDataCreate] = useState<Partial<CreateProductsDTO>>({});
+  const [inputDataUpdate, setInputDataUpdate] = useState<Partial<UpdateProductsDTO>>({});
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [warehouseFilter, setWarehouseFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [branchFilter, setBranchFilter] = useState('');
+
+  const [warehouseOptions, setWarehouseOptions] = useState<{ value: number, label: string }[]>([]);
+  const [branchOptions, setBranchOptions] = useState<{ value: number, label: string }[]>([]);
+
+  const { getEnterprise } = useEnterpriseStore();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const formatPrice = (price: number | null): string => {
+    if (!price) return 'R$ 0,00';
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(price);
   };
 
-  // Apply filters
-  const applyFilters = () => {
-    let filtered = [...products];
+  const getWarehouseName = (warehouseId: number, warehouseOptions: { value: number, label: string }[]): string => {
+    const warehouse = warehouseOptions.find(wh => wh.value === warehouseId);
+    return warehouse?.label || 'Warehouse not found';
+  };
 
-    // Apply search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (product) =>
-          product.name.toLowerCase().includes(term) ||
-          product.sku.toLowerCase().includes(term) ||
-          product.category.toLowerCase().includes(term) ||
-          (product.supplier && product.supplier.toLowerCase().includes(term))
-      );
+  const getBranchName = (branchId: number, branchOptions: { value: number, label: string }[]): string => {
+    const branch = branchOptions.find(br => br.value === branchId);
+    return branch?.label || 'Branch not found';
+  };
+
+  const getInventoryColumns = (
+    warehouseOptions: { value: number, label: string }[],
+    branchOptions: { value: number, label: string }[]
+  ) => [
+      {
+        header: 'Nome',
+        accessor: 'name',
+        cell: (value: any) => renderCellValue('name', value, { warehouseOptions, branchOptions }),
+      },
+      {
+        header: 'SKU',
+        accessor: 'sku',
+        cell: (value: any) => renderCellValue('sku', value, { warehouseOptions, branchOptions }),
+      },
+      {
+        header: 'Preço',
+        accessor: 'price',
+        cell: (value: any) => renderCellValue('price', value, { warehouseOptions, branchOptions }),
+      },
+      {
+        header: 'Estoque',
+        accessor: 'stock',
+        cell: (value: any) => renderCellValue('stock', value, { warehouseOptions, branchOptions }),
+      },
+      {
+        header: 'Categoria',
+        accessor: 'category',
+        cell: (value: any) => renderCellValue('category', value, { warehouseOptions, branchOptions }),
+      },
+      {
+        header: 'Marca',
+        accessor: 'brand',
+        cell: (value: any) => renderCellValue('brand', value, { warehouseOptions, branchOptions }),
+      },
+      {
+        header: 'Modelo',
+        accessor: 'model',
+        cell: (value: any) => renderCellValue('model', value, { warehouseOptions, branchOptions }),
+      },
+      {
+        header: 'Armazém',
+        accessor: 'wareHouseId',
+        cell: (value: any) => renderCellValue('wareHouseId', value, { warehouseOptions, branchOptions }),
+      },
+      {
+        header: 'Filial',
+        accessor: 'branchId',
+        cell: (value: any) => renderCellValue('branchId', value, { warehouseOptions, branchOptions }),
+      },
+    ];
+
+  const renderCellValue = (accessor: string, value: any, context?: any) => {
+    if (accessor === 'name') {
+      return value || 'Não informado';
+    }
+    
+    if (accessor === 'sku') {
+      return value || 'Não informado';
+    }
+    
+    if (accessor === 'price') {
+      return formatPrice(value);
+    }
+    
+    if (accessor === 'stock') {
+      return value?.toString() || '0';
+    }
+    
+    if (accessor === 'category') {
+      return value || 'Não informada';
+    }
+    
+    if (accessor === 'brand') {
+      return value || 'Não informada';
+    }
+    
+    if (accessor === 'model') {
+      return value || 'Não informado';
+    }
+    
+    if (accessor === 'wareHouseId') {
+      if (!value) return 'Não atribuído';
+      return getWarehouseName(value, context?.warehouseOptions || []);
+    }
+    
+    if (accessor === 'branchId') {
+      if (!value) return 'Não atribuída';
+      return getBranchName(value, context?.branchOptions || []);
+    }
+    
+    return value;
+  };
+
+  const reloadProductsList = async () => {
+    const enterpriseId = getEnterprise();
+    if (!enterpriseId) return;
+
+    console.log('🔄 Reloading products list...');
+    console.log('Filters:', { warehouseFilter, branchFilter, categoryFilter, statusFilter });
+    console.log('Options available:', {
+      warehouses: warehouseOptions.length,
+      branches: branchOptions.length
+    });
+
+    try {
+      let allProducts: Products[] = [];
+
+      if (warehouseFilter && warehouseFilter.trim() !== '') {
+        // Filter by specific warehouse
+        const params: any = {
+          "page": paginationNum,
+          "quantity": 8,
+          "relationFilter": ["wareHouseId", parseInt(warehouseFilter)]
+        };
+
+        if (debouncedSearchTerm) {
+          params.term = debouncedSearchTerm;
+        }
+
+        const data = await getAll<ListResponse<Products>>(APIMODULE, params);
+        allProducts = data.data.items;
+      } else if (branchFilter && branchFilter.trim() !== '') {
+        // Filter by specific branch
+        const params: any = {
+          "page": paginationNum,
+          "quantity": 8,
+          "relationFilter": ["branchId", parseInt(branchFilter)]
+        };
+
+        if (debouncedSearchTerm) {
+          params.term = debouncedSearchTerm;
+        }
+
+        const data = await getAll<ListResponse<Products>>(APIMODULE, params);
+        allProducts = data.data.items;
+      } else {
+        const params: any = {
+          "page": 1,
+          "quantity": 100
+        };
+
+        if (debouncedSearchTerm) {
+          params.term = debouncedSearchTerm;
+        }
+
+        const warehousePromises = warehouseOptions.map(warehouse => {
+          const warehouseParams = { ...params, "relationFilter": ["wareHouseId", warehouse.value] };
+          return getAll<ListResponse<Products>>(APIMODULE, warehouseParams);
+        });
+
+        const branchPromises = branchOptions.map(branch => {
+          const branchParams = { ...params, "relationFilter": ["branchId", branch.value] };
+          return getAll<ListResponse<Products>>(APIMODULE, branchParams);
+        });
+
+        const allPromises = [...warehousePromises, ...branchPromises];
+
+        if (allPromises.length > 0) {
+          const results = await Promise.all(allPromises);
+          allProducts = results.flatMap(result => result.data.items);
+
+          const uniqueProducts = allProducts.filter((product, index, self) =>
+            index === self.findIndex(p => p.id === product.id)
+          );
+          allProducts = uniqueProducts;
+          console.log(`📦 Found ${allProducts.length} unique products`);
+        } else {
+          console.log('⚠️ No warehouses or branches available to query');
+        }
+      }
+
+      let filteredItems = allProducts;
+
+      if (categoryFilter && categoryFilter.trim() !== '') {
+        filteredItems = filteredItems.filter(product =>
+          product.category?.toLowerCase() === categoryFilter.toLowerCase()
+        );
+      }
+
+      if (statusFilter && statusFilter.trim() !== '') {
+        filteredItems = filteredItems.filter(product => {
+          let productStatus = 'active';
+
+          if (product.category === 'Serviços') {
+            productStatus = 'service';
+          } else if (!product.stock || product.stock === 0) {
+            productStatus = 'out';
+          } else if (product.stock <= 10) {
+            productStatus = 'low';
+          }
+
+          return productStatus === statusFilter;
+        });
+      }
+
+      const startIndex = (paginationNum - 1) * 8;
+      const endIndex = startIndex + 8;
+      const paginatedItems = filteredItems.slice(startIndex, endIndex);
+
+      const totalPages = Math.ceil(filteredItems.length / 8);
+
+      const finalData: ListResponse<Products> = {
+        statusCode: 200,
+        message: 'Products retrieved successfully',
+        data: {
+          items: paginatedItems,
+          metadata: {
+            page: paginationNum,
+            quantity: 8,
+            last: totalPages,
+            total: filteredItems.length
+          }
+        }
+      };
+
+      console.log('✅ Products loaded:', {
+        total: allProducts.length,
+        filtered: filteredItems.length,
+        paginated: paginatedItems.length
+      });
+
+      setProducts(finalData);
+    } catch (err) {
+      console.error('❌ Error loading products:', err);
+      showError('Error loading products');
+    }
+  };
+
+  useEffect(() => {
+    setLoaded(false);
+    reloadProductsList().then(() => {
+      setLoaded(true);
+    });
+  }, [paginationNum, debouncedSearchTerm, categoryFilter, warehouseFilter, statusFilter, branchFilter, branchOptions, warehouseOptions]);
+
+  useEffect(() => {
+    const enterpriseId = getEnterprise();
+    if (!enterpriseId) return;
+
+    // Load warehouses
+    getAll<ListResponse<WareHouses>>("warehouses", {
+      "page": 1,
+      "quantity": 100,
+      "relationFilter": ["enterpriseId", enterpriseId]
+    })
+      .then((data) => {
+        setWarehouses(data);
+        const options = data.data.items.map(warehouse => ({
+          value: warehouse.id,
+          label: warehouse.name
+        }));
+        setWarehouseOptions(options);
+      })
+      .catch(err => {
+        console.error('Error loading warehouses:', err);
+      });
+
+    // Load branches
+    getAll<ListResponse<Branches>>("branches", {
+      "page": 1,
+      "quantity": 100,
+      "relationFilter": ["enterpriseId", enterpriseId]
+    })
+      .then((data) => {
+        setBranches(data);
+        const options = data.data.items.map(branch => ({
+          value: branch.id,
+          label: branch.address
+        }));
+        setBranchOptions(options);
+      })
+      .catch(err => {
+        console.error('Error loading branches:', err);
+      });
+  }, [getEnterprise]);
+
+  function createProduct(): Promise<boolean> {
+    if (!inputDataCreate.name) {
+      showError('Product name is required');
+      return Promise.resolve(false);
     }
 
-    // Apply other filters
-    Object.entries(filterValues).forEach(([key, value]) => {
-      if (value) {
-        filtered = filtered.filter((product) => {
-          if (typeof product[key as keyof typeof product] === 'string') {
-            return (product[key as keyof typeof product] as string).toLowerCase() === value.toLowerCase();
-          }
-          return product[key as keyof typeof product] === value;
-        });
+    // At least one location (warehouse or branch) must be provided
+    if (!inputDataCreate.wareHouseId && !inputDataCreate.branch) {
+      showError('Product must be assigned to either a warehouse or a branch');
+      return Promise.resolve(false);
+    }
+
+    // Filter only fields that have value and convert numeric fields
+    const payload: Partial<CreateProductsDTO> = {};
+
+    Object.entries(inputDataCreate).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        // Convert numeric fields from string to number
+        if (key === 'wareHouseId' || key === 'branchId' || key === 'price' || key === 'stock' || key === 'weight') {
+          (payload as any)[key] = Number(value);
+        } else {
+          (payload as any)[key] = value;
+        }
       }
     });
 
-    setFilteredProducts(filtered);
+    console.log('Payload for create:', payload);
+
+    return create<CreateProductsDTO, Products>(APIMODULE, payload as CreateProductsDTO)
+      .then((data) => {
+        console.log('✅ Product created:', data);
+        showSuccess('Produto criado com sucesso!');
+        setShowAddModal(false);
+        setInputDataCreate({});
+        console.log('🔄 Calling reloadProductsList after creation...');
+        reloadProductsList();
+        return true;
+      })
+      .catch(err => {
+        console.error('Error creating product:', err);
+        showError('Error creating product');
+        return false;
+      });
+  }
+
+  function updateProduct(): Promise<boolean> {
+    if (!selectedProduct) {
+      showError('No product selected');
+      return Promise.resolve(false);
+    }
+
+    // Filter only fields that were actually changed and have value
+    const payload: Partial<UpdateProductsDTO> = {};
+
+    Object.entries(inputDataUpdate).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        // Convert numeric fields from string to number
+        if (key === 'wareHouseId' || key === 'branchId' || key === 'price' || key === 'stock' || key === 'weight') {
+          (payload as any)[key] = Number(value);
+        } else {
+          (payload as any)[key] = value;
+        }
+      }
+    });
+
+    console.log('Payload for update:', payload);
+
+    return update<UpdateProductsDTO, Products>(APIMODULE, selectedProduct.id, payload as UpdateProductsDTO)
+      .then((data) => {
+        console.log('Product updated:', data);
+        showSuccess('Produto atualizado com sucesso!');
+        setShowEditModal(false);
+        setSelectedProduct(null);
+        setInputDataUpdate({});
+
+        reloadProductsList();
+        return true;
+      })
+      .catch(err => {
+        console.error('Error updating product:', err);
+        showError('Error updating product');
+        return false;
+      });
+  }
+
+  const deleteProduct = async (product: Products) => {
+    if (window.confirm('Tem certeza que deseja deletar este produto?')) {
+      try {
+        await remove(APIMODULE, product.id);
+        showSuccess('Produto deletado com sucesso!');
+        reloadProductsList();
+      } catch (err) {
+        console.error('Error deleting product:', err);
+        showError('Erro ao deletar produto');
+      }
+    }
   };
 
-  // Reset filters
-  const resetFilters = () => {
-    setFilterValues({});
-    setSearchTerm('');
-    setFilteredProducts(products);
+  const deleteBulkProducts = async (selectedIds: number[]) => {
+    try {
+      const deletePromises = selectedIds.map(id => remove(APIMODULE, id));
+      await Promise.all(deletePromises);
+      showSuccess(`${selectedIds.length} produto(s) deletado(s) com sucesso!`);
+      reloadProductsList();
+    } catch (err) {
+      console.error('Error deleting products:', err);
+      showError('Erro ao deletar produtos');
+    }
   };
 
-  // Handle product click
-  const handleProductClick = (product: any) => {
+  const handleEditProduct = (product: Products) => {
     setSelectedProduct(product);
-    setShowProductModal(true);
+    // Only include fields that have value
+    const updateData: Partial<UpdateProductsDTO> = {
+      name: product.name,
+    };
+
+    if (product.description) updateData.description = product.description;
+    if (product.price) updateData.price = product.price;
+    if (product.stock) updateData.stock = product.stock;
+    if (product.category) updateData.category = product.category;
+    if (product.subCategory) updateData.subCategory = product.subCategory;
+    if (product.brand) updateData.brand = product.brand;
+    if (product.model) updateData.model = product.model;
+    if (product.sku) updateData.sku = product.sku;
+    if (product.barcode) updateData.barcode = product.barcode;
+    if (product.weight) updateData.weight = product.weight;
+    if (product.dimensions) updateData.dimensions = product.dimensions;
+    if (product.imageUrl) updateData.imageUrl = product.imageUrl;
+    if (product.wareHouseId) updateData.wareHouseId = product.wareHouseId;
+    if (product.branchId) updateData.branch = product.branchId;
+
+    setInputDataUpdate(updateData);
+    setShowEditModal(true);
   };
 
-  // Table columns
-  const columns = [
+
+
+  const resetFilters = () => {
+    setSearchTerm('');
+    setCategoryFilter('');
+    setWarehouseFilter('');
+    setStatusFilter('');
+    setBranchFilter('');
+    setPaginationNum(1);
+  };
+
+
+
+  const categoryOptions = [
+    { value: 'Equipamentos', label: 'Equipamentos' },
+    { value: 'Periféricos', label: 'Periféricos' },
+    { value: 'Áudio', label: 'Áudio' },
+    { value: 'Armazenamento', label: 'Armazenamento' },
+    { value: 'Cabos', label: 'Cabos' },
+    { value: 'Rede', label: 'Rede' },
+    { value: 'Móveis', label: 'Móveis' },
+    { value: 'Acessórios', label: 'Acessórios' },
+    { value: 'Componentes', label: 'Componentes' },
+    { value: 'Energia', label: 'Energia' },
+    { value: 'Serviços', label: 'Serviços' },
+  ];
+
+  const statusOptions = [
+    { value: 'active', label: 'Em estoque' },
+    { value: 'low', label: 'Estoque baixo' },
+    { value: 'out', label: 'Sem estoque' },
+    { value: 'service', label: 'Serviço' },
+  ];
+
+  // Filter fields
+  const filterFields = [
     {
-      header: 'Nome',
-      accessor: 'name',
+      name: 'categoryFilter',
+      label: 'Todas as categorias',
+      type: 'select' as const,
+      options: categoryOptions,
     },
     {
-      header: 'SKU',
-      accessor: 'sku',
+      name: 'statusFilter',
+      label: 'Todos os status',
+      type: 'select' as const,
+      options: statusOptions,
     },
     {
-      header: 'Categoria',
-      accessor: 'category',
+      name: 'branchFilter',
+      label: 'Todas as filiais',
+      type: 'select' as const,
+      options: branchOptions,
     },
     {
-      header: 'Preço',
-      accessor: 'price',
-      cell: (value: number) => `€${value.toFixed(2)}`,
-    },
-    {
-      header: 'Custo',
-      accessor: 'cost',
-      cell: (value: number) => `€${value.toFixed(2)}`,
-    },
-    {
-      header: 'Estoque',
-      accessor: 'stock',
-      cell: (value: number | null, row: any) => {
-        if (row.status === 'service') return 'N/A';
-        return (
-          <span className={
-            row.status === 'out' ? 'text-red-500' : 
-            row.status === 'low' ? 'text-yellow-500' : 
-            'text-green-500'
-          }>
-            {value}
-          </span>
-        );
-      },
-    },
-    {
-      header: 'Fornecedor',
-      accessor: 'supplier',
+      name: 'warehouseFilter',
+      label: 'Todos os armazéns',
+      type: 'select' as const,
+      options: warehouseOptions,
     },
   ];
 
+  const filterValues = {
+    categoryFilter,
+    statusFilter,
+    branchFilter,
+    warehouseFilter,
+  };
+
+  const handleFilterChange = (name: string, value: any) => {
+    switch (name) {
+      case 'categoryFilter':
+        setCategoryFilter(value);
+        break;
+      case 'statusFilter':
+        setStatusFilter(value);
+        break;
+      case 'branchFilter':
+        setBranchFilter(value);
+        break;
+      case 'warehouseFilter':
+        setWarehouseFilter(value);
+        break;
+    }
+  };
+
+  // Table columns
+  const columns = getInventoryColumns(warehouseOptions, branchOptions);
+
   return (
     <>
-      <SlideFrame />
-      <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
-        <div className="flex items-center mb-6">
-          <Link href="/inventory" className="mr-4 text-gray-400 hover:text-violet-400 transition-colors duration-200">
-            <ArrowLeft size={24} />
-          </Link>
-          <h1 className="text-3xl font-bold text-white">Produtos e Serviços</h1>
-        </div>
-
-        <div className="flex justify-end mb-6">
+      <div className="min-h-screen ml-20 bg-base-300 text-white p-10">
+        <div className="flex items-center justify-between mb-10 border-b border-violet-900/30 pb-4">
+          <h1 className="text-4xl font-bold text-white">
+            📦 Inventory Management
+          </h1>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
+            className="bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2"
           >
             <Plus size={18} />
-            Adicionar Produto/Serviço
+            <span>Add Product</span>
           </button>
         </div>
 
-        {/* Search bar */}
-        <div className="relative mb-6">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={18} className="text-gray-400" />
-          </div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Pesquisar produtos e serviços..."
-            className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 pl-10 pr-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-          />
-        </div>
-
         {/* Filters */}
-        <FilterPanel
+        <Filter
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          searchPlaceholder="Pesquisar produtos por nome, SKU, categoria ou marca..."
           fields={filterFields}
           values={filterValues}
           onChange={handleFilterChange}
-          onApply={applyFilters}
           onReset={resetFilters}
         />
 
-        {/* Products table */}
+        {/* Product table */}
         <div className="bg-[#0d1218] border border-gray-800 rounded-lg overflow-hidden shadow-md">
-          <Table
+          <DataTable
             columns={columns}
-            data={filteredProducts}
-            onRowClick={handleProductClick}
+            data={loaded && products ? products.data.items : []}
+            onEdit={handleEditProduct}
+            onDelete={deleteProduct}
+            onBulkDelete={deleteBulkProducts}
+            selectable={true}
+            idField="id"
           />
         </div>
+
+        {/* Pagination */}
+        {loaded && products && (
+          <div className="mt-10">
+            <Pagination
+              updatePage={setPaginationNum}
+              actualPage={paginationNum}
+              last={products.data.metadata.last ?? 1}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Add Product Modal */}
+      {/* Modal to add product */}
       {showAddModal && (
-        <Modal onclick={() => setShowAddModal(false)} isCreate={true} isLarge={true}>
-          <h2 className="text-xl font-bold mb-4">Adicionar Novo Produto/Serviço</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Form fields would go here */}
-            <p className="text-gray-400 col-span-full">Formulário de cadastro de produto ou serviço</p>
-          </div>
-        </Modal>
+        <ModalForms create={createProduct} setInputData={setInputDataCreate} onclick={() => setShowAddModal(false)}>
+          <p className='text-2xl p-5 lg:p-10'>Add new product</p>
+
+          <Fieldset title='Product Information'>
+            <Input nameOnDB='name' name='Product name' />
+            <Input nameOnDB='description' name='Description' />
+            <Input nameOnDB='sku' name='SKU' />
+            <Input nameOnDB='barcode' name='Barcode' />
+            <SelectString
+              nameOnDB='category'
+              name='Category'
+              options={categoryOptions}
+            />
+            <Input nameOnDB='subCategory' name='Sub Category' />
+            <Input nameOnDB='brand' name='Brand' />
+            <Input nameOnDB='model' name='Model' />
+          </Fieldset>
+
+          <Fieldset title='Pricing & Stock'>
+            <Input nameOnDB='price' name='Price' type='number' />
+            <Input nameOnDB='stock' name='Stock quantity' type='number' />
+            <Input nameOnDB='weight' name='Weight (kg)' type='number' />
+            <Input nameOnDB='dimensions' name='Dimensions' />
+            <Input nameOnDB='imageUrl' name='Image URL' type='url' />
+          </Fieldset>
+
+          <Fieldset title='Location (select at least one)'>
+            <Select
+              nameOnDB='wareHouseId'
+              name='Warehouse'
+              options={warehouseOptions}
+            />
+            <Select
+              nameOnDB='branchId'
+              name='Branch'
+              options={branchOptions}
+            />
+          </Fieldset>
+        </ModalForms>
       )}
 
-      {/* Product Details Modal */}
-      {showProductModal && selectedProduct && (
-        <Modal onclick={() => setShowProductModal(false)} isCreate={false} isLarge={true}>
-          <h2 className="text-xl font-bold mb-4">{selectedProduct.name}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="col-span-full md:col-span-1">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Informações Básicas</h3>
-                <div className="space-y-2">
-                  <p><span className="text-gray-400">SKU:</span> {selectedProduct.sku}</p>
-                  <p><span className="text-gray-400">Categoria:</span> {selectedProduct.category}</p>
-                  <p><span className="text-gray-400">Preço:</span> €{selectedProduct.price.toFixed(2)}</p>
-                  <p><span className="text-gray-400">Custo:</span> €{selectedProduct.cost.toFixed(2)}</p>
-                  <p><span className="text-gray-400">Margem:</span> {((selectedProduct.price - selectedProduct.cost) / selectedProduct.price * 100).toFixed(2)}%</p>
-                  <p><span className="text-gray-400">Fornecedor:</span> {selectedProduct.supplier}</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full md:col-span-1">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Estoque</h3>
-                <div className="space-y-2">
-                  {selectedProduct.status === 'service' ? (
-                    <p className="text-gray-400">Este item é um serviço e não possui estoque.</p>
-                  ) : (
-                    <>
-                      <p>
-                        <span className="text-gray-400">Quantidade em Estoque:</span> 
-                        <span className={
-                          selectedProduct.status === 'out' ? 'text-red-500 ml-2' : 
-                          selectedProduct.status === 'low' ? 'text-yellow-500 ml-2' : 
-                          'text-green-500 ml-2'
-                        }>
-                          {selectedProduct.stock}
-                        </span>
-                      </p>
-                      <p><span className="text-gray-400">Estoque Mínimo:</span> {selectedProduct.minStock}</p>
-                      <p><span className="text-gray-400">Status:</span> {
-                        selectedProduct.status === 'active' ? 'Em estoque' :
-                        selectedProduct.status === 'low' ? 'Estoque baixo' :
-                        'Sem estoque'
-                      }</p>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Histórico de Movimentações</h3>
-                <div className="space-y-2">
-                  <p className="text-gray-400">Histórico de entradas e saídas do produto</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Modal>
+      {/* Modal to edit product */}
+      {showEditModal && selectedProduct && (
+        <ModalForms
+          create={updateProduct}
+          setInputData={setInputDataUpdate}
+          onclick={() => setShowEditModal(false)}
+          initialData={inputDataUpdate}
+        >
+          <p className='text-2xl p-5 lg:p-10'>Edit product: {selectedProduct.name}</p>
+
+          <Fieldset title='Product Information'>
+            <Input nameOnDB='name' name='Product name' />
+            <Input nameOnDB='description' name='Description' />
+            <Input nameOnDB='sku' name='SKU' />
+            <Input nameOnDB='barcode' name='Barcode' />
+            <SelectString
+              nameOnDB='category'
+              name='Category'
+              options={categoryOptions}
+            />
+            <Input nameOnDB='subCategory' name='Sub Category' />
+            <Input nameOnDB='brand' name='Brand' />
+            <Input nameOnDB='model' name='Model' />
+          </Fieldset>
+
+          <Fieldset title='Pricing & Stock'>
+            <Input nameOnDB='price' name='Price' type='number' />
+            <Input nameOnDB='stock' name='Stock quantity' type='number' />
+            <Input nameOnDB='weight' name='Weight (kg)' type='number' />
+            <Input nameOnDB='dimensions' name='Dimensions' />
+            <Input nameOnDB='imageUrl' name='Image URL' type='url' />
+          </Fieldset>
+
+          <Fieldset title='Location (select at least one)'>
+            <Select
+              nameOnDB='wareHouseId'
+              name='Warehouse'
+              options={warehouseOptions}
+            />
+            <Select
+              nameOnDB='branchId'
+              name='Branch'
+              options={branchOptions}
+            />
+          </Fieldset>
+        </ModalForms>
       )}
+
+
     </>
   );
 }

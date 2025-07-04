@@ -9,6 +9,7 @@ type Props = {
     name: string,
     nameOnDB: string
     type?: string,
+    step?: string,
     changeData?: (name: string, value: string) => void;
     initialData?: any;
 }
@@ -87,6 +88,7 @@ function typeSorting(props: Props, value: string, handleChange: (value: string) 
             return (
                 <input
                     type="number"
+                    step={props.step}
                     {...commonProps}
                     placeholder={`Enter ${props.name.toLowerCase()}`}
                 />

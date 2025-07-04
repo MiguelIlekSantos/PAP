@@ -20,9 +20,6 @@ export class EnterpriseManagementService extends BaseService {
   private readonly departmentModel: keyof PrismaService = 'departments';
   private readonly subDepartmentModel: keyof PrismaService = 'subDepartments';
 
-
-
-
   // ----------------- Enterprises -----------------
   async getEnterprises(parameters: ListParametersDto) {
     return this.findAll<Enterprise>(this.model, parameters, 'legalName');

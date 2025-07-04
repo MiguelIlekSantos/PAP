@@ -17,7 +17,7 @@ export class PurchasesService extends BaseService {
 
   // ----------------- Purchases -----------------
   async getPurchases(parameters: ListParametersDto) {
-    return this.findAll<Purchases>(this.purchaseModel, parameters, 'description');
+    return this.findAll<Purchases>(this.purchaseModel, parameters, 'name');
   }
 
   async getPurchaseById(id: number) {

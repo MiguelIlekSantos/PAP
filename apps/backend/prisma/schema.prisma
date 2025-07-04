@@ -25,7 +25,7 @@ model Enterprise {
   // Relações existentes
   branches Branches[]
 
-  // Novas relações - modelos que pertencem globalmente à empresa
+  
   wareHouses    WareHouses[]
   equipments    Equipments[]
   transactions  Transactions[]
@@ -119,15 +119,15 @@ model Products {
   weight      Float?
   dimensions  String?
   imageUrl    String?
-  wareHouseId Int
-  wareHouse   WareHouses @relation(fields: [wareHouseId], references: [id])
+  wareHouseId Int?
+  wareHouse   WareHouses? @relation(fields: [wareHouseId], references: [id])
   sales       Sales[]
   requests    Requests[]
   Delivery    Delivery[]
 
   // Conexão com filial (produtos podem variar por filial)
-  branchId Int
-  branch   Branches @relation(fields: [branchId], references: [id])
+  branchId Int?
+  branch   Branches? @relation(fields: [branchId], references: [id])
 }
 
 model WareHouses {
@@ -184,6 +184,8 @@ model Taxes {
   endDate     DateTime
   period      String?
   description String?
+  status      String   @default("pending") // pending, paid, overdue
+  paidDate    DateTime?
 
   // Conexão com empresa
   enterpriseId Int

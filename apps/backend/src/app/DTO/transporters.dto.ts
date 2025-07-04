@@ -22,7 +22,8 @@ import * as Joi from 'joi';
     'number.min': 'Rating must be at least 0',
     'number.max': 'Rating cannot exceed 5'
   }),
-  delivery: Joi.array().items(Joi.number()).optional()
+  delivery: Joi.array().items(Joi.number()).optional(),
+  enterpriseId: Joi.number().integer().required()
 }))
 
 export class CreateTransportersDto {
@@ -36,9 +37,11 @@ export class CreateTransportersDto {
   pricePerKm?: number;
   rating?: number;
   delivery?: number[];
+  enterpriseId: number;
 
-  constructor(licensePlate: string) {
+  constructor(licensePlate: string, enterpriseId: number) {
     this.licensePlate = licensePlate;
+    this.enterpriseId = enterpriseId;
   }
 }
 

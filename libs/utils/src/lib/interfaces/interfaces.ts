@@ -13,14 +13,17 @@ export interface BudgetDTO {
   id: number;
   name: string;
   amount: number;
-  usedAmount: number;
-  remainingAmount: number;
-  status: string;
-  period: string;
-  category: string;
+  usedAmount?: number;
+  remainingAmount?: number;
+  status?: string;
+  period?: string;
+  category?: string;
 
+  departmentId?: number;
+  subDepartmentId?: number;
   projectId?: number;
   campaignId?: number;
+  saleId?: number;
 
   createdAt: Date;
   updatedAt: Date;
@@ -57,6 +60,7 @@ export interface ClientsDTO {
   invoices: number[];
   delivery: number[];
   projects: number[];
+  enterpriseId: number;
 }
 
 export interface DeliveryDTO {
@@ -188,9 +192,9 @@ export interface InvoicesDTO {
   ClientId: number;
   registerdate: Date;
   dueDate: Date;
-  paymentDate: Date;
+  paymentDate: Date | null;
   total: number;
-  status: string;
+  status: string | null;
 }
 
 export interface LogsDTO {
@@ -258,17 +262,17 @@ export interface ProjectsDTO {
 export interface PurchasesDTO {
   id: number;
   number: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  subCategory: string;
-  brand: string;
-  model: string;
-  sku: string;
-  weight: number;
-  dimensions: string;
-  imageUrl: string;
+  name: string | null;
+  description: string | null;
+  price: number | null;
+  category: string | null;
+  subCategory: string | null;
+  brand: string | null;
+  model: string | null;
+  sku: string | null;
+  weight: number | null;
+  dimensions: string | null;
+  imageUrl: string | null;
   supplierId: number;
 }
 
@@ -299,11 +303,11 @@ export interface RequestsDTO {
 export interface SalesDTO {
   id: number;
   total: number;
-  Status: string;
-  PaymentMethod: string;
+  status: string;
+  paymentMethod: string;
   lastPurchase: Date;
   ClientId: number;
-  products: number[];
+  Products: number[];
 }
 
 
@@ -329,9 +333,9 @@ export interface SubDepartmentsDTO {
 export interface SuppliersDTO {
   id: number;
   name: string;
-  email: string;
-  phone: string;
-  address: string;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
   purchases: number[];
   enterpriseId: number;
 }
@@ -356,9 +360,11 @@ export interface TaxesDTO {
   id: number;
   amount: number;
   type: string;
-  period: string;
-  description: string;
+  period?: string;
+  description?: string;
   endDate: Date;
+  status?: string;
+  paidDate?: Date;
   enterpriseId: number;
 }
 
@@ -368,9 +374,9 @@ export interface TransactionsDTO {
   amount: number;
   date: Date;
   bankAccount: string;
-  category: string;
-  description: string;
-  status: string;
+  category?: string;
+  description?: string;
+  status?: string;
   enterpriseId: number;
 }
 
@@ -378,15 +384,15 @@ export interface TransactionsDTO {
 export interface TransportersDTO {
   id: number;
   licensePlate: string;
-  vehicleType: string;
-  status: string;
-  extEnterprise: string;
-  phone: string;
-  representative: string;
-  operationArea: string;
-  pricePerKm: number;
-  rating: number;
-  delivery: number[];
+  vehicleType: string | null;
+  status: string | null;
+  extEnterprise: string | null;
+  phone: string | null;
+  representative: string | null;
+  operationArea: string | null;
+  pricePerKm: number | null;
+  rating: number | null;
+  enterpriseId: number;
 }
 
 
@@ -406,12 +412,12 @@ export interface WareHousesDTO {
   id: number;
   name: string;
   location: string;
-  capacity: number;
-  currentStock: number;
-  section: number;
-  responsible: string;
-  status: string;
-  products: number[];
+  capacity?: number;
+  currentStock?: number;
+  section?: number;
+  responsible?: string;
+  status?: string;
+  products?: number[];
   enterpriseId: number;
 }
 
@@ -464,15 +470,15 @@ export type CreateSocialMediaDTO = Omit<SocialMediaDTO, 'id'>;
 export type UpdateSocialMediaDTO = Partial<CreateSocialMediaDTO>;
 export type CreateSubDepartmentsDTO = Omit<SubDepartmentsDTO, 'id'>;
 export type UpdateSubDepartmentsDTO = Partial<CreateSubDepartmentsDTO>;
-export type CreateSuppliersDTO = SuppliersDTO; 
-export type UpdateSuppliersDTO = Partial<SuppliersDTO>;
+export type CreateSuppliersDTO = Omit<SuppliersDTO, 'id' | 'purchases'>; 
+export type UpdateSuppliersDTO = Partial<CreateSuppliersDTO>;
 export type CreateTasksDTO = TasksDTO; 
 export type UpdateTasksDTO = Partial<TasksDTO>;
-export type CreateTaxesDTO = TaxesDTO; 
-export type UpdateTaxesDTO = Partial<TaxesDTO>;
-export type CreateTransactionsDTO = TransactionsDTO; 
-export type UpdateTransactionsDTO = Partial<TransactionsDTO>;
-export type CreateTransportersDTO = TransportersDTO; 
+export type CreateTaxesDTO = Omit<TaxesDTO, 'id'>; 
+export type UpdateTaxesDTO = Partial<CreateTaxesDTO>;
+export type CreateTransactionsDTO = Omit<TransactionsDTO, 'id'>; 
+export type UpdateTransactionsDTO = Partial<CreateTransactionsDTO>;
+export type CreateTransportersDTO = Omit<TransportersDTO, 'id'>; 
 export type UpdateTransportersDTO = Partial<TransportersDTO>;
 export type CreateUserDTO = Omit<UserDTO, 'id'>;
 export type UpdateUserDTO = Partial<CreateUserDTO>;

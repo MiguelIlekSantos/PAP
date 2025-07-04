@@ -12,6 +12,7 @@ import * as Joi from 'joi';
   invoices: Joi.array().items(Joi.number().integer().positive()).optional(),
   delivery: Joi.array().items(Joi.number().integer().positive()).optional(),
   projects: Joi.array().items(Joi.number().integer().positive()).optional(),
+  enterpriseId: Joi.number().integer().positive().required()
 }))
 
 export class CreateClientsDto {
@@ -25,9 +26,11 @@ export class CreateClientsDto {
   invoices?: number[];
   delivery?: number[];
   projects?: number[];
+  enterpriseId: number;
 
-  constructor(name: string) {
+  constructor(name: string, enterpriseId: number) {
     this.name = name;
+    this.enterpriseId = enterpriseId;
   }
 }
 

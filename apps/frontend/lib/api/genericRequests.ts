@@ -27,8 +27,6 @@ export async function getAll<TResponse>(url: string, params?: Record<string, any
     }
 }
 
-// localStorage.getItem('token')
-
 export async function getById<TResponse>(url: string, id: number): Promise<TResponse> {
     try {
         const { data } = await axios.get<TResponse>(`${BASE_URL}/${url}/${id}`, {
@@ -49,6 +47,10 @@ export async function getById<TResponse>(url: string, id: number): Promise<TResp
 }
 
 export async function create<TRequest, TResponse>(url: string, body: TRequest): Promise<TResponse> {
+    console.log("-----------------------------")
+    console.log(body)
+    console.log("-----------------------------")
+
     try {
         const { data } = await axios.post<TResponse>(`${BASE_URL}/${url}`, body, {
             headers: {
@@ -114,3 +116,5 @@ export async function remove<TResponse>(url: string, id: string | number): Promi
         throw error
     }
 }
+
+

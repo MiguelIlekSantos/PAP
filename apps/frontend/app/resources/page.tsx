@@ -7,6 +7,7 @@ import { Modal } from '../components/Modal'
 import { ModalForms } from '../components/forms/ModalForms'
 import { Input } from '../components/forms/Input'
 import { Select } from '../components/forms/Select'
+import { SelectString } from '../components/forms/SelectString'
 import { Fieldset } from '../components/forms/Fieldset'
 import { Pagination } from '../components/Pagination'
 import { create, getAll, getById, update, remove, ListResponse } from '@/lib/api'
@@ -63,7 +64,7 @@ export default function ResourcesPage() {
       params.term = debouncedSearchTerm;
     }
     
-    if (departmentFilter) {
+    if (departmentFilter && departmentFilter.trim() !== '') {
       params.relationFilter = ["departmentId", parseInt(departmentFilter)];
     } else {
       // Always filter by enterprise if no department filter is applied
@@ -74,7 +75,7 @@ export default function ResourcesPage() {
       .then((data) => {
         // Apply status filter on frontend if necessary
         let filteredData = data;
-        if (statusFilter) {
+        if (statusFilter && statusFilter.trim() !== '') {
           console.log('Status filter:', statusFilter);
           console.log('Employees before filter:', data.data.items.map(emp => ({ name: emp.name, status: emp.status })));
           
@@ -267,14 +268,34 @@ export default function ResourcesPage() {
   };
 
   const resetFilters = () => {
+    console.log('Resetting filters in resources page...');
     setSearchTerm('');
+    setDebouncedSearchTerm('');
     setStatusFilter('');
     setDepartmentFilter('');
     setPaginationNum(1);
-    // Recarregar sem filtros
-    setTimeout(() => {
-      reloadEmployeesList();
-    }, 100);
+    
+    // Force reload without filters by calling the API directly
+    const enterpriseId = getEnterprise();
+    if (!enterpriseId) return;
+
+    const params: any = {
+      "page": 1,
+      "quantity": 8,
+      "relationFilter": ["enterpriseId", enterpriseId]
+    };
+
+    console.log('Reloading employees with params:', params);
+
+    getAll<ListResponse<Employees>>(APIMODULE, params)
+      .then((data) => {
+        console.log('Employees loaded without filters:', data);
+        setEmployees(data);
+      })
+      .catch(err => {
+        console.error('Error loading employees:', err);
+        showError('Error loading employees');
+      });
   };
 
 
@@ -446,7 +467,7 @@ export default function ResourcesPage() {
             <Input nameOnDB='shiftType' name='Shift type' />
             <Input nameOnDB='workingHours' name='Working hours' type='number' />
             <Input nameOnDB='workingDays' name='Working days' type='number' />
-            <Select 
+            <SelectString 
               nameOnDB='status' 
               name='Status' 
               options={statusOptions}
@@ -481,7 +502,7 @@ export default function ResourcesPage() {
             <Input nameOnDB='shiftType' name='Shift type' />
             <Input nameOnDB='workingHours' name='Working hours' type='number' />
             <Input nameOnDB='workingDays' name='Working days' type='number' />
-            <Select 
+            <SelectString 
               nameOnDB='status' 
               name='Status' 
               options={statusOptions}

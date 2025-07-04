@@ -20,8 +20,12 @@ export const ModalForms = <T = any>(props: Props<T>) => {
 
     function changeData<Key extends keyof T>(
         key: Key,
-        value: string
+        value: any
     ) {
+        if (key === "products") {
+            return
+        }
+
         props.setInputData((prev) => ({
             ...prev,
             [key]: key === 'foundationDate'
@@ -34,7 +38,8 @@ export const ModalForms = <T = any>(props: Props<T>) => {
         const success = await props.create();
         if (success) {
             handleClick();
-            window.location.reload()
+            // Não recarregar a página, deixar o componente pai lidar com a atualização
+            // window.location.reload()
         }
     }
 
@@ -52,8 +57,17 @@ export const ModalForms = <T = any>(props: Props<T>) => {
         }, 300);
     };
 
+    // Garantir que os dados iniciais sejam passados corretamente para os filhos
+    useEffect(() => {
+        if (props.initialData) {
+            console.log('ModalForms - Dados iniciais disponíveis:', props.initialData);
+        }
+    }, [props.initialData]);
+
     const childrenWithMethods = React.Children.map(props.children, (child) => {
         if (React.isValidElement(child)) {
+            console.log('ModalForms - Passando initialData para filho:', props.initialData);
+            
             return React.cloneElement(child as React.ReactElement<any>, {
                 changeData: changeData,
                 initialData: props.initialData

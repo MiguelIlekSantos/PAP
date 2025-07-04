@@ -1,353 +1,465 @@
 'use client'
 
-import React, { useState } from 'react'
-import { SlideFrame } from '../../components/SlideFrame'
-import { Nav } from '../../components/Nav'
-import { FilterPanel } from '../../components/FilterPanel'
-import { Table } from '../../components/Table'
-import { Modal } from '../../components/Modal'
-import { Plus, Search, ArrowLeft, AlertTriangle, Calendar } from 'lucide-react'
-import Link from 'next/link'
+import React, { useEffect, useState } from 'react'
+import { Plus } from 'lucide-react'
+import { DataTable } from '../../components/DataTable'
+import { Filter } from '../../components/Filter'
+import { ModalForms } from '../../components/forms/ModalForms'
+import { Input } from '../../components/forms/Input'
+import { SelectString } from '../../components/forms/SelectString'
+import { Fieldset } from '../../components/forms/Fieldset'
+import { Pagination } from '../../components/Pagination'
+import { create, getAll, getById, update, remove, ListResponse } from '@/lib/api'
+import { useEnterpriseStore } from '@/lib/store/items/enterprise.store'
+import { showSuccess, showError } from '@/lib/utils/toastHelpers'
+import { Equipments } from '@prisma/client'
+import { CreateEquipmentsDTO, UpdateEquipmentsDTO } from '@utils'
 
-// Mock data for equipment
-const mockEquipment = [
-  {
-    id: '1',
-    name: 'Empilhadeira Toyota',
-    type: 'Movimentação',
-    serialNumber: 'TYT-EMP-2021-001',
-    location: 'Armazém Lisboa',
-    purchaseDate: '15/03/2020',
-    lastMaintenance: '10/01/2023',
-    nextMaintenance: '10/01/2024',
-    status: 'operational',
-    responsible: 'António Silva',
-  },
-  {
-    id: '2',
-    name: 'Esteira Transportadora',
-    type: 'Movimentação',
-    serialNumber: 'EST-TRANS-2019-002',
-    location: 'Armazém Porto',
-    purchaseDate: '05/06/2019',
-    lastMaintenance: '20/03/2023',
-    nextMaintenance: '20/03/2024',
-    status: 'operational',
-    responsible: 'Maria Santos',
-  },
-  {
-    id: '3',
-    name: 'Máquina de Embalagem',
-    type: 'Embalagem',
-    serialNumber: 'EMB-2018-003',
-    location: 'Armazém Lisboa',
-    purchaseDate: '12/04/2018',
-    lastMaintenance: '15/05/2023',
-    nextMaintenance: '15/05/2024',
-    status: 'maintenance',
-    responsible: 'João Oliveira',
-  },
-  {
-    id: '4',
-    name: 'Scanner de Código de Barras',
-    type: 'Identificação',
-    serialNumber: 'SCN-2022-004',
-    location: 'Armazém Braga',
-    purchaseDate: '03/11/2022',
-    lastMaintenance: '05/02/2023',
-    nextMaintenance: '05/02/2024',
-    status: 'operational',
-    responsible: 'Ana Costa',
-  },
-  {
-    id: '5',
-    name: 'Paleteira Manual',
-    type: 'Movimentação',
-    serialNumber: 'PLT-2020-005',
-    location: 'Armazém Faro',
-    purchaseDate: '22/07/2020',
-    lastMaintenance: '18/08/2023',
-    nextMaintenance: '18/08/2024',
-    status: 'repair',
-    responsible: 'Carlos Rodrigues',
-  },
-];
-
-// Filter fields
-const filterFields = [
-  {
-    name: 'type',
-    label: 'Tipo',
-    type: 'select' as const,
-    options: [
-      { label: 'Movimentação', value: 'Movimentação' },
-      { label: 'Embalagem', value: 'Embalagem' },
-      { label: 'Identificação', value: 'Identificação' },
-    ],
-  },
-  {
-    name: 'location',
-    label: 'Localização',
-    type: 'select' as const,
-    options: [
-      { label: 'Armazém Lisboa', value: 'Armazém Lisboa' },
-      { label: 'Armazém Porto', value: 'Armazém Porto' },
-      { label: 'Armazém Braga', value: 'Armazém Braga' },
-      { label: 'Armazém Faro', value: 'Armazém Faro' },
-    ],
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    type: 'select' as const,
-    options: [
-      { label: 'Operacional', value: 'operational' },
-      { label: 'Em manutenção', value: 'maintenance' },
-      { label: 'Em reparo', value: 'repair' },
-      { label: 'Inativo', value: 'inactive' },
-    ],
-  },
-];
+const APIMODULE = "equipments"
 
 export default function EquipmentPage() {
-  const [equipment, setEquipment] = useState(mockEquipment);
-  const [filteredEquipment, setFilteredEquipment] = useState(mockEquipment);
-  const [filterValues, setFilterValues] = useState<Record<string, any>>({});
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEquipmentModal, setShowEquipmentModal] = useState(false);
-  const [selectedEquipment, setSelectedEquipment] = useState<any>(null);
+	const [loaded, setLoaded] = useState<boolean>(false);
+	const [equipments, setEquipments] = useState<ListResponse<Equipments>>();
+	const [paginationNum, setPaginationNum] = useState<number>(1);
 
-  // Handle filter change
-  const handleFilterChange = (name: string, value: any) => {
-    setFilterValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+	const [showAddModal, setShowAddModal] = useState(false);
+	const [showEditModal, setShowEditModal] = useState(false);
+	const [selectedEquipment, setSelectedEquipment] = useState<Equipments | null>(null);
 
-  // Apply filters
-  const applyFilters = () => {
-    let filtered = [...equipment];
+	const [inputDataCreate, setInputDataCreate] = useState<Partial<CreateEquipmentsDTO>>({});
+	const [inputDataUpdate, setInputDataUpdate] = useState<Partial<UpdateEquipmentsDTO>>({});
 
-    // Apply search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (item) =>
-          item.name.toLowerCase().includes(term) ||
-          item.serialNumber.toLowerCase().includes(term) ||
-          item.type.toLowerCase().includes(term) ||
-          item.location.toLowerCase().includes(term) ||
-          item.responsible.toLowerCase().includes(term)
-      );
-    }
+	const [searchTerm, setSearchTerm] = useState('');
+	const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+	const [statusFilter, setStatusFilter] = useState('');
 
-    // Apply other filters
-    Object.entries(filterValues).forEach(([key, value]) => {
-      if (value) {
-        filtered = filtered.filter((item) => {
-          if (typeof item[key as keyof typeof item] === 'string') {
-            return (item[key as keyof typeof item] as string).toLowerCase() === value.toLowerCase();
-          }
-          return item[key as keyof typeof item] === value;
-        });
-      }
-    });
+	const { getEnterprise } = useEnterpriseStore();
 
-    setFilteredEquipment(filtered);
-  };
+	const convertValue = (key: string, value: any) => {
+		if (value === undefined || value === null || value === '') {
+			return value;
+		}
 
-  // Reset filters
-  const resetFilters = () => {
-    setFilterValues({});
-    setSearchTerm('');
-    setFilteredEquipment(equipment);
-  };
+		if (key === 'purchaseDate' || key === 'warrantyEndDate') {
+			return value ? new Date(value) : null;
+		}
 
-  // Handle equipment click
-  const handleEquipmentClick = (item: any) => {
-    setSelectedEquipment(item);
-    setShowEquipmentModal(true);
-  };
+		return value;
+	};
 
-  // Table columns
-  const columns = [
-    {
-      header: 'Nome',
-      accessor: 'name',
-    },
-    {
-      header: 'Tipo',
-      accessor: 'type',
-    },
-    {
-      header: 'Número de Série',
-      accessor: 'serialNumber',
-    },
-    {
-      header: 'Localização',
-      accessor: 'location',
-    },
-    {
-      header: 'Próxima Manutenção',
-      accessor: 'nextMaintenance',
-    },
-    {
-      header: 'Responsável',
-      accessor: 'responsible',
-    },
-    {
-      header: 'Status',
-      accessor: 'status',
-      cell: (value: string) => {
-        if (value === 'operational') return <span className="text-green-500">Operacional</span>;
-        if (value === 'maintenance') return <span className="text-yellow-500">Em manutenção</span>;
-        if (value === 'repair') return <span className="text-red-500">Em reparo</span>;
-        if (value === 'inactive') return <span className="text-gray-500">Inativo</span>;
-        return value;
-      },
-    },
-  ];
+	const formatDate = (date: Date | null): string => {
+		if (!date) return 'Não informado';
+		return new Date(date).toLocaleDateString('pt-BR');
+	};
 
-  return (
-    <>
-      <SlideFrame />
-      <div className="min-h-screen ml-20 bg-base-300 text-white p-6 relative">
-        <div className="flex items-center mb-6">
-          <Link href="/inventory" className="mr-4 text-gray-400 hover:text-violet-400 transition-colors duration-200">
-            <ArrowLeft size={24} />
-          </Link>
-          <h1 className="text-3xl font-bold text-white">Equipamentos</h1>
-        </div>
+	const equipmentColumns = [
+		{
+			header: 'Nome',
+			accessor: 'name',
+			cell: (value: any) => renderCellValue('name', value),
+		},
+		{
+			header: 'Número de Série',
+			accessor: 'serialNumber',
+			cell: (value: any) => renderCellValue('serialNumber', value),
+		},
+		{
+			header: 'Marca',
+			accessor: 'brand',
+			cell: (value: any) => renderCellValue('brand', value),
+		},
+		{
+			header: 'Modelo',
+			accessor: 'model',
+			cell: (value: any) => renderCellValue('model', value),
+		},
+		{
+			header: 'Localização',
+			accessor: 'location',
+			cell: (value: any) => renderCellValue('location', value),
+		},
+		{
+			header: 'Data de Compra',
+			accessor: 'purchaseDate',
+			cell: (value: any) => renderCellValue('purchaseDate', value),
+		},
+		{
+			header: 'Garantia até',
+			accessor: 'warrantyEndDate',
+			cell: (value: any) => renderCellValue('warrantyEndDate', value),
+		},
+		{
+			header: 'Status',
+			accessor: 'status',
+			cell: (value: any) => renderCellValue('status', value),
+		},
+	];
 
-        <div className="flex justify-end mb-6">
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-md transition-all duration-200"
-          >
-            <Plus size={18} />
-            Adicionar Equipamento
-          </button>
-        </div>
+	const renderCellValue = (accessor: string, value: any) => {
+		if (accessor === 'status') {
+			if (!value) return 'Não informado';
 
-        {/* Search bar */}
-        <div className="relative mb-6">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={18} className="text-gray-400" />
-          </div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Pesquisar equipamentos..."
-            className="bg-[#161f2c] text-white border border-gray-700 focus:border-violet-500 rounded-md py-2 pl-10 pr-3 w-full outline-none transition-all duration-200 hover:border-violet-400 focus:ring-1 focus:ring-violet-500"
-          />
-        </div>
+			let statusText = '';
+			let statusClass = '';
 
-        {/* Filters */}
-        <FilterPanel
-          fields={filterFields}
-          values={filterValues}
-          onChange={handleFilterChange}
-          onApply={applyFilters}
-          onReset={resetFilters}
-        />
+			if (value === 'operational') {
+				statusText = 'Operacional';
+				statusClass = 'bg-green-500/20 text-green-400';
+			} else if (value === 'maintenance') {
+				statusText = 'Em manutenção';
+				statusClass = 'bg-yellow-500/20 text-yellow-400';
+			} else if (value === 'repair') {
+				statusText = 'Em reparo';
+				statusClass = 'bg-red-500/20 text-red-400';
+			} else if (value === 'inactive') {
+				statusText = 'Inativo';
+				statusClass = 'bg-gray-500/20 text-gray-400';
+			} else {
+				statusText = value;
+				statusClass = 'bg-gray-500/20 text-gray-400';
+			}
 
-        {/* Equipment table */}
-        <div className="bg-[#0d1218] border border-gray-800 rounded-lg overflow-hidden shadow-md">
-          <Table
-            columns={columns}
-            data={filteredEquipment}
-            onRowClick={handleEquipmentClick}
-          />
-        </div>
-      </div>
+			return (
+				<span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClass}`}>
+					{statusText}
+				</span>
+			);
+		} else if (accessor === 'purchaseDate' || accessor === 'warrantyEndDate') {
+			return formatDate(value);
+		} else {
+			return value || 'Não informada';
+		}
+	};
 
-      {/* Add Equipment Modal */}
-      {showAddModal && (
-        <Modal onclick={() => setShowAddModal(false)} isCreate={true} isLarge={true}>
-          <h2 className="text-xl font-bold mb-4">Adicionar Novo Equipamento</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Form fields would go here */}
-            <p className="text-gray-400 col-span-full">Formulário de cadastro de equipamento</p>
-          </div>
-        </Modal>
-      )}
+	useEffect(() => {
+		console.log('🕐 Debounce useEffect triggered, searchTerm:', searchTerm);
+		const timer = setTimeout(() => {
+			console.log('⏰ Debounce timer fired, setting debouncedSearchTerm to:', searchTerm);
+			setDebouncedSearchTerm(searchTerm);
+		}, 500);
 
-      {/* Equipment Details Modal */}
-      {showEquipmentModal && selectedEquipment && (
-        <Modal onclick={() => setShowEquipmentModal(false)} isCreate={false} isLarge={true}>
-          <h2 className="text-xl font-bold mb-4">{selectedEquipment.name}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="col-span-full md:col-span-1">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Informações Básicas</h3>
-                <div className="space-y-2">
-                  <p><span className="text-gray-400">Tipo:</span> {selectedEquipment.type}</p>
-                  <p><span className="text-gray-400">Número de Série:</span> {selectedEquipment.serialNumber}</p>
-                  <p><span className="text-gray-400">Localização:</span> {selectedEquipment.location}</p>
-                  <p><span className="text-gray-400">Data de Aquisição:</span> {selectedEquipment.purchaseDate}</p>
-                  <p><span className="text-gray-400">Responsável:</span> {selectedEquipment.responsible}</p>
-                  <p>
-                    <span className="text-gray-400">Status:</span> 
-                    <span className={
-                      selectedEquipment.status === 'operational' ? 'text-green-500 ml-2' : 
-                      selectedEquipment.status === 'maintenance' ? 'text-yellow-500 ml-2' : 
-                      selectedEquipment.status === 'repair' ? 'text-red-500 ml-2' : 
-                      'text-gray-500 ml-2'
-                    }>
-                      {selectedEquipment.status === 'operational' ? 'Operacional' : 
-                       selectedEquipment.status === 'maintenance' ? 'Em manutenção' : 
-                       selectedEquipment.status === 'repair' ? 'Em reparo' : 
-                       'Inativo'}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full md:col-span-1">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Manutenção</h3>
-                <div className="space-y-2">
-                  <p><span className="text-gray-400">Última Manutenção:</span> {selectedEquipment.lastMaintenance}</p>
-                  <p><span className="text-gray-400">Próxima Manutenção:</span> {selectedEquipment.nextMaintenance}</p>
-                  
-                  <div className="mt-4 flex items-center gap-3">
-                    {new Date(selectedEquipment.nextMaintenance.split('/').reverse().join('-')) <= new Date() ? (
-                      <div className="flex items-center gap-2 text-red-500">
-                        <AlertTriangle size={18} />
-                        <span>Manutenção atrasada</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 text-green-500">
-                        <Calendar size={18} />
-                        <span>Manutenção em dia</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Histórico de Manutenções</h3>
-                <div className="space-y-2">
-                  <p className="text-gray-400">Histórico de manutenções realizadas no equipamento</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-span-full">
-              <div className="bg-[#0d1218] border border-gray-800 rounded-lg p-4">
-                <h3 className="text-violet-400 font-medium mb-3">Documentação Técnica</h3>
-                <div className="space-y-2">
-                  <p className="text-gray-400">Manuais e documentação técnica do equipamento</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Modal>
-      )}
-    </>
-  );
+		return () => clearTimeout(timer);
+	}, [searchTerm]);
+
+	const reloadEquipmentsList = async () => {
+		const enterpriseId = getEnterprise();
+		if (!enterpriseId) return;
+
+		const params: any = {
+			"page": paginationNum,
+			"quantity": 8,
+		};
+
+		if (debouncedSearchTerm) {
+			params.term = debouncedSearchTerm;
+		}
+
+		params.relationFilter = ["enterpriseId", enterpriseId];
+
+		console.log('reloadEquipmentsList called with statusFilter:', statusFilter);
+
+		try {
+			const data = await getAll<ListResponse<Equipments>>(APIMODULE, params);
+			let filteredData = data;
+			if (statusFilter && statusFilter.trim() !== '') {
+				const filteredItems = data.data.items.filter(equipment => {
+					return equipment.status === statusFilter;
+				});
+
+				filteredData = {
+					...data,
+					data: {
+						...data.data,
+						items: filteredItems,
+					}
+				};
+			}
+			setEquipments(filteredData);
+		} catch (err) {
+			console.error('Error loading equipments:', err);
+			showError('Error loading equipments');
+		}
+	};
+
+	useEffect(() => {
+		console.log('📊 Main useEffect triggered with:', {
+			paginationNum,
+			debouncedSearchTerm,
+			statusFilter
+		});
+		setLoaded(false);
+		reloadEquipmentsList().then(() => {
+			setLoaded(true);
+		});
+	}, [paginationNum, debouncedSearchTerm, statusFilter]);
+
+	function createEquipment(): Promise<boolean> {
+		if (!inputDataCreate.name) {
+			showError('Equipment name is required');
+			return Promise.resolve(false);
+		}
+
+		if (!inputDataCreate.serialNumber) {
+			showError('Serial number is required');
+			return Promise.resolve(false);
+		}
+
+		const payload: Partial<CreateEquipmentsDTO> = {
+			...inputDataCreate,
+			enterpriseId: getEnterprise()
+		};
+
+		const filteredPayload: Partial<CreateEquipmentsDTO> = {};
+
+		Object.entries(payload).forEach(([key, value]) => {
+			const convertedValue = convertValue(key, value);
+			if (convertedValue !== undefined && convertedValue !== null && convertedValue !== '') {
+				(filteredPayload as any)[key] = convertedValue;
+			}
+		});
+
+		return create<CreateEquipmentsDTO, Equipments>(APIMODULE, filteredPayload as CreateEquipmentsDTO)
+			.then((data) => {
+				showSuccess('Equipamento criado com sucesso!');
+				setShowAddModal(false);
+				setInputDataCreate({});
+				reloadEquipmentsList();
+				return true;
+			})
+			.catch(err => {
+				console.error('Error creating equipment:', err);
+				showError('Error creating equipment');
+				return false;
+			});
+	}
+
+	function updateEquipment(): Promise<boolean> {
+		if (!selectedEquipment) {
+			showError('No equipment selected');
+			return Promise.resolve(false);
+		}
+
+		const payload: Partial<UpdateEquipmentsDTO> = {};
+
+		Object.entries(inputDataUpdate).forEach(([key, value]) => {
+			const convertedValue = convertValue(key, value);
+			if (convertedValue !== undefined && convertedValue !== null && convertedValue !== '') {
+				(payload as any)[key] = convertedValue;
+			}
+		});
+
+		console.log('Payload para update:', payload);
+
+		return update<UpdateEquipmentsDTO, Equipments>(APIMODULE, selectedEquipment.id, payload as UpdateEquipmentsDTO)
+			.then((data) => {
+				console.log('Equipment updated:', data);
+				showSuccess('Equipamento atualizado com sucesso!');
+				setShowEditModal(false);
+				setSelectedEquipment(null);
+				setInputDataUpdate({});
+
+				reloadEquipmentsList();
+				return true;
+			})
+			.catch(err => {
+				console.error('Error updating equipment:', err);
+				showError('Error updating equipment');
+				return false;
+			});
+	}
+
+	const deleteEquipment = async (equipment: Equipments) => {
+		if (window.confirm('Tem certeza que deseja deletar este equipamento?')) {
+			try {
+				await remove(APIMODULE, equipment.id);
+				showSuccess('Equipamento deletado com sucesso!');
+				reloadEquipmentsList();
+			} catch (err) {
+				console.error('Error deleting equipment:', err);
+				showError('Erro ao deletar equipamento');
+			}
+		}
+	};
+
+	const deleteBulkEquipments = async (selectedIds: number[]) => {
+		try {
+			const deletePromises = selectedIds.map(id => remove(APIMODULE, id));
+			await Promise.all(deletePromises);
+			showSuccess(`${selectedIds.length} equipamento(s) deletado(s) com sucesso!`);
+			reloadEquipmentsList();
+		} catch (err) {
+			console.error('Error deleting equipments:', err);
+			showError('Erro ao deletar equipamentos');
+		}
+	};
+
+	const handleEditEquipment = (equipment: Equipments) => {
+		setSelectedEquipment(equipment);
+
+		const updateData: Partial<UpdateEquipmentsDTO> = {
+			name: equipment.name,
+			serialNumber: equipment.serialNumber,
+		};
+
+		if (equipment.description) updateData.description = equipment.description;
+		if (equipment.model) updateData.model = equipment.model;
+		if (equipment.brand) updateData.brand = equipment.brand;
+		if (equipment.purchaseDate) updateData.purchaseDate = equipment.purchaseDate;
+		if (equipment.warrantyEndDate) updateData.warrantyEndDate = equipment.warrantyEndDate;
+		if (equipment.status) updateData.status = equipment.status;
+		if (equipment.location) updateData.location = equipment.location;
+
+		setInputDataUpdate(updateData);
+		setShowEditModal(true);
+	};
+
+	const resetFilters = () => {
+		console.log('🔄 Resetting filters in equipment page...');
+		console.log('Before reset - searchTerm:', searchTerm, 'debouncedSearchTerm:', debouncedSearchTerm);
+		setSearchTerm('');
+		setStatusFilter('');
+		setPaginationNum(1);
+
+		console.log('✅ Filters reset, waiting for debounce and useEffect to trigger...');
+	};
+
+	const statusOptions = [
+		{ value: 'operational', label: 'Operacional' },
+		{ value: 'maintenance', label: 'Em manutenção' },
+		{ value: 'repair', label: 'Em reparo' },
+		{ value: 'inactive', label: 'Inativo' },
+	];
+
+	// Filter fields
+	const filterFields = [
+		{
+			name: 'statusFilter',
+			label: 'Todos os status',
+			type: 'select' as const,
+			options: statusOptions,
+		},
+	];
+
+	const filterValues = {
+		statusFilter,
+	};
+
+	const handleFilterChange = (name: string, value: any) => {
+		if (name === 'statusFilter') {
+			setStatusFilter(value);
+		}
+	};
+
+
+
+	// Table columns
+	const columns = equipmentColumns;
+
+	return (
+		<>
+			<div className="min-h-screen ml-20 bg-base-300 text-white p-10">
+				<div className="flex items-center justify-between mb-10 border-b border-violet-900/30 pb-4">
+					<h1 className="text-4xl font-bold text-white">
+						🔧 Equipamentos
+					</h1>
+					<button
+						onClick={() => setShowAddModal(true)}
+						className="bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2"
+					>
+						<Plus size={18} />
+						<span>Add Equipment</span>
+					</button>
+				</div>
+
+				{/* Filters */}
+				<Filter
+					searchTerm={searchTerm}
+					onSearchChange={setSearchTerm}
+					searchPlaceholder="Pesquisar equipamentos por nome, número de série ou localização..."
+					fields={filterFields}
+					values={filterValues}
+					onChange={handleFilterChange}
+					onReset={resetFilters}
+				/>
+
+				{/* Equipment table */}
+				<div className="bg-[#0d1218] border border-gray-800 rounded-lg overflow-hidden shadow-md">
+					<DataTable
+						columns={columns}
+						data={loaded && equipments ? equipments.data.items : []}
+						onEdit={handleEditEquipment}
+						onDelete={deleteEquipment}
+						onBulkDelete={deleteBulkEquipments}
+						selectable={true}
+						idField="id"
+					/>
+				</div>
+
+				{/* Pagination */}
+				{loaded && equipments && (
+					<div className="mt-10">
+						<Pagination
+							updatePage={setPaginationNum}
+							actualPage={paginationNum}
+							last={equipments.data.metadata.last ?? 1}
+						/>
+					</div>
+				)}
+			</div>
+
+			{/* Modal to add equipment */}
+			{showAddModal && (
+				<ModalForms create={createEquipment} setInputData={setInputDataCreate} onclick={() => setShowAddModal(false)}>
+					<p className='text-2xl p-5 lg:p-10'>Add new equipment</p>
+
+					<Fieldset title='Equipment Information'>
+						<Input nameOnDB='name' name='Equipment name *' />
+						<Input nameOnDB='serialNumber' name='Serial number *' />
+						<Input nameOnDB='description' name='Description' />
+						<Input nameOnDB='model' name='Model' />
+						<Input nameOnDB='brand' name='Brand' />
+						<Input nameOnDB='location' name='Location' />
+						<Input nameOnDB='purchaseDate' name='Purchase date' type='date' />
+						<Input nameOnDB='warrantyEndDate' name='Warranty end date' type='date' />
+						<SelectString
+							nameOnDB='status'
+							name='Status'
+							options={statusOptions}
+						/>
+					</Fieldset>
+				</ModalForms>
+			)}
+
+			{/* Modal to edit equipment */}
+			{showEditModal && selectedEquipment && (
+				<ModalForms
+					create={updateEquipment}
+					setInputData={setInputDataUpdate}
+					onclick={() => setShowEditModal(false)}
+					initialData={inputDataUpdate}
+				>
+					<p className='text-2xl p-5 lg:p-10'>Edit equipment: {selectedEquipment.name}</p>
+
+					<Fieldset title='Equipment Information'>
+						<Input nameOnDB='name' name='Equipment name *' />
+						<Input nameOnDB='serialNumber' name='Serial number *' />
+						<Input nameOnDB='description' name='Description' />
+						<Input nameOnDB='model' name='Model' />
+						<Input nameOnDB='brand' name='Brand' />
+						<Input nameOnDB='location' name='Location' />
+						<Input nameOnDB='purchaseDate' name='Purchase date' type='date' />
+						<Input nameOnDB='warrantyEndDate' name='Warranty end date' type='date' />
+						<SelectString
+							nameOnDB='status'
+							name='Status'
+							options={statusOptions}
+						/>
+					</Fieldset>
+				</ModalForms>
+			)}
+		</>
+	);
 }
+
+
+
