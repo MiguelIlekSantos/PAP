@@ -381,7 +381,7 @@ export default function PurchasesPage() {
         <div className="flex items-center justify-between mb-10 border-b border-violet-900/30 pb-4">
           <h1 className="text-4xl font-bold text-white flex items-center gap-3">
             <ShoppingBag size={40} className="text-violet-500" />
-            🛒 Gestão de Compras
+             Gestão de Compras
           </h1>
           <button
             onClick={() => setShowAddModal(true)}

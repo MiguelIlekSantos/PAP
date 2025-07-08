@@ -465,7 +465,7 @@ export default function SalesPage() {
         <div className="flex items-center justify-between mb-10 border-b border-violet-900/30 pb-4">
           <h1 className="text-4xl font-bold text-white flex items-center gap-3">
             <ShoppingCart size={40} className="text-violet-500" />
-            💰 Gestão de Vendas
+            Gestão de Vendas
           </h1>
           <button
             onClick={() => setShowAddModal(true)}

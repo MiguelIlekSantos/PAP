@@ -29,13 +29,12 @@ export const Nav = (props: Props) => {
                     </a>
                 </div>
                 <div className="flex gap-2">
-                    {props.isSimple ?
+                    {/* {props.isSimple ?
                         <Link
                             href="/dashboard"
                             className="btn btn-error flex items-center gap-2 px-4 py-2 text-white transition hover:scale-105 hover:shadow-md"
                         >
                             <ArrowLeft size={22} />
-                            {/* <span className="hidden sm:inline">Voltar</span> */}
                         </Link>
 
                         :
@@ -61,7 +60,7 @@ export const Nav = (props: Props) => {
                                 </ul>
                             </div>
                         </div>
-                    }
+                    } */}
                 </div>
             </div>
             {ProfileModal &&

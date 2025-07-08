@@ -39,31 +39,31 @@ export const Buttons: Button[] = [
         icon: MapPin,
         url: "/logistic"
     },
-    {
-        title: "Projects & Tasks",
-        icon: CheckSquare,
-        url: "/projects"
-    },
-    {
-        title: "Technology & IT",
-        icon: Monitor,
-        url: "/tecnology"
-    },
-    {
-        title: "Marketing",
-        icon: Megaphone,
-        url: "/marketing"
-    },
-    {
-        title: "Documentation & Legal",
-        icon: FileText,
-        url: "/documentation"
-    },
-    {
-        title: "System Administration",
-        icon: Settings,
-        url: "/system-admin"
-    },
+    // {
+    //     title: "Projects & Tasks",
+    //     icon: CheckSquare,
+    //     url: "/projects"
+    // },
+    // {
+    //     title: "Technology & IT",
+    //     icon: Monitor,
+    //     url: "/tecnology"
+    // },
+    // {
+    //     title: "Marketing",
+    //     icon: Megaphone,
+    //     url: "/marketing"
+    // },
+    // {
+    //     title: "Documentation & Legal",
+    //     icon: FileText,
+    //     url: "/documentation"
+    // },
+    // {
+    //     title: "System Administration",
+    //     icon: Settings,
+    //     url: "/system-admin"
+    // },
     {
         title: "AI Analysis",
         icon: Brain,

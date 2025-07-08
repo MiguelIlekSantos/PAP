@@ -71,6 +71,7 @@ export interface DeliveryDTO {
   clientId: number;
   transporterId: number;
   products?: number[];
+  enterpriseId?: number;
 }
 
 
@@ -252,9 +253,9 @@ export interface ProjectsDTO {
   manager: string;
   budget: number;  
   clientId: number;
-  employees: number[];
-  tasks: number[];
-  chat: number;
+  Employees?: number[];
+  tasks?: number[];
+  chat?: number;
   enterpriseId: number;
 }
 
@@ -346,14 +347,14 @@ export interface TasksDTO {
   name: string;
   description: string;
   assignedTo: string;
-  dueDate: Date;
+  dueDate: Date | string;
   completed: boolean;
-  completedAt: Date;
+  completedAt?: Date | string;
   projectId: number;
   status: string;
   priority: string;
   responsible: number;
-  employees: number[];
+  employees?: number[];
 }
 
 export interface TaxesDTO {
@@ -472,7 +473,7 @@ export type CreateSubDepartmentsDTO = Omit<SubDepartmentsDTO, 'id'>;
 export type UpdateSubDepartmentsDTO = Partial<CreateSubDepartmentsDTO>;
 export type CreateSuppliersDTO = Omit<SuppliersDTO, 'id' | 'purchases'>; 
 export type UpdateSuppliersDTO = Partial<CreateSuppliersDTO>;
-export type CreateTasksDTO = TasksDTO; 
+export type CreateTasksDTO = Omit<TasksDTO, 'id'>; 
 export type UpdateTasksDTO = Partial<TasksDTO>;
 export type CreateTaxesDTO = Omit<TaxesDTO, 'id'>; 
 export type UpdateTaxesDTO = Partial<CreateTaxesDTO>;

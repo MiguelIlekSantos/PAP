@@ -14,6 +14,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtGuard, JwtStrategy, VerifyService } from '../lib';
 import { AiModuleModule } from './ai-module/ai-module.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AiModuleModule } from './ai-module/ai-module.module';
     PassportModule,
     JwtModule.register({}),
     AiModuleModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [

@@ -450,9 +450,6 @@ export default function AIAnalysisPage() {
 							<button onClick={() => setActiveTab('request')} className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 mr-2">
 								Nova Análise
 							</button>
-							<button className="bg-violet-700 hover:bg-violet-600 text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2">
-								Exportar Resultados
-							</button>
 						</div>
 					</div>
 				)}
